@@ -107,7 +107,7 @@
         ConditionalExpression: ['test', 'consequent', 'alternate'],
         ContinueStatement: ['label'],
         DebuggerStatement: [],
-        DirectiveStatement: ['directive'],
+        DirectiveStatement: [],
         DoWhileStatement: ['body', 'test'],
         EmptyStatement: [],
         ExpressionStatement: ['expression'],
