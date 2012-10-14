@@ -249,8 +249,8 @@
                     return result.top;
                 }
 
-                worklist.push(marker);
                 if (tuple[0]) {
+                    worklist.push(marker);
                     leavelist.push(tuple);
 
                     if (ret !== VisitorOption.Skip) {
