@@ -74,6 +74,7 @@
         ObjectExpression: 'ObjectExpression',
         Program: 'Program',
         Property: 'Property',
+        PropertyWrapper: 'PropertyWrapper',
         ReturnStatement: 'ReturnStatement',
         SequenceExpression: 'SequenceExpression',
         SwitchStatement: 'SwitchStatement',
@@ -146,13 +147,14 @@
     };
 
     function traverse(top, visitor) {
-        var worklist, leavelist, node, ret, current, current2, candidates, candidate, marker = {};
+        var worklist, leavelist, node, nodeType, ret, current, current2, candidates, candidate, marker = {};
 
         worklist = [ top ];
         leavelist = [ null ];
 
         while (worklist.length) {
             node = worklist.pop();
+            nodeType = node.type;
 
             if (node === marker) {
                 node = leavelist.pop();
@@ -165,6 +167,11 @@
                     return;
                 }
             } else if (node) {
+                if (node.type === Syntax.PropertyWrapper) {
+                    node = node.property;
+                    nodeType = Syntax.Property;
+                }
+
                 if (visitor.enter) {
                     ret = visitor.enter(node, leavelist[leavelist.length - 1]);
                 } else {
@@ -179,7 +186,7 @@
                 leavelist.push(node);
 
                 if (ret !== VisitorOption.Skip) {
-                    candidates = VisitorKeys[node.type];
+                    candidates = VisitorKeys[nodeType];
                     current = candidates.length;
                     while ((current -= 1) >= 0) {
                         candidate = node[candidates[current]];
@@ -188,7 +195,11 @@
                                 current2 = candidate.length;
                                 while ((current2 -= 1) >= 0) {
                                     if (candidate[current2]) {
-                                        worklist.push(candidate[current2]);
+                                        if(nodeType === Syntax.ObjectExpression && 'properties' === candidates[current] && null == candidates[current].type) {
+                                            worklist.push({type: Syntax.PropertyWrapper, property: candidate[current2]});
+                                        } else {
+                                            worklist.push(candidate[current2]);
+                                        }
                                     }
                                 }
                             } else {
