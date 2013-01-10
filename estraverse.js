@@ -43,7 +43,8 @@
     var Syntax,
         isArray,
         VisitorOption,
-        VisitorKeys;
+        VisitorKeys,
+        wrappers;
 
     Syntax = {
         AssignmentExpression: 'AssignmentExpression',
@@ -74,7 +75,6 @@
         ObjectExpression: 'ObjectExpression',
         Program: 'Program',
         Property: 'Property',
-        PropertyWrapper: 'PropertyWrapper',
         ReturnStatement: 'ReturnStatement',
         SequenceExpression: 'SequenceExpression',
         SwitchStatement: 'SwitchStatement',
@@ -146,6 +146,10 @@
         Skip: 2
     };
 
+    wrappers = {
+        PropertyWrapper: 'Property'
+    };
+
     function traverse(top, visitor) {
         var worklist, leavelist, node, nodeType, ret, current, current2, candidates, candidate, marker = {};
 
@@ -167,9 +171,9 @@
                     return;
                 }
             } else if (node) {
-                if (node.type === Syntax.PropertyWrapper) {
-                    node = node.property;
-                    nodeType = Syntax.Property;
+                if (wrappers.hasOwnProperty(nodeType)) {
+                    node = node.node;
+                    nodeType = wrappers[nodeType];
                 }
 
                 if (visitor.enter) {
@@ -196,7 +200,7 @@
                                 while ((current2 -= 1) >= 0) {
                                     if (candidate[current2]) {
                                         if(nodeType === Syntax.ObjectExpression && 'properties' === candidates[current] && null == candidates[current].type) {
-                                            worklist.push({type: Syntax.PropertyWrapper, property: candidate[current2]});
+                                            worklist.push({type: 'PropertyWrapper', node: candidate[current2]});
                                         } else {
                                             worklist.push(candidate[current2]);
                                         }
