@@ -43,7 +43,8 @@
     var Syntax,
         isArray,
         VisitorOption,
-        VisitorKeys;
+        VisitorKeys,
+        wrappers;
 
     Syntax = {
         AssignmentExpression: 'AssignmentExpression',
@@ -145,14 +146,19 @@
         Skip: 2
     };
 
+    wrappers = {
+        PropertyWrapper: 'Property'
+    };
+
     function traverse(top, visitor) {
-        var worklist, leavelist, node, ret, current, current2, candidates, candidate, marker = {};
+        var worklist, leavelist, node, nodeType, ret, current, current2, candidates, candidate, marker = {};
 
         worklist = [ top ];
         leavelist = [ null ];
 
         while (worklist.length) {
             node = worklist.pop();
+            nodeType = node.type;
 
             if (node === marker) {
                 node = leavelist.pop();
@@ -165,6 +171,11 @@
                     return;
                 }
             } else if (node) {
+                if (wrappers.hasOwnProperty(nodeType)) {
+                    node = node.node;
+                    nodeType = wrappers[nodeType];
+                }
+
                 if (visitor.enter) {
                     ret = visitor.enter(node, leavelist[leavelist.length - 1]);
                 } else {
@@ -179,7 +190,7 @@
                 leavelist.push(node);
 
                 if (ret !== VisitorOption.Skip) {
-                    candidates = VisitorKeys[node.type];
+                    candidates = VisitorKeys[nodeType];
                     current = candidates.length;
                     while ((current -= 1) >= 0) {
                         candidate = node[candidates[current]];
@@ -188,7 +199,11 @@
                                 current2 = candidate.length;
                                 while ((current2 -= 1) >= 0) {
                                     if (candidate[current2]) {
-                                        worklist.push(candidate[current2]);
+                                        if(nodeType === Syntax.ObjectExpression && 'properties' === candidates[current] && null == candidates[current].type) {
+                                            worklist.push({type: 'PropertyWrapper', node: candidate[current2]});
+                                        } else {
+                                            worklist.push(candidate[current2]);
+                                        }
                                     }
                                 }
                             } else {
@@ -202,7 +217,7 @@
     }
 
     function replace(top, visitor) {
-        var worklist, leavelist, node, target, tuple, ret, current, current2, candidates, candidate, marker = {}, result;
+        var worklist, leavelist, node, nodeType, target, tuple, ret, current, current2, candidates, candidate, marker = {}, result;
 
         result = {
             top: top
@@ -236,6 +251,13 @@
             } else if (tuple[0]) {
                 ret = undefined;
                 node = tuple[0];
+
+                nodeType = node.type;
+                if (wrappers.hasOwnProperty(nodeType)) {
+                    tuple[0] = node = node.node;
+                    nodeType = wrappers[nodeType];
+                }
+
                 if (visitor.enter) {
                     target = visitor.enter(tuple[0], leavelist[leavelist.length - 1][0], notify);
                     if (target !== undefined) {
@@ -254,7 +276,7 @@
                     leavelist.push(tuple);
 
                     if (ret !== VisitorOption.Skip) {
-                        candidates = VisitorKeys[node.type];
+                        candidates = VisitorKeys[nodeType];
                         current = candidates.length;
                         while ((current -= 1) >= 0) {
                             candidate = node[candidates[current]];
@@ -263,7 +285,11 @@
                                     current2 = candidate.length;
                                     while ((current2 -= 1) >= 0) {
                                         if (candidate[current2]) {
-                                            worklist.push([candidate[current2], candidate, current2]);
+                                            if(nodeType === Syntax.ObjectExpression && 'properties' === candidates[current] && null == candidates[current].type) {
+                                                worklist.push([{type: 'PropertyWrapper', node: candidate[current2]}, candidate, current2]);
+                                            } else {
+                                                worklist.push([candidate[current2], candidate, current2]);
+                                            }
                                         }
                                     }
                                 } else {
