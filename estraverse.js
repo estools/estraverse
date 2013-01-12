@@ -305,7 +305,7 @@
         return result.top;
     }
 
-    exports.version = '0.0.4-dev';
+    exports.version = '0.0.5-dev';
     exports.Syntax = Syntax;
     exports.traverse = traverse;
     exports.replace = replace;
