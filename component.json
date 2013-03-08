@@ -1,0 +1,14 @@
+{
+    "name": "estraverse",
+    "version": "0.0.5-dev",
+    "main": "./estraverse.js",
+    "dependencies": {},
+    "repository": {
+        "type": "git",
+        "url": "http://github.com/Constellation/estraverse.git"
+    },
+    "licenses": [{
+        "type": "BSD",
+        "url": "http://github.com/Constellation/estraverse/raw/master/LICENSE.BSD"
+    }]
+}
