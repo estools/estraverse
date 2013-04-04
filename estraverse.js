@@ -43,8 +43,7 @@
     var Syntax,
         isArray,
         VisitorOption,
-        VisitorKeys,
-        wrappers;
+        VisitorKeys;
 
     Syntax = {
         AssignmentExpression: 'AssignmentExpression',
@@ -144,10 +143,6 @@
     VisitorOption = {
         Break: 1,
         Skip: 2
-    };
-
-    wrappers = {
-        PropertyWrapper: 'Property'
     };
 
     function Reference(parent, key) {
