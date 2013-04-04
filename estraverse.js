@@ -150,8 +150,25 @@
         PropertyWrapper: 'Property'
     };
 
+    function Controller(visitor) {
+        this.visitor = visitor;
+    }
+
     function traverse(top, visitor) {
-        var worklist, leavelist, node, nodeType, ret, current, current2, candidates, candidate, marker = {};
+        var worklist,
+            leavelist,
+            node,
+            nodeType,
+            ret,
+            current,
+            current2,
+            candidates,
+            candidate,
+            marker,
+            controller;
+
+        marker  = {};
+        controller = new Controller(visitor);
 
         worklist = [ top ];
         leavelist = [ null ];
@@ -163,7 +180,7 @@
             if (node === marker) {
                 node = leavelist.pop();
                 if (visitor.leave) {
-                    ret = visitor.leave(node, leavelist[leavelist.length - 1]);
+                    ret = visitor.leave.call(controller, node, leavelist[leavelist.length - 1]);
                 } else {
                     ret = undefined;
                 }
@@ -177,7 +194,7 @@
                 }
 
                 if (visitor.enter) {
-                    ret = visitor.enter(node, leavelist[leavelist.length - 1]);
+                    ret = visitor.enter.call(controller, node, leavelist[leavelist.length - 1]);
                 } else {
                     ret = undefined;
                 }
@@ -217,7 +234,23 @@
     }
 
     function replace(top, visitor) {
-        var worklist, leavelist, node, nodeType, target, tuple, ret, current, current2, candidates, candidate, marker = {}, result;
+        var worklist,
+            leavelist,
+            node,
+            nodeType,
+            target,
+            tuple,
+            ret,
+            current,
+            current2,
+            candidates,
+            candidate,
+            marker,
+            controller,
+            result;
+
+        marker = {};
+        controller = new Controller(visitor);
 
         result = {
             top: top
@@ -239,7 +272,7 @@
                 ret = undefined;
                 if (visitor.leave) {
                     node = tuple[0];
-                    target = visitor.leave(tuple[0], leavelist[leavelist.length - 1][0], notify);
+                    target = visitor.leave.call(controller, tuple[0], leavelist[leavelist.length - 1][0], notify);
                     if (target !== undefined) {
                         node = target;
                     }
@@ -259,7 +292,7 @@
                 }
 
                 if (visitor.enter) {
-                    target = visitor.enter(tuple[0], leavelist[leavelist.length - 1][0], notify);
+                    target = visitor.enter.call(controller, tuple[0], leavelist[leavelist.length - 1][0], notify);
                     if (target !== undefined) {
                         node = target;
                     }
@@ -311,5 +344,6 @@
     exports.replace = replace;
     exports.VisitorKeys = VisitorKeys;
     exports.VisitorOption = VisitorOption;
+    exports.Controller = Controller;
 }));
 /* vim: set sw=4 ts=4 et tw=80 : */
