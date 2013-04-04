@@ -17,6 +17,7 @@
         "url": "http://github.com/Constellation/estraverse.git"
     },
     "devDependencies": {
+        "jshint": "~1.1.0",
         "mocha": "*",
         "chai": "*"
     },
@@ -25,6 +26,7 @@
         "url": "http://github.com/Constellation/estraverse/raw/master/LICENSE.BSD"
     }],
     "scripts": {
-        "test": "./node_modules/.bin/mocha"
+        "test": "npm run-script lint",
+        "lint": "node_modules/.bin/jshint estraverse.js"
     }
 }

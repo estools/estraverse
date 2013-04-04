@@ -22,9 +22,9 @@
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
   THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-
-/*jslint bitwise:true */
-/*global exports:true, define:true, window:true */
+/*jslint vars:false*/
+/*jshint indent:4*/
+/*global exports:true, define:true, window:true*/
 (function (factory) {
     'use strict';
 
@@ -216,7 +216,7 @@
                                 current2 = candidate.length;
                                 while ((current2 -= 1) >= 0) {
                                     if (candidate[current2]) {
-                                        if(nodeType === Syntax.ObjectExpression && 'properties' === candidates[current] && null == candidates[current].type) {
+                                        if (nodeType === Syntax.ObjectExpression && 'properties' === candidates[current] && null == candidates[current].type) {
                                             worklist.push({type: 'PropertyWrapper', node: candidate[current2]});
                                         } else {
                                             worklist.push(candidate[current2]);
@@ -318,7 +318,7 @@
                                     current2 = candidate.length;
                                     while ((current2 -= 1) >= 0) {
                                         if (candidate[current2]) {
-                                            if(nodeType === Syntax.ObjectExpression && 'properties' === candidates[current] && null == candidates[current].type) {
+                                            if (nodeType === Syntax.ObjectExpression && 'properties' === candidates[current] && null == candidates[current].type) {
                                                 worklist.push([{type: 'PropertyWrapper', node: candidate[current2]}, candidate, current2]);
                                             } else {
                                                 worklist.push([candidate[current2], candidate, current2]);
