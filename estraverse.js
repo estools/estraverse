@@ -169,8 +169,8 @@
     function Controller(root, visitor) {
         this.visitor = visitor;
         this.root = root;
-        this.__worklist = [ new Element(root, '', null, null) ];
-        this.__leavelist = [ new Element(null, '', null, null) ];
+        this.__worklist = [];
+        this.__leavelist = [];
         this.__current = null;
     }
 
@@ -215,7 +215,7 @@
         return result;
     };
 
-    function traverse(top, visitor) {
+    function traverse(root, visitor) {
         var worklist,
             leavelist,
             element,
@@ -231,11 +231,15 @@
             controller;
 
         sentinel = {};
-        controller = new Controller(top, visitor);
+        controller = new Controller(root, visitor);
 
         // reference
         worklist = controller.__worklist;
         leavelist = controller.__leavelist;
+
+        // initialize
+        worklist.push(new Element(root, '', null, null));
+        leavelist.push(new Element(null, '', null, null));
 
         while (worklist.length) {
             element = worklist.pop();
