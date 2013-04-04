@@ -172,6 +172,7 @@
         this.__worklist = [];
         this.__leavelist = [];
         this.__current = null;
+        this.__state = null;
     }
 
     // API:
@@ -210,13 +211,26 @@
         return this.__current.node;
     };
 
-    Controller.prototype.__execute = function __execute(callback, element, notify) {
+    Controller.prototype.__execute = function __execute(callback, element) {
         var previous, result;
         previous  = this.__current;
         this.__current = element;
-        result = callback.call(this, element.node, this.__leavelist[this.__leavelist.length - 1].node, notify);
+        this.__state = null;
+        result = callback.call(this, element.node, this.__leavelist[this.__leavelist.length - 1].node);
         this.__current = previous;
         return result;
+    };
+
+    Controller.prototype.notify = function notify(flag) {
+        this.__state = flag;
+    };
+
+    Controller.prototype.skip = function () {
+        this.notify(VisitorOption.Skip);
+    };
+
+    Controller.prototype['break'] = function () {
+        this.notify(VisitorOption.Break);
     };
 
     function traverse(root, visitor) {
@@ -253,7 +267,7 @@
 
                 ret = (visitor.leave) ? controller.__execute(visitor.leave, element) : null;
 
-                if (ret === VisitorOption.Break) {
+                if (controller.__state === VisitorOption.Break || ret === VisitorOption.Break) {
                     return;
                 }
                 continue;
@@ -263,14 +277,14 @@
 
                 ret = (visitor.enter) ? controller.__execute(visitor.enter, element) : null;
 
-                if (ret === VisitorOption.Break) {
+                if (controller.__state === VisitorOption.Break || ret === VisitorOption.Break) {
                     return;
                 }
 
                 worklist.push(sentinel);
                 leavelist.push(element);
 
-                if (ret === VisitorOption.Skip) {
+                if (controller.__state === VisitorOption.Skip || ret === VisitorOption.Skip) {
                     continue;
                 }
 
@@ -315,7 +329,6 @@
             nodeType,
             target,
             element,
-            ret,
             current,
             current2,
             candidates,
@@ -340,19 +353,14 @@
         worklist.push(element);
         leavelist.push(element);
 
-        function notify(v) {
-            ret = v;
-        }
-
         while (worklist.length) {
             element = worklist.pop();
 
             if (element === sentinel) {
                 element = leavelist.pop();
 
-                ret = null;
                 if (visitor.leave) {
-                    target = controller.__execute(visitor.leave, element, notify);
+                    target = controller.__execute(visitor.leave, element);
 
                     // node may be replaced with null,
                     // so distinguish between undefined and null in this place
@@ -362,16 +370,14 @@
                     }
                 }
 
-                if (ret === VisitorOption.Break) {
+                if (controller.__state === VisitorOption.Break) {
                     return outer.root;
                 }
                 continue;
             }
 
-            ret = null;
-
             if (visitor.enter) {
-                target = controller.__execute(visitor.enter, element, notify);
+                target = controller.__execute(visitor.enter, element);
 
                 // node may be replaced with null,
                 // so distinguish between undefined and null in this place
@@ -382,7 +388,7 @@
                 }
             }
 
-            if (ret === VisitorOption.Break) {
+            if (controller.__state === VisitorOption.Break) {
                 return outer.root;
             }
 
@@ -395,7 +401,7 @@
             worklist.push(sentinel);
             leavelist.push(element);
 
-            if (ret === VisitorOption.Skip) {
+            if (controller.__state === VisitorOption.Skip) {
                 continue;
             }
 
