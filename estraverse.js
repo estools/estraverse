@@ -216,14 +216,20 @@
         return result;
     };
 
+    // API:
+    // notify control skip / break
     Controller.prototype.notify = function notify(flag) {
         this.__state = flag;
     };
 
+    // API:
+    // skip child nodes of current node
     Controller.prototype.skip = function () {
         this.notify(VisitorOption.Skip);
     };
 
+    // API:
+    // break traversals
     Controller.prototype['break'] = function () {
         this.notify(VisitorOption.Break);
     };
