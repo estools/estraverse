@@ -439,7 +439,7 @@
         return outer.root;
     }
 
-    exports.version = '0.0.5-dev';
+    exports.version = '1.0.0';
     exports.Syntax = Syntax;
     exports.traverse = traverse;
     exports.replace = replace;
