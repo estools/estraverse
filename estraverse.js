@@ -178,14 +178,15 @@
     // return property path from root to current node
     Controller.prototype.path = function path() {
         var i, iz, result, element;
+
+        // first node is sentinel
         result = [];
-        for (i = 0, iz = this.__leavelist.length; i < iz; ++i) {
+        for (i = 1, iz = this.__leavelist.length; i < iz; ++i) {
             element = this.__leavelist[i];
-            if (element.node) {
-                result.push(element.path);
-            }
+            result.push(element.path);
         }
         result.push(this.__current.path);
+
         return '$' + result.join('.');
     };
 
@@ -193,10 +194,13 @@
     // return array of parent elements
     Controller.prototype.parents = function parents() {
         var i, iz, result;
+
+        // first node is sentinel
         result = [];
         for (i = 1, iz = this.__leavelist.length; i < iz; ++i) {
             result.push(this.__leavelist[i].node);
         }
+
         return result;
     };
 
@@ -206,11 +210,11 @@
         return this.__current.node;
     };
 
-    Controller.prototype.__execute = function __execute(callback, element) {
+    Controller.prototype.__execute = function __execute(callback, element, notify) {
         var previous, result;
         previous  = this.__current;
         this.__current = element;
-        result = callback.call(this, element.node, this.__leavelist[this.__leavelist.length - 1].node);
+        result = callback.call(this, element.node, this.__leavelist[this.__leavelist.length - 1].node, notify);
         this.__current = previous;
         return result;
     };
@@ -252,9 +256,10 @@
                 if (ret === VisitorOption.Break) {
                     return;
                 }
-            } else if (element) {
-                node = element.node;
-                nodeType = element.wrap || node.type;
+                continue;
+            }
+
+            if (element.node) {
 
                 ret = (visitor.enter) ? controller.__execute(visitor.enter, element) : null;
 
@@ -269,6 +274,8 @@
                     continue;
                 }
 
+                node = element.node;
+                nodeType = element.wrap || node.type;
                 candidates = VisitorKeys[nodeType];
 
                 current = candidates.length;
@@ -301,13 +308,13 @@
         }
     }
 
-    function replace(top, visitor) {
+    function replace(root, visitor) {
         var worklist,
             leavelist,
             node,
             nodeType,
             target,
-            tuple,
+            element,
             ret,
             current,
             current2,
@@ -315,95 +322,115 @@
             candidate,
             sentinel,
             controller,
-            result;
+            outer,
+            key;
 
         sentinel = {};
-        controller = new Controller(top, visitor);
+        controller = new Controller(root, visitor);
 
-        result = {
-            top: top
+        // reference
+        worklist = controller.__worklist;
+        leavelist = controller.__leavelist;
+
+        // initialize
+        outer = {
+            root: root
         };
-
-        tuple = [ top, result, 'top' ];
-        worklist = [ tuple ];
-        leavelist = [ tuple ];
+        element = new Element(root, '', null, new Reference(outer, 'root'));
+        worklist.push(element);
+        leavelist.push(element);
 
         function notify(v) {
             ret = v;
         }
 
         while (worklist.length) {
-            tuple = worklist.pop();
+            element = worklist.pop();
 
-            if (tuple === sentinel) {
-                tuple = leavelist.pop();
-                ret = undefined;
+            if (element === sentinel) {
+                element = leavelist.pop();
+
+                ret = null;
                 if (visitor.leave) {
-                    node = tuple[0];
-                    target = visitor.leave.call(controller, tuple[0], leavelist[leavelist.length - 1][0], notify);
-                    if (target !== undefined) {
-                        node = target;
-                    }
-                    tuple[1][tuple[2]] = node;
-                }
-                if (ret === VisitorOption.Break) {
-                    return result.top;
-                }
-            } else if (tuple[0]) {
-                ret = undefined;
-                node = tuple[0];
+                    target = controller.__execute(visitor.leave, element, notify);
 
-                nodeType = node.type;
-                if (wrappers.hasOwnProperty(nodeType)) {
-                    tuple[0] = node = node.node;
-                    nodeType = wrappers[nodeType];
-                }
-
-                if (visitor.enter) {
-                    target = visitor.enter.call(controller, tuple[0], leavelist[leavelist.length - 1][0], notify);
+                    // node may be replaced with null,
+                    // so distinguish between undefined and null in this place
                     if (target !== undefined) {
-                        node = target;
+                        // replace
+                        element.ref.replace(target);
                     }
-                    tuple[1][tuple[2]] = node;
-                    tuple[0] = node;
                 }
 
                 if (ret === VisitorOption.Break) {
-                    return result.top;
+                    return outer.root;
+                }
+                continue;
+            }
+
+            ret = null;
+
+            if (visitor.enter) {
+                target = controller.__execute(visitor.enter, element, notify);
+
+                // node may be replaced with null,
+                // so distinguish between undefined and null in this place
+                if (target !== undefined) {
+                    // replace
+                    element.ref.replace(target);
+                    element.node = target;
+                }
+            }
+
+            if (ret === VisitorOption.Break) {
+                return outer.root;
+            }
+
+            // node may be null
+            node = element.node;
+            if (!node) {
+                continue;
+            }
+
+            worklist.push(sentinel);
+            leavelist.push(element);
+
+            if (ret === VisitorOption.Skip) {
+                continue;
+            }
+
+            nodeType = element.wrap || node.type;
+            candidates = VisitorKeys[nodeType];
+
+            current = candidates.length;
+            while ((current -= 1) >= 0) {
+                key = candidates[current];
+                candidate = node[key];
+                if (!candidate) {
+                    continue;
                 }
 
-                if (tuple[0]) {
-                    worklist.push(sentinel);
-                    leavelist.push(tuple);
+                if (!isArray(candidate)) {
+                    worklist.push(new Element(candidate, key, null, new Reference(node, key)));
+                    continue;
+                }
 
-                    if (ret !== VisitorOption.Skip) {
-                        candidates = VisitorKeys[nodeType];
-                        current = candidates.length;
-                        while ((current -= 1) >= 0) {
-                            candidate = node[candidates[current]];
-                            if (candidate) {
-                                if (isArray(candidate)) {
-                                    current2 = candidate.length;
-                                    while ((current2 -= 1) >= 0) {
-                                        if (candidate[current2]) {
-                                            if (nodeType === Syntax.ObjectExpression && 'properties' === candidates[current] && null == candidates[current].type) {
-                                                worklist.push([{type: 'PropertyWrapper', node: candidate[current2]}, candidate, current2]);
-                                            } else {
-                                                worklist.push([candidate[current2], candidate, current2]);
-                                            }
-                                        }
-                                    }
-                                } else {
-                                    worklist.push([candidate, node, candidates[current]]);
-                                }
-                            }
-                        }
+                current2 = candidate.length;
+                while ((current2 -= 1) >= 0) {
+                    if (!candidate[current2]) {
+                        continue;
                     }
+                    if (nodeType === Syntax.ObjectExpression && 'properties' === candidates[current] && null == candidates[current].type) {
+                        element = new Element(candidate[current2], key + '[' + current2 + ']', 'Property', new Reference(candidate, current2));
+                    } else {
+                        element = new Element(candidate[current2], key + '[' + current2 + ']', null, new Reference(candidate, current2));
+                    }
+                    worklist.push(element);
                 }
             }
         }
 
-        return result.top;
+        return outer.root;
     }
 
     exports.version = '0.0.5-dev';
