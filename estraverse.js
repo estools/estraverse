@@ -171,19 +171,33 @@
     }
 
     // API:
-    // return property path from root to current node
+    // return property path array from root to current node
     Controller.prototype.path = function path() {
-        var i, iz, result, element;
+        var i, iz, j, jz, result, element;
 
-        // first node is sentinel
-        result = [];
-        for (i = 1, iz = this.__leavelist.length; i < iz; ++i) {
-            element = this.__leavelist[i];
-            result.push(element.path);
+        function addToPath(result, path) {
+            if (isArray(path)) {
+                for (j = 0, jz = path.length; j < jz; ++j) {
+                    result.push(path[j]);
+                }
+            } else {
+                result.push(path);
+            }
         }
-        result.push(this.__current.path);
 
-        return '$' + result.join('.');
+        // root node
+        if (!this.__current.path) {
+            return null;
+        }
+
+        // first node is sentinel, second node is root element
+        result = [];
+        for (i = 2, iz = this.__leavelist.length; i < iz; ++i) {
+            element = this.__leavelist[i];
+            addToPath(result, element.path);
+        }
+        addToPath(result, this.__current.path);
+        return result;
     };
 
     // API:
@@ -257,8 +271,8 @@
         leavelist = controller.__leavelist;
 
         // initialize
-        worklist.push(new Element(root, '', null, null));
-        leavelist.push(new Element(null, '', null, null));
+        worklist.push(new Element(root, null, null, null));
+        leavelist.push(new Element(null, null, null, null));
 
         while (worklist.length) {
             element = worklist.pop();
@@ -312,9 +326,9 @@
                             continue;
                         }
                         if (nodeType === Syntax.ObjectExpression && 'properties' === candidates[current] && null == candidates[current].type) {
-                            element = new Element(candidate[current2], key + '[' + current2 + ']', 'Property', null);
+                            element = new Element(candidate[current2], [key, current2], 'Property', null);
                         } else {
-                            element = new Element(candidate[current2], key + '[' + current2 + ']', null, null);
+                            element = new Element(candidate[current2], [key, current2], null, null);
                         }
                         worklist.push(element);
                     }
@@ -350,7 +364,7 @@
         outer = {
             root: root
         };
-        element = new Element(root, '', null, new Reference(outer, 'root'));
+        element = new Element(root, null, null, new Reference(outer, 'root'));
         worklist.push(element);
         leavelist.push(element);
 
@@ -428,9 +442,9 @@
                         continue;
                     }
                     if (nodeType === Syntax.ObjectExpression && 'properties' === candidates[current] && null == candidates[current].type) {
-                        element = new Element(candidate[current2], key + '[' + current2 + ']', 'Property', new Reference(candidate, current2));
+                        element = new Element(candidate[current2], [key, current2], 'Property', new Reference(candidate, current2));
                     } else {
-                        element = new Element(candidate[current2], key + '[' + current2 + ']', null, new Reference(candidate, current2));
+                        element = new Element(candidate[current2], [key, current2], null, new Reference(candidate, current2));
                     }
                     worklist.push(element);
                 }
