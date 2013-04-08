@@ -43,7 +43,9 @@
     var Syntax,
         isArray,
         VisitorOption,
-        VisitorKeys;
+        VisitorKeys,
+        BREAK,
+        SKIP;
 
     Syntax = {
         AssignmentExpression: 'AssignmentExpression',
@@ -140,9 +142,13 @@
         WithStatement: ['object', 'body']
     };
 
+    // unique id
+    BREAK = {};
+    SKIP = {};
+
     VisitorOption = {
-        Break: 1,
-        Skip: 2
+        Break: BREAK,
+        Skip: SKIP
     };
 
     function Reference(parent, key) {
@@ -222,11 +228,17 @@
 
     Controller.prototype.__execute = function __execute(callback, element) {
         var previous, result;
+
+        result = undefined;
+
         previous  = this.__current;
         this.__current = element;
         this.__state = null;
-        result = callback.call(this, element.node, this.__leavelist[this.__leavelist.length - 1].node);
+        if (callback) {
+            result = callback.call(this, element.node, this.__leavelist[this.__leavelist.length - 1].node);
+        }
         this.__current = previous;
+
         return result;
     };
 
@@ -239,13 +251,13 @@
     // API:
     // skip child nodes of current node
     Controller.prototype.skip = function () {
-        this.notify(VisitorOption.Skip);
+        this.notify(SKIP);
     };
 
     // API:
     // break traversals
     Controller.prototype['break'] = function () {
-        this.notify(VisitorOption.Break);
+        this.notify(BREAK);
     };
 
     function traverse(root, visitor) {
@@ -280,9 +292,9 @@
             if (element === sentinel) {
                 element = leavelist.pop();
 
-                ret = (visitor.leave) ? controller.__execute(visitor.leave, element) : null;
+                ret = controller.__execute(visitor.leave, element);
 
-                if (controller.__state === VisitorOption.Break || ret === VisitorOption.Break) {
+                if (controller.__state === BREAK || ret === BREAK) {
                     return;
                 }
                 continue;
@@ -290,16 +302,16 @@
 
             if (element.node) {
 
-                ret = (visitor.enter) ? controller.__execute(visitor.enter, element) : null;
+                ret = controller.__execute(visitor.enter, element);
 
-                if (controller.__state === VisitorOption.Break || ret === VisitorOption.Break) {
+                if (controller.__state === BREAK || ret === BREAK) {
                     return;
                 }
 
                 worklist.push(sentinel);
                 leavelist.push(element);
 
-                if (controller.__state === VisitorOption.Skip || ret === VisitorOption.Skip) {
+                if (controller.__state === SKIP || ret === SKIP) {
                     continue;
                 }
 
@@ -374,36 +386,32 @@
             if (element === sentinel) {
                 element = leavelist.pop();
 
-                if (visitor.leave) {
-                    target = controller.__execute(visitor.leave, element);
+                target = controller.__execute(visitor.leave, element);
 
-                    // node may be replaced with null,
-                    // so distinguish between undefined and null in this place
-                    if (target !== undefined) {
-                        // replace
-                        element.ref.replace(target);
-                    }
+                // node may be replaced with null,
+                // so distinguish between undefined and null in this place
+                if (target !== undefined && target !== BREAK && target !== SKIP) {
+                    // replace
+                    element.ref.replace(target);
                 }
 
-                if (controller.__state === VisitorOption.Break) {
+                if (controller.__state === BREAK || target === BREAK) {
                     return outer.root;
                 }
                 continue;
             }
 
-            if (visitor.enter) {
-                target = controller.__execute(visitor.enter, element);
+            target = controller.__execute(visitor.enter, element);
 
-                // node may be replaced with null,
-                // so distinguish between undefined and null in this place
-                if (target !== undefined) {
-                    // replace
-                    element.ref.replace(target);
-                    element.node = target;
-                }
+            // node may be replaced with null,
+            // so distinguish between undefined and null in this place
+            if (target !== undefined && target !== BREAK && target !== SKIP) {
+                // replace
+                element.ref.replace(target);
+                element.node = target;
             }
 
-            if (controller.__state === VisitorOption.Break) {
+            if (controller.__state === BREAK || target === BREAK) {
                 return outer.root;
             }
 
@@ -416,7 +424,7 @@
             worklist.push(sentinel);
             leavelist.push(element);
 
-            if (controller.__state === VisitorOption.Skip) {
+            if (controller.__state === SKIP || target === SKIP) {
                 continue;
             }
 
