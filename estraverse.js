@@ -462,7 +462,7 @@
         return outer.root;
     }
 
-    exports.version = '1.1.1-dev';
+    exports.version = '1.1.1';
     exports.Syntax = Syntax;
     exports.traverse = traverse;
     exports.replace = replace;
