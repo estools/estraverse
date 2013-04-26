@@ -25,7 +25,7 @@
 /*jslint vars:false*/
 /*jshint indent:4*/
 /*global exports:true, define:true, window:true*/
-(function (factory) {
+(function (root, factory) {
     'use strict';
 
     // Universal Module Definition (UMD) to support AMD, CommonJS/Node.js,
@@ -35,9 +35,9 @@
     } else if (typeof exports !== 'undefined') {
         factory(exports);
     } else {
-        factory((window.estraverse = {}));
+        factory((root.estraverse = {}));
     }
-}(function (exports) {
+}(this, function (exports) {
     'use strict';
 
     var Syntax,
