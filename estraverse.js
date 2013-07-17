@@ -476,7 +476,7 @@
         return controller.replace(root, visitor);
     }
 
-    exports.version = '1.2.0-dev';
+    exports.version = '1.2.0';
     exports.Syntax = Syntax;
     exports.traverse = traverse;
     exports.replace = replace;
