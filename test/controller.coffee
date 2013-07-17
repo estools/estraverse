@@ -22,35 +22,14 @@
 
 'use strict'
 
+estraverse = require '../'
 Dumper = require './dumper'
 expect = require('chai').expect
 
-describe 'object expression', ->
-    it 'properties', ->
-        tree =
-            type: 'ObjectExpression'
-            properties: [{
-                type: 'Property'
-                key:
-                    type: 'Identifier'
-                    name: 'a'
-                value:
-                    type: 'Identifier'
-                    name: 'a'
-            }]
-
-        expect(Dumper.dump(tree)).to.be.equal """
-            enter - ObjectExpression
-            enter - Property
-            enter - Identifier
-            leave - Identifier
-            enter - Identifier
-            leave - Identifier
-            leave - Property
-            leave - ObjectExpression
-        """
-
-    it 'properties without type', ->
+describe 'controller', ->
+    it 'traverse', ->
+        controller = new estraverse.Controller
+        dumper = new Dumper
         tree =
             type: 'ObjectExpression'
             properties: [{
@@ -61,6 +40,13 @@ describe 'object expression', ->
                     type: 'Identifier'
                     name: 'a'
             }]
+
+        controller.traverse tree,
+            enter: (node) ->
+                dumper.log("enter - #{node.type}")
+
+            leave: (node) ->
+                dumper.log("leave - #{node.type}")
 
         expect(Dumper.dump(tree)).to.be.equal """
             enter - ObjectExpression
@@ -72,46 +58,3 @@ describe 'object expression', ->
             leave - undefined
             leave - ObjectExpression
         """
-
-describe 'try statement', ->
-    it 'old interface', ->
-        tree =
-            type: 'TryStatement'
-            handlers: [{
-                type: 'BlockStatement'
-                body: []
-            }]
-            finalizer:
-                type: 'BlockStatement'
-                body: []
-
-        expect(Dumper.dump(tree)).to.be.equal """
-            enter - TryStatement
-            enter - BlockStatement
-            leave - BlockStatement
-            enter - BlockStatement
-            leave - BlockStatement
-            leave - TryStatement
-        """
-
-    it 'new interface', ->
-        tree =
-            type: 'TryStatement'
-            handler: [{
-                type: 'BlockStatement'
-                body: []
-            }]
-            guardedHandlers: null
-            finalizer:
-                type: 'BlockStatement'
-                body: []
-
-        expect(Dumper.dump(tree)).to.be.equal """
-            enter - TryStatement
-            enter - BlockStatement
-            leave - BlockStatement
-            enter - BlockStatement
-            leave - BlockStatement
-            leave - TryStatement
-        """
-

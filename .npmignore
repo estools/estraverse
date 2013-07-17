@@ -1,0 +1,15 @@
+npm-debug.log
+.DS_Store
+.vimrc.local
+t.js
+.travis.yml
+.npmignore
+/tmp/
+/.git/
+/node_modules/
+/tools/
+/test/
+/build/
+/cover_html/
+/coverage/
+/.coverage_data/

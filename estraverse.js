@@ -169,14 +169,7 @@
         this.ref = ref;
     }
 
-    function Controller(root, visitor) {
-        this.visitor = visitor;
-        this.root = root;
-        this.__worklist = [];
-        this.__leavelist = [];
-        this.__current = null;
-        this.__state = null;
-    }
+    function Controller() { }
 
     // API:
     // return property path array from root to current node
@@ -262,7 +255,16 @@
         this.notify(BREAK);
     };
 
-    function traverse(root, visitor) {
+    Controller.prototype.__initialize = function(root, visitor) {
+        this.visitor = visitor;
+        this.root = root;
+        this.__worklist = [];
+        this.__leavelist = [];
+        this.__current = null;
+        this.__state = null;
+    };
+
+    Controller.prototype.traverse = function traverse(root, visitor) {
         var worklist,
             leavelist,
             element,
@@ -274,15 +276,15 @@
             current2,
             candidates,
             candidate,
-            sentinel,
-            controller;
+            sentinel;
+
+        this.__initialize(root, visitor);
 
         sentinel = {};
-        controller = new Controller(root, visitor);
 
         // reference
-        worklist = controller.__worklist;
-        leavelist = controller.__leavelist;
+        worklist = this.__worklist;
+        leavelist = this.__leavelist;
 
         // initialize
         worklist.push(new Element(root, null, null, null));
@@ -294,9 +296,9 @@
             if (element === sentinel) {
                 element = leavelist.pop();
 
-                ret = controller.__execute(visitor.leave, element);
+                ret = this.__execute(visitor.leave, element);
 
-                if (controller.__state === BREAK || ret === BREAK) {
+                if (this.__state === BREAK || ret === BREAK) {
                     return;
                 }
                 continue;
@@ -304,16 +306,16 @@
 
             if (element.node) {
 
-                ret = controller.__execute(visitor.enter, element);
+                ret = this.__execute(visitor.enter, element);
 
-                if (controller.__state === BREAK || ret === BREAK) {
+                if (this.__state === BREAK || ret === BREAK) {
                     return;
                 }
 
                 worklist.push(sentinel);
                 leavelist.push(element);
 
-                if (controller.__state === SKIP || ret === SKIP) {
+                if (this.__state === SKIP || ret === SKIP) {
                     continue;
                 }
 
@@ -349,9 +351,9 @@
                 }
             }
         }
-    }
+    };
 
-    function replace(root, visitor) {
+    Controller.prototype.replace = function replace(root, visitor) {
         var worklist,
             leavelist,
             node,
@@ -363,16 +365,16 @@
             candidates,
             candidate,
             sentinel,
-            controller,
             outer,
             key;
 
+        this.__initialize(root, visitor);
+
         sentinel = {};
-        controller = new Controller(root, visitor);
 
         // reference
-        worklist = controller.__worklist;
-        leavelist = controller.__leavelist;
+        worklist = this.__worklist;
+        leavelist = this.__leavelist;
 
         // initialize
         outer = {
@@ -388,7 +390,7 @@
             if (element === sentinel) {
                 element = leavelist.pop();
 
-                target = controller.__execute(visitor.leave, element);
+                target = this.__execute(visitor.leave, element);
 
                 // node may be replaced with null,
                 // so distinguish between undefined and null in this place
@@ -397,13 +399,13 @@
                     element.ref.replace(target);
                 }
 
-                if (controller.__state === BREAK || target === BREAK) {
+                if (this.__state === BREAK || target === BREAK) {
                     return outer.root;
                 }
                 continue;
             }
 
-            target = controller.__execute(visitor.enter, element);
+            target = this.__execute(visitor.enter, element);
 
             // node may be replaced with null,
             // so distinguish between undefined and null in this place
@@ -413,7 +415,7 @@
                 element.node = target;
             }
 
-            if (controller.__state === BREAK || target === BREAK) {
+            if (this.__state === BREAK || target === BREAK) {
                 return outer.root;
             }
 
@@ -426,7 +428,7 @@
             worklist.push(sentinel);
             leavelist.push(element);
 
-            if (controller.__state === SKIP || target === SKIP) {
+            if (this.__state === SKIP || target === SKIP) {
                 continue;
             }
 
@@ -462,6 +464,16 @@
         }
 
         return outer.root;
+    };
+
+    function traverse(root, visitor) {
+        var controller = new Controller();
+        return controller.traverse(root, visitor);
+    }
+
+    function replace(root, visitor) {
+        var controller = new Controller();
+        return controller.replace(root, visitor);
     }
 
     exports.version = '1.2.0-dev';
