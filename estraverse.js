@@ -88,7 +88,8 @@
         VariableDeclaration: 'VariableDeclaration',
         VariableDeclarator: 'VariableDeclarator',
         WhileStatement: 'WhileStatement',
-        WithStatement: 'WithStatement'
+        WithStatement: 'WithStatement',
+        YieldExpression: 'YieldExpression'
     };
 
     isArray = Array.isArray;
@@ -139,7 +140,8 @@
         VariableDeclaration: ['declarations'],
         VariableDeclarator: ['id', 'init'],
         WhileStatement: ['test', 'body'],
-        WithStatement: ['object', 'body']
+        WithStatement: ['object', 'body'],
+        YieldExpression: ['argument']
     };
 
     // unique id
