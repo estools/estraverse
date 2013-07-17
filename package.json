@@ -1,32 +1,38 @@
 {
-    "name": "estraverse",
-    "description": "ECMAScript JS AST traversal functions",
-    "homepage": "http://github.com/Constellation/estraverse.html",
-    "main": "estraverse.js",
-    "version": "1.2.0-dev",
-    "engines": {
-        "node": ">=0.4.0"
-    },
-    "maintainers": [{
-        "name": "Yusuke Suzuki",
-        "email": "utatane.tea@gmail.com",
-        "web": "http://github.com/Constellation"
-    }],
-    "repository": {
-        "type": "git",
-        "url": "http://github.com/Constellation/estraverse.git"
-    },
-    "devDependencies": {
-        "jshint": "~1.1.0",
-        "mocha": "*",
-        "chai": "*"
-    },
-    "licenses": [{
-        "type": "BSD",
-        "url": "http://github.com/Constellation/estraverse/raw/master/LICENSE.BSD"
-    }],
-    "scripts": {
-        "test": "npm run-script lint",
-        "lint": "node_modules/.bin/jshint estraverse.js"
+  "name": "estraverse",
+  "description": "ECMAScript JS AST traversal functions",
+  "homepage": "http://github.com/Constellation/estraverse.html",
+  "main": "estraverse.js",
+  "version": "1.2.0-dev",
+  "engines": {
+    "node": ">=0.4.0"
+  },
+  "maintainers": [
+    {
+      "name": "Yusuke Suzuki",
+      "email": "utatane.tea@gmail.com",
+      "web": "http://github.com/Constellation"
     }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/Constellation/estraverse.git"
+  },
+  "devDependencies": {
+    "mocha": "~1.12.0",
+    "chai": "~1.7.2",
+    "jshint": "~2.1.4",
+    "coffee-script": "~1.6.3"
+  },
+  "licenses": [
+    {
+      "type": "BSD",
+      "url": "http://github.com/Constellation/estraverse/raw/master/LICENSE.BSD"
+    }
+  ],
+  "scripts": {
+    "test": "npm run-script lint && npm run-script unit-test",
+    "lint": "jshint estraverse.js",
+    "unit-test": "mocha --compilers coffee:coffee-script"
+  }
 }

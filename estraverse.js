@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2012 Yusuke Suzuki <utatane.tea@gmail.com>
+  Copyright (C) 2012-2013 Yusuke Suzuki <utatane.tea@gmail.com>
   Copyright (C) 2012 Ariya Hidayat <ariya.hidayat@gmail.com>
 
   Redistribution and use in source and binary forms, with or without
@@ -24,7 +24,7 @@
 */
 /*jslint vars:false*/
 /*jshint indent:4*/
-/*global exports:true, define:true, window:true*/
+/*global exports:true, define:true*/
 (function (root, factory) {
     'use strict';
 
@@ -337,7 +337,7 @@
                         if (!candidate[current2]) {
                             continue;
                         }
-                        if (nodeType === Syntax.ObjectExpression && 'properties' === candidates[current] && null == candidates[current].type) {
+                        if (nodeType === Syntax.ObjectExpression && 'properties' === candidates[current]) {
                             element = new Element(candidate[current2], [key, current2], 'Property', null);
                         } else {
                             element = new Element(candidate[current2], [key, current2], null, null);
@@ -449,7 +449,7 @@
                     if (!candidate[current2]) {
                         continue;
                     }
-                    if (nodeType === Syntax.ObjectExpression && 'properties' === candidates[current] && null == candidates[current].type) {
+                    if (nodeType === Syntax.ObjectExpression && 'properties' === candidates[current]) {
                         element = new Element(candidate[current2], [key, current2], 'Property', new Reference(candidate, current2));
                     } else {
                         element = new Element(candidate[current2], [key, current2], null, new Reference(candidate, current2));
