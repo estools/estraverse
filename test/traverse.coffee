@@ -36,9 +36,19 @@ class Dumper
     result: ->
         @logs.join '\n'
 
-describe 'traverse', ->
-    it 'properties', ->
+    @dump: (tree) ->
         dumper = new Dumper
+        estraverse.traverse tree,
+            enter: (node) ->
+                dumper.log("enter - #{node.type}")
+
+            leave: (node) ->
+                dumper.log("leave - #{node.type}")
+        dumper.result()
+
+
+describe 'object expression', ->
+    it 'properties', ->
         tree =
             type: 'ObjectExpression'
             properties: [{
@@ -51,14 +61,7 @@ describe 'traverse', ->
                     name: 'a'
             }]
 
-        estraverse.traverse tree,
-            enter: (node) ->
-                dumper.log("enter - #{node.type}")
-
-            leave: (node) ->
-                dumper.log("leave - #{node.type}")
-
-        expect(dumper.result()).to.be.equal """
+        expect(Dumper.dump(tree)).to.be.equal """
             enter - ObjectExpression
             enter - Property
             enter - Identifier
@@ -70,7 +73,6 @@ describe 'traverse', ->
         """
 
     it 'properties without type', ->
-        dumper = new Dumper
         tree =
             type: 'ObjectExpression'
             properties: [{
@@ -82,14 +84,7 @@ describe 'traverse', ->
                     name: 'a'
             }]
 
-        estraverse.traverse tree,
-            enter: (node) ->
-                dumper.log("enter - #{node.type}")
-
-            leave: (node) ->
-                dumper.log("leave - #{node.type}")
-
-        expect(dumper.result()).to.be.equal """
+        expect(Dumper.dump(tree)).to.be.equal """
             enter - ObjectExpression
             enter - undefined
             enter - Identifier
@@ -100,4 +95,45 @@ describe 'traverse', ->
             leave - ObjectExpression
         """
 
+describe 'try statement', ->
+    it 'old interface', ->
+        tree =
+            type: 'TryStatement'
+            handlers: [{
+                type: 'BlockStatement'
+                body: []
+            }]
+            finalizer:
+                type: 'BlockStatement'
+                body: []
+
+        expect(Dumper.dump(tree)).to.be.equal """
+            enter - TryStatement
+            enter - BlockStatement
+            leave - BlockStatement
+            enter - BlockStatement
+            leave - BlockStatement
+            leave - TryStatement
+        """
+
+    it 'new interface', ->
+        tree =
+            type: 'TryStatement'
+            handler: [{
+                type: 'BlockStatement'
+                body: []
+            }]
+            guardedHandlers: null
+            finalizer:
+                type: 'BlockStatement'
+                body: []
+
+        expect(Dumper.dump(tree)).to.be.equal """
+            enter - TryStatement
+            enter - BlockStatement
+            leave - BlockStatement
+            enter - BlockStatement
+            leave - BlockStatement
+            leave - TryStatement
+        """
 

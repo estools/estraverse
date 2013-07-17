@@ -134,7 +134,7 @@
         SwitchCase: ['test', 'consequent'],
         ThisExpression: [],
         ThrowStatement: ['argument'],
-        TryStatement: ['block', 'handler', 'guardedHandlers', 'finalizer'],
+        TryStatement: ['block', 'handlers', 'handler', 'guardedHandlers', 'finalizer'],
         UnaryExpression: ['argument'],
         UpdateExpression: ['argument'],
         VariableDeclaration: ['declarations'],
