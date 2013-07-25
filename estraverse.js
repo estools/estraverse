@@ -41,6 +41,7 @@
     'use strict';
 
     var Syntax,
+        Comment,
         isArray,
         VisitorOption,
         VisitorKeys,
@@ -92,6 +93,11 @@
         YieldExpression: 'YieldExpression'
     };
 
+    Comment = {
+        Block: 'Block',
+        Line: 'Line'
+    };
+
     isArray = Array.isArray;
     if (!isArray) {
         isArray = function isArray(array) {
@@ -102,6 +108,7 @@
     VisitorKeys = {
         AssignmentExpression: ['left', 'right'],
         ArrayExpression: ['elements'],
+        Block: [],
         BlockStatement: ['body'],
         BinaryExpression: ['left', 'right'],
         BreakStatement: ['label'],
@@ -120,13 +127,14 @@
         FunctionExpression: ['id', 'params', 'body'],
         Identifier: [],
         IfStatement: ['test', 'consequent', 'alternate'],
+        Line: [],
         Literal: [],
         LabeledStatement: ['label', 'body'],
         LogicalExpression: ['left', 'right'],
         MemberExpression: ['object', 'property'],
         NewExpression: ['callee', 'arguments'],
         ObjectExpression: ['properties'],
-        Program: ['body'],
+        Program: ['body', 'comments'],
         Property: ['key', 'value'],
         ReturnStatement: ['argument'],
         SequenceExpression: ['expressions'],
@@ -478,6 +486,7 @@
 
     exports.version = '1.2.1-dev';
     exports.Syntax = Syntax;
+    exports.Comment = Comment;
     exports.traverse = traverse;
     exports.replace = replace;
     exports.VisitorKeys = VisitorKeys;

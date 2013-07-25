@@ -115,3 +115,28 @@ describe 'try statement', ->
             leave - TryStatement
         """
 
+describe 'comments', ->
+    it 'traverses comments', ->
+        tree =
+            type: 'Program',
+            body: [{
+                type: "FunctionDeclaration"
+            }],
+            comments: [{
+                type: "Block",
+                value: "hello"
+            },{
+                type: "Line",
+                value: "world"
+            }]
+
+        expect(Dumper.dump(tree)).to.be.equal """
+            enter - Program
+            enter - FunctionDeclaration
+            leave - FunctionDeclaration
+            enter - Block
+            leave - Block
+            enter - Line
+            leave - Line
+            leave - Program
+        """
