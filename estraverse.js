@@ -666,7 +666,7 @@
         return tree;
     }
 
-    exports.version = '1.2.1-dev';
+    exports.version = '1.2.1';
     exports.Syntax = Syntax;
     exports.traverse = traverse;
     exports.replace = replace;
