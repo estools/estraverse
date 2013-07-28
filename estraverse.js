@@ -22,7 +22,7 @@
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
   THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-/*jslint vars:false*/
+/*jslint vars:false, bitwise:true*/
 /*jshint indent:4*/
 /*global exports:true, define:true*/
 (function (root, factory) {
