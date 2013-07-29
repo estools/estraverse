@@ -11,7 +11,7 @@ The following code will output all variables declared at the root of a file.
 ```javascript
 estraverse.traverse(ast, {
   enter: function(node, parent) {
-    if (node.type == 'FunctionExpression')
+    if (node.type == 'FunctionExpression' || node.type == 'FunctionDeclaration')
       return estraverse.VisitorOption.Skip;
   },
   leave: function(node, parent) {
