@@ -115,3 +115,24 @@ describe 'try statement', ->
             leave - TryStatement
         """
 
+describe 'arrow function expression', ->
+    it 'traverse', ->
+        tree =
+            type: 'ArrowFunctionExpression'
+            params: [{
+                type: 'Identifier',
+                name: 'a'
+            }]
+            body:
+                type: 'BlockStatement'
+                body: []
+
+        expect(Dumper.dump(tree)).to.be.equal """
+            enter - ArrowFunctionExpression
+            enter - Identifier
+            leave - Identifier
+            enter - BlockStatement
+            leave - BlockStatement
+            leave - ArrowFunctionExpression
+        """
+
