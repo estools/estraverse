@@ -668,7 +668,7 @@
         return tree;
     }
 
-    exports.version = '1.3.1-dev';
+    exports.version = '1.3.2-dev';
     exports.Syntax = Syntax;
     exports.traverse = traverse;
     exports.replace = replace;
