@@ -4,6 +4,23 @@ Estraverse ([estraverse](http://github.com/Constellation/estraverse)) is
 [ECMAScript](http://www.ecma-international.org/publications/standards/Ecma-262.htm)
 traversal functions from [esmangle project](http://github.com/Constellation/esmangle).
 
+### Example Usage
+
+The following code will output all variables declared at the root of a file.
+
+```javascript
+estraverse.traverse(ast, {
+  enter: function(node, parent) {
+    if (node.type == 'FunctionExpression' || node.type == 'FunctionDeclaration')
+      return estraverse.VisitorOption.Skip;
+  },
+  leave: function(node, parent) {
+    if (node.type == 'VariableDeclarator')
+      console.log(node.id.name);
+  }
+});
+```
+
 ### License
 
 Copyright (C) 2012 [Yusuke Suzuki](http://github.com/Constellation)
