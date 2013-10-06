@@ -549,7 +549,7 @@
     }
 
     function extendCommentRange(comment, tokens) {
-        var target, token;
+        var target;
 
         target = upperBound(tokens, function search(token) {
             return token.range[0] > comment.range[0];
@@ -563,11 +563,7 @@
 
         target -= 1;
         if (target >= 0) {
-            if (target < tokens.length) {
-                comment.extendedRange[0] = tokens[target].range[1];
-            } else if (token.length) {
-                comment.extendedRange[1] = tokens[tokens.length - 1].range[0];
-            }
+            comment.extendedRange[0] = tokens[target].range[1];
         }
 
         return comment;
