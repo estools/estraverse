@@ -10,20 +10,42 @@ The following code will output all variables declared at the root of a file.
 
 ```javascript
 estraverse.traverse(ast, {
-  enter: function(node, parent) {
-    if (node.type == 'FunctionExpression' || node.type == 'FunctionDeclaration')
-      return estraverse.VisitorOption.Skip;
-  },
-  leave: function(node, parent) {
-    if (node.type == 'VariableDeclarator')
-      console.log(node.id.name);
-  }
+    enter: function (node, parent) {
+        if (node.type == 'FunctionExpression' || node.type == 'FunctionDeclaration')
+            return estraverse.VisitorOption.Skip;
+    },
+    leave: function (node, parent) {
+        if (node.type == 'VariableDeclarator')
+          console.log(node.id.name);
+    }
+});
+```
+
+We can use `this.skip` and `this.break` functions instead of using Skip and Break.
+
+```javascript
+estraverse.traverse(ast, {
+    enter: function (node) {
+        this.break();
+    }
+});
+```
+
+And estraverse provides `estraverse.replace` function. When returning node from `enter`/`leave`, current node is replaced with it.
+
+```javascript
+result = estraverse.replace(tree, {
+    enter: function (node) {
+        // Replace it with replaced.
+        if (node.type === 'Literal')
+            return replaced;
+    }
 });
 ```
 
 ### License
 
-Copyright (C) 2012 [Yusuke Suzuki](http://github.com/Constellation)
+Copyright (C) 2012-2013 [Yusuke Suzuki](http://github.com/Constellation)
  (twitter: [@Constellation](http://twitter.com/Constellation)) and other contributors.
 
 Redistribution and use in source and binary forms, with or without
