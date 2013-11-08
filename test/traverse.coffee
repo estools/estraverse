@@ -73,6 +73,54 @@ describe 'object expression', ->
             leave - ObjectExpression
         """
 
+describe 'object pattern', ->
+    it 'properties', ->
+        tree =
+            type: 'ObjectPattern'
+            properties: [{
+                type: 'Property'
+                key:
+                    type: 'Identifier'
+                    name: 'a'
+                value:
+                    type: 'Identifier'
+                    name: 'a'
+            }]
+
+        expect(Dumper.dump(tree)).to.be.equal """
+            enter - ObjectPattern
+            enter - Property
+            enter - Identifier
+            leave - Identifier
+            enter - Identifier
+            leave - Identifier
+            leave - Property
+            leave - ObjectPattern
+        """
+
+    it 'properties without type', ->
+        tree =
+            type: 'ObjectPattern'
+            properties: [{
+                key:
+                    type: 'Identifier'
+                    name: 'a'
+                value:
+                    type: 'Identifier'
+                    name: 'a'
+            }]
+
+        expect(Dumper.dump(tree)).to.be.equal """
+            enter - ObjectPattern
+            enter - undefined
+            enter - Identifier
+            leave - Identifier
+            enter - Identifier
+            leave - Identifier
+            leave - undefined
+            leave - ObjectPattern
+        """
+
 describe 'try statement', ->
     it 'old interface', ->
         tree =
