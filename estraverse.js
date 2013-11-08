@@ -50,7 +50,7 @@
     Syntax = {
         AssignmentExpression: 'AssignmentExpression',
         ArrayExpression: 'ArrayExpression',
-        ArrowFunctionExpression: 'ArrowFunctionExpression',
+        ArrowExpression: 'ArrowExpression',
         BlockStatement: 'BlockStatement',
         BinaryExpression: 'BinaryExpression',
         BreakStatement: 'BreakStatement',
@@ -177,7 +177,7 @@
     VisitorKeys = {
         AssignmentExpression: ['left', 'right'],
         ArrayExpression: ['elements'],
-        ArrowFunctionExpression: ['params', 'body'],
+        ArrowExpression: ['params', 'body'],
         BlockStatement: ['body'],
         BinaryExpression: ['left', 'right'],
         BreakStatement: ['label'],
