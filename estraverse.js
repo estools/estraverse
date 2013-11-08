@@ -50,6 +50,7 @@
     Syntax = {
         AssignmentExpression: 'AssignmentExpression',
         ArrayExpression: 'ArrayExpression',
+        ArrayPattern: 'ArrayPattern',
         ArrowFunctionExpression: 'ArrowFunctionExpression',
         BlockStatement: 'BlockStatement',
         BinaryExpression: 'BinaryExpression',
@@ -79,6 +80,7 @@
         MethodDefinition: 'MethodDefinition',
         NewExpression: 'NewExpression',
         ObjectExpression: 'ObjectExpression',
+        ObjectPattern: 'ObjectPattern',
         Program: 'Program',
         Property: 'Property',
         ReturnStatement: 'ReturnStatement',
@@ -177,6 +179,7 @@
     VisitorKeys = {
         AssignmentExpression: ['left', 'right'],
         ArrayExpression: ['elements'],
+        ArrayPattern: ['elements'],
         ArrowFunctionExpression: ['params', 'body'],
         BlockStatement: ['body'],
         BinaryExpression: ['left', 'right'],
@@ -206,6 +209,7 @@
         MethodDefinition: ['key', 'value'],
         NewExpression: ['callee', 'arguments'],
         ObjectExpression: ['properties'],
+        ObjectPattern: ['properties'],
         Program: ['body'],
         Property: ['key', 'value'],
         ReturnStatement: ['argument'],
@@ -421,7 +425,7 @@
                         if (!candidate[current2]) {
                             continue;
                         }
-                        if (nodeType === Syntax.ObjectExpression && 'properties' === candidates[current]) {
+                        if ((nodeType === Syntax.ObjectExpression || nodeType === Syntax.ObjectPattern) && 'properties' === candidates[current]) {
                             element = new Element(candidate[current2], [key, current2], 'Property', null);
                         } else {
                             element = new Element(candidate[current2], [key, current2], null, null);
