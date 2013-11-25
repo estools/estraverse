@@ -168,9 +168,17 @@ describe 'arrow function expression', ->
         tree =
             type: 'ArrowFunctionExpression'
             params: [{
-                type: 'Identifier',
+                type: 'Identifier'
                 name: 'a'
             }]
+            defaults: [{
+                type: 'Literal'
+                value: 20
+            }]
+            rest: {
+                type: 'Identifier'
+                name: 'rest'
+            }
             body:
                 type: 'BlockStatement'
                 body: []
@@ -179,8 +187,84 @@ describe 'arrow function expression', ->
             enter - ArrowFunctionExpression
             enter - Identifier
             leave - Identifier
+            enter - Literal
+            leave - Literal
+            enter - Identifier
+            leave - Identifier
             enter - BlockStatement
             leave - BlockStatement
             leave - ArrowFunctionExpression
+        """
+
+describe 'function expression', ->
+    it 'traverse', ->
+        tree =
+            type: 'FunctionExpression'
+            params: [{
+                type: 'Identifier'
+                name: 'a'
+            }]
+            defaults: [{
+                type: 'Literal'
+                value: 20
+            }]
+            rest: {
+                type: 'Identifier'
+                name: 'rest'
+            }
+            body:
+                type: 'BlockStatement'
+                body: []
+
+        expect(Dumper.dump(tree)).to.be.equal """
+            enter - FunctionExpression
+            enter - Identifier
+            leave - Identifier
+            enter - Literal
+            leave - Literal
+            enter - Identifier
+            leave - Identifier
+            enter - BlockStatement
+            leave - BlockStatement
+            leave - FunctionExpression
+        """
+
+describe 'function declaration', ->
+    it 'traverse', ->
+        tree =
+            type: 'FunctionDeclaration'
+            id: {
+                type: 'Identifier'
+                name: 'decl'
+            }
+            params: [{
+                type: 'Identifier'
+                name: 'a'
+            }]
+            defaults: [{
+                type: 'Literal'
+                value: 20
+            }]
+            rest: {
+                type: 'Identifier'
+                name: 'rest'
+            }
+            body:
+                type: 'BlockStatement'
+                body: []
+
+        expect(Dumper.dump(tree)).to.be.equal """
+            enter - FunctionDeclaration
+            enter - Identifier
+            leave - Identifier
+            enter - Identifier
+            leave - Identifier
+            enter - Literal
+            leave - Literal
+            enter - Identifier
+            leave - Identifier
+            enter - BlockStatement
+            leave - BlockStatement
+            leave - FunctionDeclaration
         """
 
