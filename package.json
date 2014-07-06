@@ -35,8 +35,8 @@
     "test": "npm run-script lint && npm run-script unit-test",
     "lint": "jshint estraverse.js",
     "unit-test": "mocha --compilers coffee:coffee-script",
-    "release-major": "xyz --increment major",
-    "release-minor": "xyz --increment minor",
-    "release-patch": "xyz --increment patch"
+    "release-major": "xyz --increment major --tag X.Y.Z",
+    "release-minor": "xyz --increment minor --tag X.Y.Z",
+    "release-patch": "xyz --increment patch --tag X.Y.Z"
   }
 }
