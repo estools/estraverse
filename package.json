@@ -22,7 +22,8 @@
     "mocha": "~1.12.0",
     "chai": "~1.7.2",
     "jshint": "2.1.5",
-    "coffee-script": "~1.6.3"
+    "coffee-script": "~1.6.3",
+    "xyz": "^0.4.0"
   },
   "licenses": [
     {
@@ -33,6 +34,9 @@
   "scripts": {
     "test": "npm run-script lint && npm run-script unit-test",
     "lint": "jshint estraverse.js",
-    "unit-test": "mocha --compilers coffee:coffee-script"
+    "unit-test": "mocha --compilers coffee:coffee-script",
+    "release-major": "xyz --increment major",
+    "release-minor": "xyz --increment minor",
+    "release-patch": "xyz --increment patch"
   }
 }
