@@ -45,7 +45,8 @@
         VisitorOption,
         VisitorKeys,
         BREAK,
-        SKIP;
+        SKIP,
+        REMOVE;
 
     Syntax = {
         AssignmentExpression: 'AssignmentExpression',
@@ -232,10 +233,12 @@
     // unique id
     BREAK = {};
     SKIP = {};
+    REMOVE = {};
 
     VisitorOption = {
         Break: BREAK,
-        Skip: SKIP
+        Skip: SKIP,
+        Remove: REMOVE
     };
 
     function Reference(parent, key) {
@@ -245,6 +248,16 @@
 
     Reference.prototype.replace = function replace(node) {
         this.parent[this.key] = node;
+    };
+
+    Reference.prototype.remove = function remove(node) {
+        if (isArray(this.parent)) {
+            this.parent.splice(this.key, 1);
+            return true;
+        } else {
+            this.parent.replace(null);
+            return false;
+        }
     };
 
     function Element(node, path, wrap, ref) {
@@ -338,6 +351,12 @@
     // break traversals
     Controller.prototype['break'] = function () {
         this.notify(BREAK);
+    };
+
+    // API:
+    // remove node
+    Controller.prototype.remove = function () {
+        this.notify(REMOVE);
     };
 
     Controller.prototype.__initialize = function(root, visitor) {
@@ -439,6 +458,21 @@
     };
 
     Controller.prototype.replace = function replace(root, visitor) {
+        function removeElem() {
+            var i, nextElem;
+
+            if (element.ref.remove()) {
+                // if removed from array, then shift following items' keys
+                for (i = 1; i < worklist.length; i++) {
+                    nextElem = worklist[i];
+                    if (nextElem.ref.parent !== element.ref.parent) {
+                        break;
+                    }
+                    nextElem.path[nextElem.path.length - 1] = --nextElem.ref.key;
+                }
+            }
+        }
+
         var worklist,
             leavelist,
             node,
@@ -479,9 +513,13 @@
 
                 // node may be replaced with null,
                 // so distinguish between undefined and null in this place
-                if (target !== undefined && target !== BREAK && target !== SKIP) {
+                if (target !== undefined && target !== BREAK && target !== SKIP && target !== REMOVE) {
                     // replace
                     element.ref.replace(target);
+                }
+
+                if (this.__state === REMOVE || target === REMOVE) {
+                    removeElem();
                 }
 
                 if (this.__state === BREAK || target === BREAK) {
@@ -494,10 +532,15 @@
 
             // node may be replaced with null,
             // so distinguish between undefined and null in this place
-            if (target !== undefined && target !== BREAK && target !== SKIP) {
+            if (target !== undefined && target !== BREAK && target !== SKIP && target !== REMOVE) {
                 // replace
                 element.ref.replace(target);
                 element.node = target;
+            }
+
+            if (this.__state === REMOVE || target === REMOVE) {
+                removeElem();
+                element.node = null;
             }
 
             if (this.__state === BREAK || target === BREAK) {
