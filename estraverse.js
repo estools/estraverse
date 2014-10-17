@@ -250,7 +250,7 @@
         this.parent[this.key] = node;
     };
 
-    Reference.prototype.remove = function remove(node) {
+    Reference.prototype.remove = function remove() {
         if (isArray(this.parent)) {
             this.parent.splice(this.key, 1);
             return true;
