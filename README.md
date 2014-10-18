@@ -4,6 +4,10 @@ Estraverse ([estraverse](http://github.com/Constellation/estraverse)) is
 [ECMAScript](http://www.ecma-international.org/publications/standards/Ecma-262.htm)
 traversal functions from [esmangle project](http://github.com/Constellation/esmangle).
 
+### Documentation
+
+You can find usage docs at [wiki page](https://github.com/Constellation/estraverse/wiki/Usage).
+
 ### Example Usage
 
 The following code will output all variables declared at the root of a file.
@@ -21,7 +25,7 @@ estraverse.traverse(ast, {
 });
 ```
 
-We can use `this.skip` and `this.break` functions instead of using Skip and Break.
+We can use `this.skip`, `this.remove` and `this.break` functions instead of using Skip, Remove and Break.
 
 ```javascript
 estraverse.traverse(ast, {
