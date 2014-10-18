@@ -138,8 +138,8 @@
         ClassBody: 'ClassBody',
         ClassDeclaration: 'ClassDeclaration',
         ClassExpression: 'ClassExpression',
-        /* CAUTION: It's deferred to ES7. */  ComprehensionBlock: 'ComprehensionBlock',
-        /* CAUTION: It's deferred to ES7. */  ComprehensionExpression: 'ComprehensionExpression',
+        ComprehensionBlock: 'ComprehensionBlock',  // CAUTION: It's deferred to ES7.
+        ComprehensionExpression: 'ComprehensionExpression',  // CAUTION: It's deferred to ES7.
         ConditionalExpression: 'ConditionalExpression',
         ContinueStatement: 'ContinueStatement',
         DebuggerStatement: 'DebuggerStatement',
@@ -155,7 +155,7 @@
         ForOfStatement: 'ForOfStatement',
         FunctionDeclaration: 'FunctionDeclaration',
         FunctionExpression: 'FunctionExpression',
-        /* CAUTION: It's deferred to ES7. */  GeneratorExpression: 'GeneratorExpression',
+        GeneratorExpression: 'GeneratorExpression',  // CAUTION: It's deferred to ES7.
         Identifier: 'Identifier',
         IfStatement: 'IfStatement',
         ImportDeclaration: 'ImportDeclaration',
@@ -206,8 +206,8 @@
         ClassBody: ['body'],
         ClassDeclaration: ['id', 'body', 'superClass'],
         ClassExpression: ['id', 'body', 'superClass'],
-        /* CAUTION: It's deferred to ES7. */  ComprehensionBlock: ['left', 'right'],
-        /* CAUTION: It's deferred to ES7. */  ComprehensionExpression: ['blocks', 'filter', 'body'],
+        ComprehensionBlock: ['left', 'right'],  // CAUTION: It's deferred to ES7.
+        ComprehensionExpression: ['blocks', 'filter', 'body'],  // CAUTION: It's deferred to ES7.
         ConditionalExpression: ['test', 'consequent', 'alternate'],
         ContinueStatement: ['label'],
         DebuggerStatement: [],
@@ -223,7 +223,7 @@
         ForOfStatement: ['left', 'right', 'body'],
         FunctionDeclaration: ['id', 'params', 'defaults', 'rest', 'body'],
         FunctionExpression: ['id', 'params', 'defaults', 'rest', 'body'],
-        /* CAUTION: It's deferred to ES7. */  GeneratorExpression: ['blocks', 'filter', 'body'],
+        GeneratorExpression: ['blocks', 'filter', 'body'],  // CAUTION: It's deferred to ES7.
         Identifier: [],
         IfStatement: ['test', 'consequent', 'alternate'],
         ImportDeclaration: ['specifiers', 'source'],
