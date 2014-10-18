@@ -268,3 +268,43 @@ describe 'function declaration', ->
             leave - FunctionDeclaration
         """
 
+describe 'extending keys', ->
+    it 'traverse', ->
+        tree =
+            type: 'TestStatement'
+            id: {
+                type: 'Identifier'
+                name: 'decl'
+            }
+            params: [{
+                type: 'Identifier'
+                name: 'a'
+            }]
+            defaults: [{
+                type: 'Literal'
+                value: 20
+            }]
+            rest: {
+                type: 'Identifier'
+                name: 'rest'
+            }
+            body:
+                type: 'BlockStatement'
+                body: []
+
+        result = Dumper.dump tree,
+            TestStatement: ['id', 'params', 'defaults', 'rest', 'body']
+        expect(result).to.be.equal """
+            enter - TestStatement
+            enter - Identifier
+            leave - Identifier
+            enter - Identifier
+            leave - Identifier
+            enter - Literal
+            leave - Literal
+            enter - Identifier
+            leave - Identifier
+            enter - BlockStatement
+            leave - BlockStatement
+            leave - TestStatement
+        """

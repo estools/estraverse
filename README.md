@@ -47,6 +47,33 @@ result = estraverse.replace(tree, {
 });
 ```
 
+By passing `visitor.keys` mapping, we can extend estraverse traversing functionality.
+
+```javascript
+// This tree contains a user-defined `TestExpression` node.
+var tree = {
+    type: 'TestExpression',
+
+    // This 'argument' is the property containing the other **node**.
+    argument: {
+        type: 'Literal',
+        value: 20
+    },
+
+    // This 'extended' is the property not containing the other **node**.
+    extended: true
+};
+estraverse.traverse(tree, {
+    enter: function (node) { },
+
+    // Extending the exising traversing rules.
+    keys: {
+        // TargetNodeName: [ 'keys', 'containing', 'the', 'other', '**node**' ]
+        TestExpression: ['argument']
+    }
+});
+```
+
 ### License
 
 Copyright (C) 2012-2013 [Yusuke Suzuki](http://github.com/Constellation)

@@ -44,6 +44,7 @@
         isArray,
         VisitorOption,
         VisitorKeys,
+        objectCreate,
         BREAK,
         SKIP,
         REMOVE;
@@ -124,6 +125,26 @@
         return i;
     }
     ignoreJSHintError(lowerBound);
+
+    if (Object.create) {
+        objectCreate = Object.create;
+    } else {
+        objectCreate = (function () {
+            function F() { }
+
+            return function(o) {
+                F.prototype = o;
+                return new F();
+            };
+        })();
+    }
+
+    function extend(to, from) {
+        Object.keys(from).forEach(function (key) {
+            to[key] = from[key];
+        });
+        return to;
+    }
 
     Syntax = {
         AssignmentExpression: 'AssignmentExpression',
@@ -397,6 +418,10 @@
         this.__leavelist = [];
         this.__current = null;
         this.__state = null;
+        this.__keys = VisitorKeys;
+        if (visitor.keys) {
+            this.__keys = extend(objectCreate(this.__keys), visitor.keys);
+        }
     };
 
     Controller.prototype.traverse = function traverse(root, visitor) {
@@ -456,7 +481,7 @@
 
                 node = element.node;
                 nodeType = element.wrap || node.type;
-                candidates = VisitorKeys[nodeType];
+                candidates = this.__keys[nodeType];
 
                 current = candidates.length;
                 while ((current -= 1) >= 0) {
@@ -592,7 +617,7 @@
             }
 
             nodeType = element.wrap || node.type;
-            candidates = VisitorKeys[nodeType];
+            candidates = this.__keys[nodeType];
 
             current = candidates.length;
             while ((current -= 1) >= 0) {

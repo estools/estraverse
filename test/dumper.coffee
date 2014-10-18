@@ -34,7 +34,7 @@ module.exports = class Dumper
     result: ->
         @logs.join '\n'
 
-    @dump: (tree) ->
+    @dump: (tree, keys) ->
         dumper = new Dumper
 
         estraverse.traverse tree,
@@ -43,5 +43,7 @@ module.exports = class Dumper
 
             leave: (node) ->
                 dumper.log("leave - #{node.type}")
+
+            keys: keys
 
         dumper.result()
