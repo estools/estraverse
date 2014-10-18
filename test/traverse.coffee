@@ -23,7 +23,7 @@
 'use strict'
 
 Dumper = require './dumper'
-expect = require('chai').expect
+{expect} = require 'chai'
 
 describe 'object expression', ->
     it 'properties', ->

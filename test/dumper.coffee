@@ -22,7 +22,7 @@
 
 'use strict'
 
-estraverse = require '..'
+{traverse, VisitorOption} = require '..'
 
 module.exports = class Dumper
     constructor: ->
@@ -37,14 +37,14 @@ module.exports = class Dumper
     @dump: (tree, keys) ->
         dumper = new Dumper
 
-        estraverse.traverse tree,
+        traverse tree,
             enter: (node) ->
                 dumper.log("enter - #{node.type}")
-                estraverse.VisitorOption[node.$enter] if node.$enter
+                VisitorOption[node.$enter] if node.$enter
 
             leave: (node) ->
                 dumper.log("leave - #{node.type}")
-                estraverse.VisitorOption[node.$leave] if node.$leave
+                VisitorOption[node.$leave] if node.$leave
 
             keys: keys
 
