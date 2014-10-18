@@ -40,9 +40,11 @@ module.exports = class Dumper
         estraverse.traverse tree,
             enter: (node) ->
                 dumper.log("enter - #{node.type}")
+                estraverse.VisitorOption[node.$enter] if node.$enter
 
             leave: (node) ->
                 dumper.log("leave - #{node.type}")
+                estraverse.VisitorOption[node.$leave] if node.$leave
 
             keys: keys
 

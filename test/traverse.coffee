@@ -73,6 +73,39 @@ describe 'object expression', ->
             leave - ObjectExpression
         """
 
+    it 'skip and break', ->
+        tree =
+            type: 'ObjectExpression'
+            properties: [{
+                type: 'Property'
+                key:
+                    type: 'Identifier'
+                    name: 'a'
+                value:
+                    $enter: 'Skip'
+                    type: 'ObjectExpression'
+                    properties: [{
+                        type: 'Property'
+                        key:
+                            type: 'Identifier'
+                            name: 'a'
+                        value:
+                            type: 'Identifier'
+                            name: 'a'
+                    }]
+                $leave: 'Break'
+            }]
+
+        expect(Dumper.dump(tree)).to.be.equal """
+            enter - ObjectExpression
+            enter - Property
+            enter - Identifier
+            leave - Identifier
+            enter - ObjectExpression
+            leave - ObjectExpression
+            leave - Property
+        """
+
 describe 'object pattern', ->
     it 'properties', ->
         tree =
