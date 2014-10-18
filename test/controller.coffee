@@ -48,7 +48,7 @@ describe 'controller', ->
             leave: (node) ->
                 dumper.log("leave - #{node.type}")
 
-        expect(Dumper.dump(tree)).to.be.equal """
+        expect(dumper.result()).to.be.equal """
             enter - ObjectExpression
             enter - undefined
             enter - Identifier
