@@ -40,11 +40,11 @@ module.exports = class Dumper
         traverse tree,
             enter: (node) ->
                 dumper.log("enter - #{node.type}")
-                VisitorOption[node.$enter] if node.$enter
+                VisitorOption[node.$enter]
 
             leave: (node) ->
                 dumper.log("leave - #{node.type}")
-                VisitorOption[node.$leave] if node.$leave
+                VisitorOption[node.$leave]
 
             keys: keys
 
