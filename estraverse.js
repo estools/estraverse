@@ -523,8 +523,10 @@
                             }
                             if (isProperty(nodeType, candidates[current])) {
                                 element = new Element(candidate[current2], [key, current2], 'Property', null);
-                            } else {
+                            } else if (isNode(candidate[current2])) {
                                 element = new Element(candidate[current2], [key, current2], null, null);
+                            } else {
+                                continue;
                             }
                             worklist.push(element);
                         }
@@ -669,8 +671,10 @@
                         }
                         if (isProperty(nodeType, candidates[current])) {
                             element = new Element(candidate[current2], [key, current2], 'Property', new Reference(candidate, current2));
-                        } else {
+                        } else if (isNode(candidate[current2])) {
                             element = new Element(candidate[current2], [key, current2], null, new Reference(candidate, current2));
+                        } else {
+                            continue;
                         }
                         worklist.push(element);
                     }
