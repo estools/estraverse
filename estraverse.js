@@ -307,7 +307,7 @@
             this.parent.splice(this.key, 1);
             return true;
         } else {
-            this.parent.replace(null);
+            this.replace(null);
             return false;
         }
     };
@@ -515,13 +515,17 @@
 
     Controller.prototype.replace = function replace(root, visitor) {
         function removeElem() {
-            var i, nextElem;
+            var i,
+                nextElem,
+                parent;
 
             if (element.ref.remove()) {
+                parent = element.ref.parent;
+
                 // if removed from array, then shift following items' keys
                 for (i = 1; i < worklist.length; i++) {
                     nextElem = worklist[i];
-                    if (nextElem.ref.parent !== element.ref.parent) {
+                    if (nextElem === sentinel || nextElem.ref.parent !== parent) {
                         break;
                     }
                     nextElem.path[nextElem.path.length - 1] = --nextElem.ref.key;

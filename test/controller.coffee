@@ -22,13 +22,13 @@
 
 'use strict'
 
-estraverse = require '../'
+{Controller} = require '../'
 Dumper = require './dumper'
-expect = require('chai').expect
+{expect} = require 'chai'
 
 describe 'controller', ->
     it 'traverse', ->
-        controller = new estraverse.Controller
+        controller = new Controller
         dumper = new Dumper
         tree =
             type: 'ObjectExpression'
@@ -48,7 +48,7 @@ describe 'controller', ->
             leave: (node) ->
                 dumper.log("leave - #{node.type}")
 
-        expect(Dumper.dump(tree)).to.be.equal """
+        expect(dumper.result()).to.be.equal """
             enter - ObjectExpression
             enter - undefined
             enter - Identifier
