@@ -45,6 +45,7 @@
         VisitorOption,
         VisitorKeys,
         objectCreate,
+        objectKeys,
         BREAK,
         SKIP,
         REMOVE;
@@ -126,21 +127,25 @@
     }
     ignoreJSHintError(lowerBound);
 
-    if (Object.create) {
-        objectCreate = Object.create;
-    } else {
-        objectCreate = (function () {
-            function F() { }
+    objectCreate = Object.create || (function () {
+        function F() { }
 
-            return function(o) {
-                F.prototype = o;
-                return new F();
-            };
-        })();
-    }
+        return function (o) {
+            F.prototype = o;
+            return new F();
+        };
+    })();
+
+    objectKeys = Object.keys || function (o) {
+        var keys = [], key;
+        for (key in o) {
+            keys.push(key);
+        }
+        return keys;
+    };
 
     function extend(to, from) {
-        Object.keys(from).forEach(function (key) {
+        objectKeys(from).forEach(function (key) {
             to[key] = from[key];
         });
         return to;
@@ -418,11 +423,23 @@
         this.__leavelist = [];
         this.__current = null;
         this.__state = null;
+        this.__fallback = visitor.fallback === 'iteration';
         this.__keys = VisitorKeys;
         if (visitor.keys) {
             this.__keys = extend(objectCreate(this.__keys), visitor.keys);
         }
     };
+
+    function isNode(node) {
+        if (node == null) {
+            return false;
+        }
+        return typeof node === 'object' && typeof node.type === 'string';
+    }
+
+    function isProperty(nodeType, key) {
+        return (nodeType === Syntax.ObjectExpression || nodeType === Syntax.ObjectPattern) && 'properties' === key;
+    }
 
     Controller.prototype.traverse = function traverse(root, visitor) {
         var worklist,
@@ -482,6 +499,13 @@
                 node = element.node;
                 nodeType = element.wrap || node.type;
                 candidates = this.__keys[nodeType];
+                if (!candidates) {
+                    if (this.__fallback) {
+                        candidates = objectKeys(node);
+                    } else {
+                        throw new Error('Unknown node type ' + nodeType + '.');
+                    }
+                }
 
                 current = candidates.length;
                 while ((current -= 1) >= 0) {
@@ -491,22 +515,21 @@
                         continue;
                     }
 
-                    if (!isArray(candidate)) {
+                    if (isArray(candidate)) {
+                        current2 = candidate.length;
+                        while ((current2 -= 1) >= 0) {
+                            if (!candidate[current2]) {
+                                continue;
+                            }
+                            if (isProperty(nodeType, candidates[current])) {
+                                element = new Element(candidate[current2], [key, current2], 'Property', null);
+                            } else {
+                                element = new Element(candidate[current2], [key, current2], null, null);
+                            }
+                            worklist.push(element);
+                        }
+                    } else if (isNode(candidate)) {
                         worklist.push(new Element(candidate, key, null, null));
-                        continue;
-                    }
-
-                    current2 = candidate.length;
-                    while ((current2 -= 1) >= 0) {
-                        if (!candidate[current2]) {
-                            continue;
-                        }
-                        if ((nodeType === Syntax.ObjectExpression || nodeType === Syntax.ObjectPattern) && 'properties' === candidates[current]) {
-                            element = new Element(candidate[current2], [key, current2], 'Property', null);
-                        } else {
-                            element = new Element(candidate[current2], [key, current2], null, null);
-                        }
-                        worklist.push(element);
                     }
                 }
             }
@@ -622,6 +645,13 @@
 
             nodeType = element.wrap || node.type;
             candidates = this.__keys[nodeType];
+            if (!candidates) {
+                if (this.__fallback) {
+                    candidates = objectKeys(node);
+                } else {
+                    throw new Error('Unknown node type ' + nodeType + '.');
+                }
+            }
 
             current = candidates.length;
             while ((current -= 1) >= 0) {
@@ -631,22 +661,21 @@
                     continue;
                 }
 
-                if (!isArray(candidate)) {
+                if (isArray(candidate)) {
+                    current2 = candidate.length;
+                    while ((current2 -= 1) >= 0) {
+                        if (!candidate[current2]) {
+                            continue;
+                        }
+                        if (isProperty(nodeType, candidates[current])) {
+                            element = new Element(candidate[current2], [key, current2], 'Property', new Reference(candidate, current2));
+                        } else {
+                            element = new Element(candidate[current2], [key, current2], null, new Reference(candidate, current2));
+                        }
+                        worklist.push(element);
+                    }
+                } else if (isNode(candidate)) {
                     worklist.push(new Element(candidate, key, null, new Reference(node, key)));
-                    continue;
-                }
-
-                current2 = candidate.length;
-                while ((current2 -= 1) >= 0) {
-                    if (!candidate[current2]) {
-                        continue;
-                    }
-                    if (nodeType === Syntax.ObjectExpression && 'properties' === candidates[current]) {
-                        element = new Element(candidate[current2], [key, current2], 'Property', new Reference(candidate, current2));
-                    } else {
-                        element = new Element(candidate[current2], [key, current2], null, new Reference(candidate, current2));
-                    }
-                    worklist.push(element);
                 }
             }
         }

@@ -34,7 +34,7 @@ module.exports = class Dumper
     result: ->
         @logs.join '\n'
 
-    @dump: (tree, keys) ->
+    @dump: (tree, keys, fallback) ->
         dumper = new Dumper
 
         traverse tree,
@@ -47,5 +47,6 @@ module.exports = class Dumper
                 VisitorOption[node.$leave]
 
             keys: keys
+            fallback: fallback
 
         dumper.result()

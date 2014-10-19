@@ -132,3 +132,70 @@ describe 'replace', ->
                         return VisitorOption.Remove
 
         expect(tree).to.be.eql old
+
+    it 'can remove unknown nodes', ->
+        tree =
+            type: 'XXXExpression'
+            properties: [{
+                type: 'Property'
+                key:
+                    type: 'Identifier'
+                    name: 'a'
+                value:
+                    type: 'ArrayExpression'
+                    elements: [
+                        {type: 'Literal', value: 1}
+                        {type: 'Literal', value: 2}
+                        {type: 'Literal', value: 3}
+                        {type: 'Literal', value: 4}
+                    ]
+            }]
+
+        tree = replace tree,
+            enter: (node) ->
+                if node.type is 'Identifier' and node.name is 'a'
+                    this.remove()
+                if node.type is 'Literal' and node.value is 2
+                    VisitorOption.Remove
+            fallback: 'iteration'
+
+        expect(tree).to.be.eql
+            type: 'XXXExpression'
+            properties: [{
+                type: 'Property'
+                key: null
+                value:
+                    type: 'ArrayExpression'
+                    elements: [
+                        {type: 'Literal', value: 1}
+                        {type: 'Literal', value: 3}
+                        {type: 'Literal', value: 4}
+                    ]
+            }]
+
+    it 'throw unkown node type error when unknown nodes', ->
+        tree =
+            type: 'XXXExpression'
+            properties: [{
+                type: 'Property'
+                key:
+                    type: 'Identifier'
+                    name: 'a'
+                value:
+                    type: 'ArrayExpression'
+                    elements: [
+                        {type: 'Literal', value: 1}
+                        {type: 'Literal', value: 2}
+                        {type: 'Literal', value: 3}
+                        {type: 'Literal', value: 4}
+                    ]
+            }]
+
+        expect ->
+            replace tree,
+                enter: (node) ->
+                    if node.type is 'Identifier' and node.name is 'a'
+                        this.remove()
+                    if node.type is 'Literal' and node.value is 2
+                        VisitorOption.Remove
+        .to.throw('Unknown node type XXXExpression.')

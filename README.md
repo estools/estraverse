@@ -74,6 +74,29 @@ estraverse.traverse(tree, {
 });
 ```
 
+By passing `visitor.fallback` option, we can control the behavior when encountering unknown nodes.
+```javascript
+// This tree contains a user-defined `TestExpression` node.
+var tree = {
+    type: 'TestExpression',
+
+    // This 'argument' is the property containing the other **node**.
+    argument: {
+        type: 'Literal',
+        value: 20
+    },
+
+    // This 'extended' is the property not containing the other **node**.
+    extended: true
+};
+estraverse.traverse(tree, {
+    enter: function (node) { },
+
+    // Iterating the child **nodes** of unknown nodes.
+    fallback: 'iteration'
+});
+```
+
 ### License
 
 Copyright (C) 2012-2013 [Yusuke Suzuki](http://github.com/Constellation)

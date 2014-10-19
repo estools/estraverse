@@ -24,6 +24,7 @@
 
 Dumper = require './dumper'
 {expect} = require 'chai'
+{traverse} = require '..'
 
 describe 'object expression', ->
     it 'properties', ->
@@ -341,3 +342,66 @@ describe 'extending keys', ->
             leave - BlockStatement
             leave - TestStatement
         """
+
+
+describe 'no listed keys fallback', ->
+    it 'traverse', ->
+        tree =
+            type: 'TestStatement'
+            id: {
+                type: 'Identifier'
+                name: 'decl'
+            }
+            params: [{
+                type: 'Identifier'
+                name: 'a'
+            }]
+            defaults: [{
+                type: 'Literal'
+                value: 20
+            }]
+            rest: {
+                type: 'Identifier'
+                name: 'rest'
+            }
+            body:
+                type: 'BlockStatement'
+                body: []
+
+        expect(Dumper.dump(tree, null, 'iteration')).to.be.equal """
+            enter - TestStatement
+            enter - Identifier
+            leave - Identifier
+            enter - Identifier
+            leave - Identifier
+            enter - Literal
+            leave - Literal
+            enter - Identifier
+            leave - Identifier
+            enter - BlockStatement
+            leave - BlockStatement
+            leave - TestStatement
+        """
+
+    it 'throw unkown node type error when unknown nodes', ->
+        tree =
+            type: 'XXXExpression'
+            properties: [{
+                type: 'Property'
+                key:
+                    type: 'Identifier'
+                    name: 'a'
+                value:
+                    type: 'ArrayExpression'
+                    elements: [
+                        {type: 'Literal', value: 1}
+                        {type: 'Literal', value: 2}
+                        {type: 'Literal', value: 3}
+                        {type: 'Literal', value: 4}
+                    ]
+            }]
+
+        expect ->
+            traverse tree,
+                enter: (node) ->
+        .to.throw('Unknown node type XXXExpression.')
