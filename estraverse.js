@@ -819,7 +819,7 @@
         return tree;
     }
 
-    exports.version = '1.5.1-dev';
+    exports.version = '1.7.1';
     exports.Syntax = Syntax;
     exports.traverse = traverse;
     exports.replace = replace;
