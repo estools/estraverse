@@ -102,6 +102,194 @@ describe 'replace', ->
                     ]
             }]
 
+    it 'can remove all nodes in an array in enter phase', ->
+        tree =
+            type: 'ObjectExpression'
+            properties: [{
+                type: 'Property'
+                key:
+                    type: 'Identifier'
+                    name: 'a'
+                value:
+                    type: 'ArrayExpression'
+                    elements: [
+                        {type: 'Literal', value: 1}
+                        {type: 'Literal', value: 2}
+                        {type: 'Literal', value: 3}
+                        {type: 'Literal', value: 4}
+                    ]
+            }]
+
+        tree = replace tree,
+            enter: (node) ->
+                if node.type is 'Literal'
+                    return @remove()
+
+        expect(tree).to.be.eql
+            type: 'ObjectExpression'
+            properties: [{
+                type: 'Property'
+                key:
+                    type: 'Identifier'
+                    name: 'a'
+                value:
+                    type: 'ArrayExpression'
+                    elements: [
+                    ]
+            }]
+
+        tree =
+            type: 'FunctionExpression'
+            id:
+                type: 'Identifier'
+                name: 'foo'
+            params: []
+            defaults: []
+            body:
+                type: 'BlockStatement'
+                body: [{
+                    type: 'ExpressionStatement'
+                    expression:
+                        type: 'CallExpression'
+                        callee:
+                            type: 'Identifier'
+                            name: 'debug'
+                        arguments: [{
+                            type: 'Literal'
+                            value: 'foo'
+                            raw: '"foo"'
+                        }]
+                }
+                {
+                    type: 'ExpressionStatement'
+                    expression:
+                        type: 'CallExpression'
+                        callee:
+                            type: 'Identifier'
+                            name: 'debug'
+                        arguments: [{
+                            type: 'Literal'
+                            value: 'bar'
+                            raw: '"bar"'
+                        }]
+                }]
+            rest: null,
+            generator: false,
+            expression: false
+
+        tree = replace tree,
+            enter: (node) ->
+                if node.type is 'ExpressionStatement' and node.expression.type is 'CallExpression' and node.expression.callee.name is 'debug'
+                    return @remove()
+
+        expect(tree).to.be.eql
+            type: 'FunctionExpression'
+            id:
+                type: 'Identifier'
+                name: 'foo'
+            params: []
+            defaults: []
+            body:
+                type: 'BlockStatement'
+                body: []
+            rest: null,
+            generator: false,
+            expression: false
+
+    it 'can remove all nodes in an array in leave phase', ->
+        tree =
+            type: 'ObjectExpression'
+            properties: [{
+                type: 'Property'
+                key:
+                    type: 'Identifier'
+                    name: 'a'
+                value:
+                    type: 'ArrayExpression'
+                    elements: [
+                        {type: 'Literal', value: 1}
+                        {type: 'Literal', value: 2}
+                        {type: 'Literal', value: 3}
+                        {type: 'Literal', value: 4}
+                    ]
+            }]
+
+        tree = replace tree,
+            leave: (node) ->
+                if node.type is 'Literal'
+                    return @remove()
+
+        expect(tree).to.be.eql
+            type: 'ObjectExpression'
+            properties: [{
+                type: 'Property'
+                key:
+                    type: 'Identifier'
+                    name: 'a'
+                value:
+                    type: 'ArrayExpression'
+                    elements: [
+                    ]
+            }]
+
+        tree =
+            type: 'FunctionExpression'
+            id:
+                type: 'Identifier'
+                name: 'foo'
+            params: []
+            defaults: []
+            body:
+                type: 'BlockStatement'
+                body: [{
+                    type: 'ExpressionStatement'
+                    expression:
+                        type: 'CallExpression'
+                        callee:
+                            type: 'Identifier'
+                            name: 'debug'
+                        arguments: [{
+                            type: 'Literal'
+                            value: 'foo'
+                            raw: '"foo"'
+                        }]
+                }
+                {
+                    type: 'ExpressionStatement'
+                    expression:
+                        type: 'CallExpression'
+                        callee:
+                            type: 'Identifier'
+                            name: 'debug'
+                        arguments: [{
+                            type: 'Literal'
+                            value: 'bar'
+                            raw: '"bar"'
+                        }]
+                }]
+            rest: null,
+            generator: false,
+            expression: false
+
+        tree = replace tree,
+            leave: (node) ->
+                if node.type is 'ExpressionStatement' and node.expression.type is 'CallExpression' and node.expression.callee.name is 'debug'
+                    return @remove()
+
+        expect(tree).to.be.eql
+            type: 'FunctionExpression'
+            id:
+                type: 'Identifier'
+                name: 'foo'
+            params: []
+            defaults: []
+            body:
+                type: 'BlockStatement'
+                body: []
+            rest: null,
+            generator: false,
+            expression: false
+
     it 'respects skip', ->
         tree =
             type: 'ObjectExpression'

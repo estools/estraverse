@@ -539,21 +539,27 @@
     };
 
     Controller.prototype.replace = function replace(root, visitor) {
-        function removeElem() {
+        function removeElem(element) {
             var i,
+                key,
                 nextElem,
                 parent;
 
             if (element.ref.remove()) {
+                // When the reference is an element of an array.
+                key = element.ref.key;
                 parent = element.ref.parent;
 
-                // if removed from array, then shift following items' keys
-                for (i = 1; i < worklist.length; i++) {
+                // If removed from array, then decrease following items' keys.
+                i = worklist.length;
+                while (i--) {
                     nextElem = worklist[i];
-                    if (nextElem === sentinel || nextElem.ref.parent !== parent) {
-                        break;
+                    if (nextElem.ref && nextElem.ref.parent === parent) {
+                        if  (nextElem.ref.key < key) {
+                            break;
+                        }
+                        --nextElem.ref.key;
                     }
-                    nextElem.path[nextElem.path.length - 1] = --nextElem.ref.key;
                 }
             }
         }
@@ -604,7 +610,7 @@
                 }
 
                 if (this.__state === REMOVE || target === REMOVE) {
-                    removeElem();
+                    removeElem(element);
                 }
 
                 if (this.__state === BREAK || target === BREAK) {
@@ -624,7 +630,7 @@
             }
 
             if (this.__state === REMOVE || target === REMOVE) {
-                removeElem();
+                removeElem(element);
                 element.node = null;
             }
 
