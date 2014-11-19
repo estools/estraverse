@@ -357,6 +357,13 @@
     };
 
     // API:
+    // return type of current node
+    Controller.prototype.type = function () {
+        var node = this.current();
+        return node.type || this.__current.wrap;
+    };
+
+    // API:
     // return array of parent elements
     Controller.prototype.parents = function parents() {
         var i, iz, result;
