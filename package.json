@@ -3,7 +3,7 @@
   "description": "ECMAScript JS AST traversal functions",
   "homepage": "https://github.com/Constellation/estraverse",
   "main": "estraverse.js",
-  "version": "1.7.2-dev",
+  "version": "1.8.1-dev",
   "engines": {
     "node": ">=0.10.0"
   },
