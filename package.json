@@ -1,7 +1,7 @@
 {
   "name": "estraverse",
   "description": "ECMAScript JS AST traversal functions",
-  "homepage": "https://github.com/Constellation/estraverse",
+  "homepage": "https://github.com/estools/estraverse",
   "main": "estraverse.js",
   "version": "1.8.1-dev",
   "engines": {
@@ -16,7 +16,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "http://github.com/Constellation/estraverse.git"
+    "url": "http://github.com/estools/estraverse.git"
   },
   "devDependencies": {
     "mocha": "^1.21.5",
@@ -28,7 +28,7 @@
   "licenses": [
     {
       "type": "BSD",
-      "url": "http://github.com/Constellation/estraverse/raw/master/LICENSE.BSD"
+      "url": "http://github.com/estools/estraverse/raw/master/LICENSE.BSD"
     }
   ],
   "scripts": {

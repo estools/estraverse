@@ -1,12 +1,12 @@
-### Estraverse [![Build Status](https://secure.travis-ci.org/Constellation/estraverse.png)](http://travis-ci.org/Constellation/estraverse)
+### Estraverse [![Build Status](https://secure.travis-ci.org/estools/estraverse.png)](http://travis-ci.org/estools/estraverse)
 
-Estraverse ([estraverse](http://github.com/Constellation/estraverse)) is
+Estraverse ([estraverse](http://github.com/estools/estraverse)) is
 [ECMAScript](http://www.ecma-international.org/publications/standards/Ecma-262.htm)
-traversal functions from [esmangle project](http://github.com/Constellation/esmangle).
+traversal functions from [esmangle project](http://github.com/estools/esmangle).
 
 ### Documentation
 
-You can find usage docs at [wiki page](https://github.com/Constellation/estraverse/wiki/Usage).
+You can find usage docs at [wiki page](https://github.com/estools/estraverse/wiki/Usage).
 
 ### Example Usage
 
