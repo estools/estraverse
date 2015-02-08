@@ -828,7 +828,7 @@
         return tree;
     }
 
-    exports.version = '1.8.1-dev';
+    exports.version = '1.9.2';
     exports.Syntax = Syntax;
     exports.traverse = traverse;
     exports.replace = replace;
