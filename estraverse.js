@@ -830,7 +830,7 @@
         return tree;
     }
 
-    exports.version = '1.9.2';
+    exports.version = '1.9.3';
     exports.Syntax = Syntax;
     exports.traverse = traverse;
     exports.replace = replace;
