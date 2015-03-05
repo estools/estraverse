@@ -23,7 +23,11 @@
     "chai": "^1.9.2",
     "jshint": "^2.5.6",
     "coffee-script": "^1.8.0",
-    "xyz": "^0.4.0"
+    "gulp": "^3.8.10",
+    "gulp-bump": "^0.1.11",
+    "gulp-filter": "^2.0.0",
+    "gulp-git": "^0.5.5",
+    "gulp-tag-version": "^1.2.1"
   },
   "licenses": [
     {
@@ -34,9 +38,6 @@
   "scripts": {
     "test": "npm run-script lint && npm run-script unit-test",
     "lint": "jshint estraverse.js",
-    "unit-test": "mocha --compilers coffee:coffee-script/register",
-    "release-major": "xyz --increment major --tag X.Y.Z",
-    "release-minor": "xyz --increment minor --tag X.Y.Z",
-    "release-patch": "xyz --increment patch --tag X.Y.Z"
+    "unit-test": "mocha --compilers coffee:coffee-script/register"
   }
 }
