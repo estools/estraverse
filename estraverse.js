@@ -24,20 +24,8 @@
 */
 /*jslint vars:false, bitwise:true*/
 /*jshint indent:4*/
-/*global exports:true, define:true*/
-(function (root, factory) {
-    'use strict';
-
-    // Universal Module Definition (UMD) to support AMD, CommonJS/Node.js,
-    // and plain browser loading,
-    if (typeof define === 'function' && define.amd) {
-        define(['exports'], factory);
-    } else if (typeof exports !== 'undefined') {
-        factory(exports);
-    } else {
-        factory((root.estraverse = {}));
-    }
-}(this, function clone(exports) {
+/*global exports:true*/
+(function clone(exports) {
     'use strict';
 
     var Syntax,
@@ -836,7 +824,7 @@
         return tree;
     }
 
-    exports.version = '1.9.3';
+    exports.version = require('./package.json').version;
     exports.Syntax = Syntax;
     exports.traverse = traverse;
     exports.replace = replace;
@@ -847,5 +835,5 @@
     exports.cloneEnvironment = function () { return clone({}); };
 
     return exports;
-}));
+}(exports));
 /* vim: set sw=4 ts=4 et tw=80 : */
