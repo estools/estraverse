@@ -109,4 +109,36 @@ describe 'class', ->
             leave - Program
         """
 
+describe 'export', ->
+    it 'named declaration #1', ->
+        tree =
+            type: 'ExportNamedDeclaration'
+            declaration: {
+                type: 'VariableDeclaration'
+                declarations: [{
+                    type: 'VariableDeclarator'
+                    id: {
+                        type: 'Identifier'
+                        name: 'hello'
+                    }
+                    init: {
+                        type: 'Literal'
+                        value: 6
+                    }
+                }]
+            }
+
+        expect(Dumper.dump(tree)).to.be.equal """
+            enter - ExportNamedDeclaration
+            enter - VariableDeclaration
+            enter - VariableDeclarator
+            enter - Identifier
+            leave - Identifier
+            enter - Literal
+            leave - Literal
+            leave - VariableDeclarator
+            leave - VariableDeclaration
+            leave - ExportNamedDeclaration
+        """
+
 # vim: set sw=4 ts=4 et tw=80 :
