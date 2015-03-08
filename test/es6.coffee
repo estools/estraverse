@@ -141,4 +141,38 @@ describe 'export', ->
             leave - ExportNamedDeclaration
         """
 
+    it 'named declaration #1', ->
+        tree =
+            type: 'ExportNamedDeclaration'
+            declaration: null
+            specifiers: [{
+                type: 'ExportSpecifier',
+                exported: {
+                    type: 'Identifier',
+                    name: 'foo'
+                }
+                local: {
+                    type: 'Identifier',
+                    name: 'bar'
+                }
+
+            }]
+            source: {
+                type: 'Literal',
+                value: 'hello'
+            }
+
+        expect(Dumper.dump(tree)).to.be.equal """
+            enter - ExportNamedDeclaration
+            enter - ExportSpecifier
+            enter - Identifier
+            leave - Identifier
+            enter - Identifier
+            leave - Identifier
+            leave - ExportSpecifier
+            enter - Literal
+            leave - Literal
+            leave - ExportNamedDeclaration
+        """
+
 # vim: set sw=4 ts=4 et tw=80 :

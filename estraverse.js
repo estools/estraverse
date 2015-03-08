@@ -249,7 +249,7 @@
         ExportBatchSpecifier: [],
         ExportDeclaration: ['declaration', 'specifiers', 'source'],
         ExportNamedDeclaration: ['declaration', 'specifiers', 'source'],
-        ExportSpecifier: ['id', 'name'],
+        ExportSpecifier: ['exported', 'local'],
         ExpressionStatement: ['expression'],
         ForStatement: ['init', 'test', 'update', 'body'],
         ForInStatement: ['left', 'right', 'body'],
