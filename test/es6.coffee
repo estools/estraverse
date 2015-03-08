@@ -303,4 +303,26 @@ describe 'import', ->
             leave - Program
         """
 
+describe 'pattern', ->
+    it 'assignment pattern#1', ->
+        tree =
+            type: 'AssignmentPattern'
+            left: {
+                type: 'Identifier'
+                name: 'hello'
+            }
+            right: {
+                type: 'Literal'
+                value: 'world'
+            }
+
+        expect(Dumper.dump(tree)).to.be.equal """
+            enter - AssignmentPattern
+            enter - Identifier
+            leave - Identifier
+            enter - Literal
+            leave - Literal
+            leave - AssignmentPattern
+        """
+
 # vim: set sw=4 ts=4 et tw=80 :

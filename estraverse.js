@@ -155,6 +155,7 @@
 
     Syntax = {
         AssignmentExpression: 'AssignmentExpression',
+        AssignmentPattern: 'AssignmentPattern',
         ArrayExpression: 'ArrayExpression',
         ArrayPattern: 'ArrayPattern',
         ArrowFunctionExpression: 'ArrowFunctionExpression',
@@ -226,6 +227,7 @@
 
     VisitorKeys = {
         AssignmentExpression: ['left', 'right'],
+        AssignmentPattern: ['left', 'right'],
         ArrayExpression: ['elements'],
         ArrayPattern: ['elements'],
         ArrowFunctionExpression: ['params', 'defaults', 'rest', 'body'],
