@@ -21,6 +21,7 @@
   "devDependencies": {
     "chai": "^2.1.1",
     "coffee-script": "^1.8.0",
+    "espree": "^1.11.0",
     "gulp": "^3.8.10",
     "gulp-bump": "^0.2.2",
     "gulp-filter": "^2.0.0",

@@ -25,6 +25,7 @@
 
 Dumper = require './dumper'
 harmony = require './third_party/esprima'
+espree = require 'espree'
 {expect} = require 'chai'
 {traverse} = require '..'
 
@@ -211,6 +212,95 @@ describe 'export', ->
             leave - ClassBody
             leave - ClassDeclaration
             leave - ExportDefaultDeclaration
+        """
+
+    it 'default declaration #1', ->
+        tree =
+            type: 'ExportDefaultDeclaration'
+            declaration: classDeclaration()
+
+        expect(Dumper.dump(tree)).to.be.equal """
+            enter - ExportDefaultDeclaration
+            enter - ClassDeclaration
+            enter - Identifier
+            leave - Identifier
+            enter - ClassBody
+            leave - ClassBody
+            leave - ClassDeclaration
+            leave - ExportDefaultDeclaration
+        """
+
+
+describe 'import', ->
+    it 'default specifier #1', ->
+        tree = espree.parse """
+        import Cocoa from 'rabbit-house'
+        """, {
+            ecmaFeatures:
+                modules: yes
+        }
+
+        expect(Dumper.dump(tree)).to.be.equal """
+            enter - Program
+            enter - ImportDeclaration
+            enter - ImportDefaultSpecifier
+            enter - Identifier
+            leave - Identifier
+            leave - ImportDefaultSpecifier
+            enter - Literal
+            leave - Literal
+            leave - ImportDeclaration
+            leave - Program
+        """
+
+    it 'named specifier #1', ->
+        tree = espree.parse """
+        import {Cocoa, Cappuccino as Chino} from 'rabbit-house'
+        """, {
+            ecmaFeatures:
+                modules: yes
+        }
+
+        expect(Dumper.dump(tree)).to.be.equal """
+            enter - Program
+            enter - ImportDeclaration
+            enter - ImportSpecifier
+            enter - Identifier
+            leave - Identifier
+            enter - Identifier
+            leave - Identifier
+            leave - ImportSpecifier
+            enter - ImportSpecifier
+            enter - Identifier
+            leave - Identifier
+            enter - Identifier
+            leave - Identifier
+            leave - ImportSpecifier
+            enter - Literal
+            leave - Literal
+            leave - ImportDeclaration
+            leave - Program
+        """
+
+    it 'namespace specifier #1', ->
+        tree = espree.parse """
+        import * as RabbitHouse from 'rabbit-house'
+        """, {
+            ecmaFeatures:
+                modules: yes
+        }
+
+        expect(Dumper.dump(tree)).to.be.equal """
+            enter - Program
+            enter - ImportDeclaration
+            enter - ImportNamespaceSpecifier
+            enter - Identifier
+            leave - Identifier
+            leave - ImportNamespaceSpecifier
+            enter - Literal
+            leave - Literal
+            leave - ImportDeclaration
+            leave - Program
         """
 
 # vim: set sw=4 ts=4 et tw=80 :
