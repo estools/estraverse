@@ -24,6 +24,7 @@
 'use strict'
 
 Dumper = require './dumper'
+harmony = require './third_party/esprima'
 {expect} = require 'chai'
 {traverse} = require '..'
 
@@ -41,6 +42,71 @@ describe 'rest expression', ->
             enter - Identifier
             leave - Identifier
             leave - RestElement
+        """
+
+describe 'class', ->
+    it 'declaration#1', ->
+        tree = harmony.parse """
+        class Hello extends World {
+            method() {
+            }
+        };
+        """
+
+        expect(Dumper.dump(tree)).to.be.equal """
+            enter - Program
+            enter - ClassDeclaration
+            enter - Identifier
+            leave - Identifier
+            enter - Identifier
+            leave - Identifier
+            enter - ClassBody
+            enter - MethodDefinition
+            enter - Identifier
+            leave - Identifier
+            enter - FunctionExpression
+            enter - BlockStatement
+            leave - BlockStatement
+            leave - FunctionExpression
+            leave - MethodDefinition
+            leave - ClassBody
+            leave - ClassDeclaration
+            enter - EmptyStatement
+            leave - EmptyStatement
+            leave - Program
+        """
+
+    it 'declaration#2', ->
+        tree = harmony.parse """
+        class Hello extends ok() {
+            method() {
+            }
+        };
+        """
+
+        expect(Dumper.dump(tree)).to.be.equal """
+            enter - Program
+            enter - ClassDeclaration
+            enter - Identifier
+            leave - Identifier
+            enter - CallExpression
+            enter - Identifier
+            leave - Identifier
+            leave - CallExpression
+            enter - ClassBody
+            enter - MethodDefinition
+            enter - Identifier
+            leave - Identifier
+            enter - FunctionExpression
+            enter - BlockStatement
+            leave - BlockStatement
+            leave - FunctionExpression
+            leave - MethodDefinition
+            leave - ClassBody
+            leave - ClassDeclaration
+            enter - EmptyStatement
+            leave - EmptyStatement
+            leave - Program
         """
 
 # vim: set sw=4 ts=4 et tw=80 :
