@@ -175,4 +175,21 @@ describe 'export', ->
             leave - ExportNamedDeclaration
         """
 
+    it 'all declaration #1', ->
+        tree =
+            type: 'ExportAllDeclaration'
+            source: {
+                type: 'Literal',
+                value: 'hello'
+            }
+
+        expect(Dumper.dump(tree)).to.be.equal """
+            enter - ExportAllDeclaration
+            enter - Literal
+            leave - Literal
+            leave - ExportAllDeclaration
+        """
+
+
+
 # vim: set sw=4 ts=4 et tw=80 :
