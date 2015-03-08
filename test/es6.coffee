@@ -28,6 +28,13 @@ harmony = require './third_party/esprima'
 {expect} = require 'chai'
 {traverse} = require '..'
 
+classDeclaration = ->
+    program = harmony.parse """
+        class Hello {
+        };
+    """
+    program.body[0]
+
 describe 'rest expression', ->
     it 'argument', ->
         tree =
@@ -141,7 +148,7 @@ describe 'export', ->
             leave - ExportNamedDeclaration
         """
 
-    it 'named declaration #1', ->
+    it 'named declaration #2', ->
         tree =
             type: 'ExportNamedDeclaration'
             declaration: null
@@ -190,6 +197,20 @@ describe 'export', ->
             leave - ExportAllDeclaration
         """
 
+    it 'default declaration #1', ->
+        tree =
+            type: 'ExportDefaultDeclaration'
+            declaration: classDeclaration()
 
+        expect(Dumper.dump(tree)).to.be.equal """
+            enter - ExportDefaultDeclaration
+            enter - ClassDeclaration
+            enter - Identifier
+            leave - Identifier
+            enter - ClassBody
+            leave - ClassBody
+            leave - ClassDeclaration
+            leave - ExportDefaultDeclaration
+        """
 
 # vim: set sw=4 ts=4 et tw=80 :
