@@ -275,7 +275,7 @@
         TemplateLiteral: ['quasis', 'expressions'],
         ThisExpression: [],
         ThrowStatement: ['argument'],
-        TryStatement: ['block', 'handlers', 'handler', 'guardedHandlers', 'finalizer'],
+        TryStatement: ['block', 'handler', 'finalizer'],
         UnaryExpression: ['argument'],
         UpdateExpression: ['argument'],
         VariableDeclaration: ['declarations'],
