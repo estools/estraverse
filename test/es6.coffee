@@ -325,4 +325,15 @@ describe 'pattern', ->
             leave - AssignmentPattern
         """
 
+describe 'super', ->
+    it 'super expression#1', ->
+        tree =
+            type: 'SuperExpression'
+
+        expect(Dumper.dump(tree)).to.be.equal """
+            enter - SuperExpression
+            leave - SuperExpression
+        """
+
+
 # vim: set sw=4 ts=4 et tw=80 :
