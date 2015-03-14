@@ -159,10 +159,10 @@ describe 'try statement', ->
     it 'old interface', ->
         tree =
             type: 'TryStatement'
-            handlers: [{
+            handler: {
                 type: 'BlockStatement'
                 body: []
-            }]
+            }
             finalizer:
                 type: 'BlockStatement'
                 body: []
@@ -179,11 +179,10 @@ describe 'try statement', ->
     it 'new interface', ->
         tree =
             type: 'TryStatement'
-            handler: [{
+            handler: {
                 type: 'BlockStatement'
                 body: []
-            }]
-            guardedHandlers: null
+            }
             finalizer:
                 type: 'BlockStatement'
                 body: []
@@ -202,29 +201,40 @@ describe 'arrow function expression', ->
         tree =
             type: 'ArrowFunctionExpression'
             params: [{
-                type: 'Identifier'
-                name: 'a'
-            }]
-            defaults: [{
-                type: 'Literal'
-                value: 20
-            }]
-            rest: {
-                type: 'Identifier'
-                name: 'rest'
-            }
+                    type: 'AssignmentPattern'
+                    left: {
+                        type: 'Identifier'
+                        name: 'a'
+                    }
+                    right: {
+                        type: 'Literal'
+                        value: 20
+                    }
+                }
+                {
+                    type: 'RestElement'
+                    argument: {
+                        type: 'Identifier'
+                        name: 'rest'
+                    }
+                }
+            ]
             body:
                 type: 'BlockStatement'
                 body: []
 
         expect(Dumper.dump(tree)).to.be.equal """
             enter - ArrowFunctionExpression
+            enter - AssignmentPattern
             enter - Identifier
             leave - Identifier
             enter - Literal
             leave - Literal
+            leave - AssignmentPattern
+            enter - RestElement
             enter - Identifier
             leave - Identifier
+            leave - RestElement
             enter - BlockStatement
             leave - BlockStatement
             leave - ArrowFunctionExpression
@@ -235,29 +245,39 @@ describe 'function expression', ->
         tree =
             type: 'FunctionExpression'
             params: [{
-                type: 'Identifier'
-                name: 'a'
-            }]
-            defaults: [{
-                type: 'Literal'
-                value: 20
-            }]
-            rest: {
-                type: 'Identifier'
-                name: 'rest'
-            }
+                    type: 'AssignmentPattern'
+                    left: {
+                        type: 'Identifier'
+                        name: 'a'
+                    }
+                    right: {
+                        type: 'Literal'
+                        value: 20
+                    }
+                }
+                {
+                    type: 'RestElement'
+                    argument:
+                        type: 'Identifier'
+                        name: 'rest'
+                }
+            ]
             body:
                 type: 'BlockStatement'
                 body: []
 
         expect(Dumper.dump(tree)).to.be.equal """
             enter - FunctionExpression
+            enter - AssignmentPattern
             enter - Identifier
             leave - Identifier
             enter - Literal
             leave - Literal
+            leave - AssignmentPattern
+            enter - RestElement
             enter - Identifier
             leave - Identifier
+            leave - RestElement
             enter - BlockStatement
             leave - BlockStatement
             leave - FunctionExpression
@@ -272,17 +292,23 @@ describe 'function declaration', ->
                 name: 'decl'
             }
             params: [{
-                type: 'Identifier'
-                name: 'a'
-            }]
-            defaults: [{
-                type: 'Literal'
-                value: 20
-            }]
-            rest: {
-                type: 'Identifier'
-                name: 'rest'
-            }
+                    type: 'AssignmentPattern'
+                    left: {
+                        type: 'Identifier'
+                        name: 'a'
+                    }
+                    right: {
+                        type: 'Literal'
+                        value: 20
+                    }
+                }
+                {
+                    type: 'RestElement'
+                    argument:
+                        type: 'Identifier'
+                        name: 'rest'
+                }
+            ]
             body:
                 type: 'BlockStatement'
                 body: []
@@ -291,12 +317,16 @@ describe 'function declaration', ->
             enter - FunctionDeclaration
             enter - Identifier
             leave - Identifier
+            enter - AssignmentPattern
             enter - Identifier
             leave - Identifier
             enter - Literal
             leave - Literal
+            leave - AssignmentPattern
+            enter - RestElement
             enter - Identifier
             leave - Identifier
+            leave - RestElement
             enter - BlockStatement
             leave - BlockStatement
             leave - FunctionDeclaration
