@@ -328,11 +328,11 @@ describe 'pattern', ->
 describe 'super', ->
     it 'super expression#1', ->
         tree =
-            type: 'SuperExpression'
+            type: 'Super'
 
         expect(Dumper.dump(tree)).to.be.equal """
-            enter - SuperExpression
-            leave - SuperExpression
+            enter - Super
+            leave - Super
         """
 
 
