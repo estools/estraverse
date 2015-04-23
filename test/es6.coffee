@@ -335,5 +335,33 @@ describe 'super', ->
             leave - Super
         """
 
+describe 'meta property', ->
+    it 'MetaProperty in constructor #1', ->
+        tree =
+            type: 'UnaryExpression'
+            operator: 'typeof'
+            prefix: true
+            argument: {
+                type: 'MetaProperty'
+                meta: {
+                    type: 'Identifier'
+                    name: 'new'
+                }
+                property: {
+                    type: 'Identifier'
+                    name: 'target'
+                }
+            }
+
+        expect(Dumper.dump(tree)).to.be.equal """
+            enter - UnaryExpression
+            enter - MetaProperty
+            enter - Identifier
+            leave - Identifier
+            enter - Identifier
+            leave - Identifier
+            leave - MetaProperty
+            leave - UnaryExpression
+        """
 
 # vim: set sw=4 ts=4 et tw=80 :
