@@ -28,7 +28,8 @@ var gulp = require('gulp'),
     git = require('gulp-git'),
     bump = require('gulp-bump'),
     filter = require('gulp-filter'),
-    tagVersion = require('gulp-tag-version');
+    tagVersion = require('gulp-tag-version'),
+    browserify = require('gulp-browserify-thin');
 
 var TEST = [ 'test/*.js' ];
 var POWERED = [ 'powered-test/*.js' ];
@@ -50,7 +51,7 @@ var SOURCE = [ 'src/**/*.js' ];
 
 function inc(importance) {
     // get all the files to bump version in
-    return gulp.src(['./package.json'])
+    return gulp.src(['./package.json', './bower.json'])
         // bump the version number in those files
         .pipe(bump({type: importance}))
         // save it back to filesystem
@@ -58,13 +59,22 @@ function inc(importance) {
         // commit the changed version number
         .pipe(git.commit('Bumps package version'))
         // read only one file to get the version number
-        .pipe(filter('package.json'))
+        .pipe(filter(['package.json', 'bower.json']))
         // **tag it in the repository**
         .pipe(tagVersion({
             prefix: ''
         }));
 }
 
-gulp.task('patch', [ ], function () { return inc('patch'); })
-gulp.task('minor', [ ], function () { return inc('minor'); })
-gulp.task('major', [ ], function () { return inc('major'); })
+gulp.task('patch', ['browserify'], function () { return inc('patch'); })
+gulp.task('minor', ['browserify'], function () { return inc('minor'); })
+gulp.task('major', ['browserify'], function () { return inc('major'); })
+
+gulp.task('browserify', function () {
+    return browserify({
+        entries: './estraverse.js',
+        standalone: 'estraverse'
+    })
+        .bundle('estraverse.js')
+        .pipe(gulp.dest('dist'))
+});

@@ -1,0 +1,27 @@
+{
+  "name": "estraverse",
+  "main": "dist/estraverse.js",
+  "version": "4.1.0",
+  "homepage": "https://github.com/estools/estraverse",
+  "authors": [
+    "Yusuke Suzuki <utatane.tea@gmail.com>",
+    "Ariya Hidayat <ariya.hidayat@gmail.com>"
+  ],
+  "description": "ECMAScript JS AST traversal functions",
+  "moduleType": [
+    "amd",
+    "globals",
+    "node"
+  ],
+  "license": "BSD-2-Clause",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "./estraverse.js",
+    "gulpfile.js",
+    "package.json"
+  ]
+}
