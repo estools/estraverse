@@ -74,6 +74,25 @@ describe 'object expression', ->
             leave - ObjectExpression
         """
 
+    it 'properties with custom type', ->
+        tree =
+            type: 'ObjectExpression'
+            properties: [{
+                type: 'CustomProperty'
+                foo:
+                    type: 'Identifier'
+                    name: 'a'
+            }]
+
+        expect(Dumper.dump(tree, {CustomProperty: ['foo']})).to.be.equal """
+            enter - ObjectExpression
+            enter - CustomProperty
+            enter - Identifier
+            leave - Identifier
+            leave - CustomProperty
+            leave - ObjectExpression
+        """
+
     it 'skip and break', ->
         tree =
             type: 'ObjectExpression'
