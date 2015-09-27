@@ -394,7 +394,7 @@
         this.__current = element;
         this.__state = null;
         if (callback) {
-            result = callback.call(this, element.node, this.__leavelist[this.__leavelist.length - 1]);
+            result = callback.call(this, element.node, this.__leavelist[this.__leavelist.length - 1].node);
         }
         this.__current = previous;
 
