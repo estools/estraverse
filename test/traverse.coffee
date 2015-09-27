@@ -45,6 +45,7 @@ describe 'object expression', ->
             enter - Property
             enter - Identifier
             leave - Identifier
+            recur - Property
             enter - Identifier
             leave - Identifier
             leave - Property
@@ -68,6 +69,7 @@ describe 'object expression', ->
             enter - undefined
             enter - Identifier
             leave - Identifier
+            recur - undefined
             enter - Identifier
             leave - Identifier
             leave - undefined
@@ -121,9 +123,45 @@ describe 'object expression', ->
             enter - Property
             enter - Identifier
             leave - Identifier
+            recur - Property
             enter - ObjectExpression
             leave - ObjectExpression
             leave - Property
+        """
+
+    it 'break in recur', ->
+        tree =
+            type: 'ObjectExpression'
+            properties: [{
+                type: 'Property'
+                key:
+                    type: 'Identifier'
+                    name: 'a'
+                value:
+                    type: 'ObjectExpression'
+                    properties: [{
+                        type: 'Property'
+                        $recur: 'Break'
+                        key:
+                            type: 'Identifier'
+                            name: 'a'
+                        value:
+                            type: 'Identifier'
+                            name: 'a'
+                    }]
+            }]
+
+        expect(Dumper.dump(tree)).to.be.equal """
+            enter - ObjectExpression
+            enter - Property
+            enter - Identifier
+            leave - Identifier
+            recur - Property
+            enter - ObjectExpression
+            enter - Property
+            enter - Identifier
+            leave - Identifier
+            recur - Property
         """
 
 describe 'object pattern', ->
@@ -145,6 +183,7 @@ describe 'object pattern', ->
             enter - Property
             enter - Identifier
             leave - Identifier
+            recur - Property
             enter - Identifier
             leave - Identifier
             leave - Property
@@ -168,6 +207,7 @@ describe 'object pattern', ->
             enter - undefined
             enter - Identifier
             leave - Identifier
+            recur - undefined
             enter - Identifier
             leave - Identifier
             leave - undefined
@@ -190,6 +230,7 @@ describe 'try statement', ->
             enter - TryStatement
             enter - BlockStatement
             leave - BlockStatement
+            recur - TryStatement
             enter - BlockStatement
             leave - BlockStatement
             leave - TryStatement
@@ -210,6 +251,7 @@ describe 'try statement', ->
             enter - TryStatement
             enter - BlockStatement
             leave - BlockStatement
+            recur - TryStatement
             enter - BlockStatement
             leave - BlockStatement
             leave - TryStatement
@@ -247,13 +289,16 @@ describe 'arrow function expression', ->
             enter - AssignmentPattern
             enter - Identifier
             leave - Identifier
+            recur - AssignmentPattern
             enter - Literal
             leave - Literal
             leave - AssignmentPattern
+            recur - ArrowFunctionExpression
             enter - RestElement
             enter - Identifier
             leave - Identifier
             leave - RestElement
+            recur - ArrowFunctionExpression
             enter - BlockStatement
             leave - BlockStatement
             leave - ArrowFunctionExpression
@@ -290,13 +335,16 @@ describe 'function expression', ->
             enter - AssignmentPattern
             enter - Identifier
             leave - Identifier
+            recur - AssignmentPattern
             enter - Literal
             leave - Literal
             leave - AssignmentPattern
+            recur - FunctionExpression
             enter - RestElement
             enter - Identifier
             leave - Identifier
             leave - RestElement
+            recur - FunctionExpression
             enter - BlockStatement
             leave - BlockStatement
             leave - FunctionExpression
@@ -336,16 +384,20 @@ describe 'function declaration', ->
             enter - FunctionDeclaration
             enter - Identifier
             leave - Identifier
+            recur - FunctionDeclaration
             enter - AssignmentPattern
             enter - Identifier
             leave - Identifier
+            recur - AssignmentPattern
             enter - Literal
             leave - Literal
             leave - AssignmentPattern
+            recur - FunctionDeclaration
             enter - RestElement
             enter - Identifier
             leave - Identifier
             leave - RestElement
+            recur - FunctionDeclaration
             enter - BlockStatement
             leave - BlockStatement
             leave - FunctionDeclaration
@@ -381,12 +433,16 @@ describe 'extending keys', ->
             enter - TestStatement
             enter - Identifier
             leave - Identifier
+            recur - TestStatement
             enter - Identifier
             leave - Identifier
+            recur - TestStatement
             enter - Literal
             leave - Literal
+            recur - TestStatement
             enter - Identifier
             leave - Identifier
+            recur - TestStatement
             enter - BlockStatement
             leave - BlockStatement
             leave - TestStatement
@@ -421,12 +477,16 @@ describe 'no listed keys fallback', ->
             enter - TestStatement
             enter - Identifier
             leave - Identifier
+            recur - TestStatement
             enter - Identifier
             leave - Identifier
+            recur - TestStatement
             enter - Literal
             leave - Literal
+            recur - TestStatement
             enter - Identifier
             leave - Identifier
+            recur - TestStatement
             enter - BlockStatement
             leave - BlockStatement
             leave - TestStatement

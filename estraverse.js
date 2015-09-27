@@ -394,7 +394,7 @@
         this.__current = element;
         this.__state = null;
         if (callback) {
-            result = callback.call(this, element.node, this.__leavelist[this.__leavelist.length - 1].node);
+            result = callback.call(this, element.node, this.__leavelist[this.__leavelist.length - 1]);
         }
         this.__current = previous;
 
@@ -487,6 +487,15 @@
                 if (this.__state === BREAK || ret === BREAK) {
                     return;
                 }
+
+                if (worklist.length > 0 && worklist[worklist.length-1] !== sentinel) {
+                    ret = this.__execute(visitor.recur, leavelist[leavelist.length-1]);
+                }
+
+                if (this.__state === BREAK || ret === BREAK) {
+                    return;
+                }
+
                 continue;
             }
 
@@ -625,6 +634,15 @@
                 if (this.__state === BREAK || target === BREAK) {
                     return outer.root;
                 }
+
+                if (worklist.length > 0 && worklist[worklist.length-1] !== sentinel) {
+                    target = this.__execute(visitor.recur, leavelist[leavelist.length-1]);
+                }
+
+                if (this.__state === BREAK || target === BREAK) {
+                    return;
+                }
+
                 continue;
             }
 

@@ -12,3 +12,6 @@ coverage/
 
 npm-debug.log
 .vimrc.local
+
+/*.sublime-project
+/*.sublime-workspace

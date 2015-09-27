@@ -45,6 +45,9 @@ describe 'controller', ->
             enter: (node) ->
                 dumper.log("enter - #{node.type}")
 
+            recur: (node) ->
+                dumper.log("recur - #{node.type}")
+
             leave: (node) ->
                 dumper.log("leave - #{node.type}")
 
@@ -53,6 +56,7 @@ describe 'controller', ->
             enter - undefined
             enter - Identifier
             leave - Identifier
+            recur - undefined
             enter - Identifier
             leave - Identifier
             leave - undefined
