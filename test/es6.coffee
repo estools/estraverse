@@ -66,12 +66,15 @@ describe 'class', ->
             enter - ClassDeclaration
             enter - Identifier
             leave - Identifier
+            recur - ClassDeclaration
             enter - Identifier
             leave - Identifier
+            recur - ClassDeclaration
             enter - ClassBody
             enter - MethodDefinition
             enter - Identifier
             leave - Identifier
+            recur - MethodDefinition
             enter - FunctionExpression
             enter - BlockStatement
             leave - BlockStatement
@@ -79,6 +82,7 @@ describe 'class', ->
             leave - MethodDefinition
             leave - ClassBody
             leave - ClassDeclaration
+            recur - Program
             enter - EmptyStatement
             leave - EmptyStatement
             leave - Program
@@ -97,14 +101,17 @@ describe 'class', ->
             enter - ClassDeclaration
             enter - Identifier
             leave - Identifier
+            recur - ClassDeclaration
             enter - CallExpression
             enter - Identifier
             leave - Identifier
             leave - CallExpression
+            recur - ClassDeclaration
             enter - ClassBody
             enter - MethodDefinition
             enter - Identifier
             leave - Identifier
+            recur - MethodDefinition
             enter - FunctionExpression
             enter - BlockStatement
             leave - BlockStatement
@@ -112,6 +119,7 @@ describe 'class', ->
             leave - MethodDefinition
             leave - ClassBody
             leave - ClassDeclaration
+            recur - Program
             enter - EmptyStatement
             leave - EmptyStatement
             leave - Program
@@ -142,6 +150,7 @@ describe 'export', ->
             enter - VariableDeclarator
             enter - Identifier
             leave - Identifier
+            recur - VariableDeclarator
             enter - Literal
             leave - Literal
             leave - VariableDeclarator
@@ -175,9 +184,11 @@ describe 'export', ->
             enter - ExportSpecifier
             enter - Identifier
             leave - Identifier
+            recur - ExportSpecifier
             enter - Identifier
             leave - Identifier
             leave - ExportSpecifier
+            recur - ExportNamedDeclaration
             enter - Literal
             leave - Literal
             leave - ExportNamedDeclaration
@@ -208,6 +219,7 @@ describe 'export', ->
             enter - ClassDeclaration
             enter - Identifier
             leave - Identifier
+            recur - ClassDeclaration
             enter - ClassBody
             leave - ClassBody
             leave - ClassDeclaration
@@ -224,6 +236,7 @@ describe 'export', ->
             enter - ClassDeclaration
             enter - Identifier
             leave - Identifier
+            recur - ClassDeclaration
             enter - ClassBody
             leave - ClassBody
             leave - ClassDeclaration
@@ -247,6 +260,7 @@ describe 'import', ->
             enter - Identifier
             leave - Identifier
             leave - ImportDefaultSpecifier
+            recur - ImportDeclaration
             enter - Literal
             leave - Literal
             leave - ImportDeclaration
@@ -267,15 +281,19 @@ describe 'import', ->
             enter - ImportSpecifier
             enter - Identifier
             leave - Identifier
+            recur - ImportSpecifier
             enter - Identifier
             leave - Identifier
             leave - ImportSpecifier
+            recur - ImportDeclaration
             enter - ImportSpecifier
             enter - Identifier
             leave - Identifier
+            recur - ImportSpecifier
             enter - Identifier
             leave - Identifier
             leave - ImportSpecifier
+            recur - ImportDeclaration
             enter - Literal
             leave - Literal
             leave - ImportDeclaration
@@ -297,6 +315,7 @@ describe 'import', ->
             enter - Identifier
             leave - Identifier
             leave - ImportNamespaceSpecifier
+            recur - ImportDeclaration
             enter - Literal
             leave - Literal
             leave - ImportDeclaration
@@ -320,6 +339,7 @@ describe 'pattern', ->
             enter - AssignmentPattern
             enter - Identifier
             leave - Identifier
+            recur - AssignmentPattern
             enter - Literal
             leave - Literal
             leave - AssignmentPattern
@@ -358,6 +378,7 @@ describe 'meta property', ->
             enter - MetaProperty
             enter - Identifier
             leave - Identifier
+            recur - MetaProperty
             enter - Identifier
             leave - Identifier
             leave - MetaProperty

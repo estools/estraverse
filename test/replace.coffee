@@ -387,3 +387,33 @@ describe 'replace', ->
                     if node.type is 'Literal' and node.value is 2
                         VisitorOption.Remove
         .to.throw('Unknown node type XXXExpression.')
+
+    it 'supports recur without remove/replace', ->
+        log = ""
+        tree =
+            type: 'ObjectExpression'
+            properties: [{
+                type: 'Property'
+                key:
+                    type: 'Identifier'
+                    name: 'a'
+                value:
+                    type: 'BinaryExpression'
+                    operator: '*'
+                    left:
+                        type: 'Literal'
+                        value: 2
+                    right:
+                        type: 'Literal'
+                        value: 3
+            }]
+
+        tree = replace tree,
+            recur: (node) ->
+                log += node.type + "\n"
+
+        expect(log).to.be.equal """
+            Property
+            BinaryExpression
+            
+        """

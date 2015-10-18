@@ -42,6 +42,10 @@ module.exports = class Dumper
                 dumper.log("enter - #{node.type}")
                 VisitorOption[node.$enter]
 
+            recur: (node) ->
+                dumper.log("recur - #{node.type}")
+                VisitorOption[node.$recur]
+
             leave: (node) ->
                 dumper.log("leave - #{node.type}")
                 VisitorOption[node.$leave]

@@ -1,7 +1,7 @@
 {
   "name": "estraverse",
   "description": "ECMAScript JS AST traversal functions",
-  "homepage": "https://github.com/estools/estraverse",
+  "homepage": "https://github.com/ghost23/estraverse",
   "main": "estraverse.js",
   "version": "4.1.1",
   "engines": {
@@ -16,7 +16,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "http://github.com/estools/estraverse.git"
+    "url": "http://github.com/ghost23/estraverse.git"
   },
   "devDependencies": {
     "chai": "^2.1.1",
