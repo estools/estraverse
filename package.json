@@ -19,6 +19,7 @@
     "url": "http://github.com/estools/estraverse.git"
   },
   "devDependencies": {
+    "browserify": "^12.0.1",
     "chai": "^2.1.1",
     "coffee-script": "^1.8.0",
     "espree": "^1.11.0",
@@ -28,7 +29,8 @@
     "gulp-git": "^1.0.1",
     "gulp-tag-version": "^1.2.1",
     "jshint": "^2.5.6",
-    "mocha": "^2.1.0"
+    "mocha": "^2.1.0",
+    "vinyl-source-stream": "^1.1.0"
   },
   "license": "BSD-2-Clause",
   "scripts": {
