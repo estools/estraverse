@@ -28,7 +28,9 @@ var gulp = require('gulp'),
     git = require('gulp-git'),
     bump = require('gulp-bump'),
     filter = require('gulp-filter'),
-    tagVersion = require('gulp-tag-version');
+    tagVersion = require('gulp-tag-version'),
+    browserify = require('browserify'),
+    source = require('vinyl-source-stream');
 
 var TEST = [ 'test/*.js' ];
 var POWERED = [ 'powered-test/*.js' ];
@@ -68,3 +70,22 @@ function inc(importance) {
 gulp.task('patch', [ ], function () { return inc('patch'); })
 gulp.task('minor', [ ], function () { return inc('minor'); })
 gulp.task('major', [ ], function () { return inc('major'); })
+
+/**
+ * Generating a dist version with browserify.
+ */
+
+gulp.task('dist', function () {
+  // set up the browserify instance
+  var b = browserify({
+    entries: './estraverse.js',
+    standalone: 'estraverse'
+  });
+
+  return b.bundle()
+    // Use vinyl-source-stream to make the stream gulp compatible.
+    // Specify the desired output filename here.
+    .pipe(source('estraverse.js'))
+    // Specify the output destination
+    .pipe(gulp.dest('./dist/'));
+});
