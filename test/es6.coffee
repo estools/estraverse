@@ -24,12 +24,12 @@
 'use strict'
 
 Dumper = require './dumper'
-harmony = require './third_party/esprima'
-espree = require 'espree'
+{parse: esprima} = require './third_party/esprima'
+{parse: espree} = require 'espree'
 {expect} = require 'chai'
 
 classDeclaration = ->
-    program = harmony.parse """
+    program = esprima """
         class Hello {
         };
     """
@@ -54,7 +54,7 @@ describe 'rest expression', ->
 
 describe 'class', ->
     it 'declaration#1', ->
-        tree = harmony.parse """
+        tree = esprima """
         class Hello extends World {
             method() {
             }
@@ -85,7 +85,7 @@ describe 'class', ->
         """
 
     it 'declaration#2', ->
-        tree = harmony.parse """
+        tree = esprima """
         class Hello extends ok() {
             method() {
             }
@@ -238,7 +238,7 @@ describe 'export', ->
 
 describe 'import', ->
     it 'default specifier #1', ->
-        tree = espree.parse """
+        tree = espree """
         import Cocoa from 'rabbit-house'
         """, {
             ecmaFeatures: {
@@ -260,7 +260,7 @@ describe 'import', ->
         """
 
     it 'named specifier #1', ->
-        tree = espree.parse """
+        tree = espree """
         import {Cocoa, Cappuccino as Chino} from 'rabbit-house'
         """, {
             ecmaFeatures: {
@@ -290,7 +290,7 @@ describe 'import', ->
         """
 
     it 'namespace specifier #1', ->
-        tree = espree.parse """
+        tree = espree """
         import * as RabbitHouse from 'rabbit-house'
         """, {
             ecmaFeatures: {
