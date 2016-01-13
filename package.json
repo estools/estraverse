@@ -19,8 +19,9 @@
     "url": "http://github.com/estools/estraverse.git"
   },
   "devDependencies": {
+    "babel-preset-es2015": "^6.3.13",
+    "babel-register": "^6.3.13",
     "chai": "^2.1.1",
-    "coffee-script": "^1.8.0",
     "espree": "^1.11.0",
     "gulp": "^3.8.10",
     "gulp-bump": "^0.2.2",
@@ -34,6 +35,6 @@
   "scripts": {
     "test": "npm run-script lint && npm run-script unit-test",
     "lint": "jshint estraverse.js",
-    "unit-test": "mocha --compilers coffee:coffee-script/register"
+    "unit-test": "mocha --compilers js:babel-register"
   }
 }
