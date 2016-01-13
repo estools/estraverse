@@ -28,17 +28,20 @@ Dumper = require './dumper'
 
 describe 'object expression', ->
     it 'properties', ->
-        tree =
+        tree = {
             type: 'ObjectExpression'
             properties: [{
                 type: 'Property'
-                key:
+                key: {
                     type: 'Identifier'
                     name: 'a'
-                value:
+                }
+                value: {
                     type: 'Identifier'
                     name: 'a'
+                }
             }]
+        }
 
         expect(Dumper.dump(tree)).to.be.equal """
             enter - ObjectExpression
@@ -52,16 +55,19 @@ describe 'object expression', ->
         """
 
     it 'properties without type', ->
-        tree =
+        tree = {
             type: 'ObjectExpression'
             properties: [{
-                key:
+                key: {
                     type: 'Identifier'
                     name: 'a'
-                value:
+                }
+                value: {
                     type: 'Identifier'
                     name: 'a'
+                }
             }]
+        }
 
         expect(Dumper.dump(tree)).to.be.equal """
             enter - ObjectExpression
@@ -75,14 +81,16 @@ describe 'object expression', ->
         """
 
     it 'properties with custom type', ->
-        tree =
+        tree = {
             type: 'ObjectExpression'
             properties: [{
                 type: 'CustomProperty'
-                foo:
+                foo: {
                     type: 'Identifier'
                     name: 'a'
+                }
             }]
+        }
 
         expect(Dumper.dump(tree, {CustomProperty: ['foo']})).to.be.equal """
             enter - ObjectExpression
@@ -94,27 +102,32 @@ describe 'object expression', ->
         """
 
     it 'skip and break', ->
-        tree =
+        tree = {
             type: 'ObjectExpression'
             properties: [{
                 type: 'Property'
-                key:
+                key: {
                     type: 'Identifier'
                     name: 'a'
-                value:
+                }
+                value: {
                     $enter: 'Skip'
                     type: 'ObjectExpression'
                     properties: [{
                         type: 'Property'
-                        key:
+                        key: {
                             type: 'Identifier'
                             name: 'a'
-                        value:
+                        }
+                        value: {
                             type: 'Identifier'
                             name: 'a'
+                        }
                     }]
+                }
                 $leave: 'Break'
             }]
+        }
 
         expect(Dumper.dump(tree)).to.be.equal """
             enter - ObjectExpression
@@ -128,17 +141,20 @@ describe 'object expression', ->
 
 describe 'object pattern', ->
     it 'properties', ->
-        tree =
+        tree = {
             type: 'ObjectPattern'
             properties: [{
                 type: 'Property'
-                key:
+                key: {
                     type: 'Identifier'
                     name: 'a'
-                value:
+                }
+                value: {
                     type: 'Identifier'
                     name: 'a'
+                }
             }]
+        }
 
         expect(Dumper.dump(tree)).to.be.equal """
             enter - ObjectPattern
@@ -152,16 +168,19 @@ describe 'object pattern', ->
         """
 
     it 'properties without type', ->
-        tree =
+        tree = {
             type: 'ObjectPattern'
             properties: [{
-                key:
+                key: {
                     type: 'Identifier'
                     name: 'a'
-                value:
+                }
+                value: {
                     type: 'Identifier'
                     name: 'a'
+                }
             }]
+        }
 
         expect(Dumper.dump(tree)).to.be.equal """
             enter - ObjectPattern
@@ -176,15 +195,17 @@ describe 'object pattern', ->
 
 describe 'try statement', ->
     it 'old interface', ->
-        tree =
+        tree = {
             type: 'TryStatement'
             handler: {
                 type: 'BlockStatement'
                 body: []
             }
-            finalizer:
+            finalizer: {
                 type: 'BlockStatement'
                 body: []
+            }
+        }
 
         expect(Dumper.dump(tree)).to.be.equal """
             enter - TryStatement
@@ -196,15 +217,17 @@ describe 'try statement', ->
         """
 
     it 'new interface', ->
-        tree =
+        tree = {
             type: 'TryStatement'
             handler: {
                 type: 'BlockStatement'
                 body: []
             }
-            finalizer:
+            finalizer: {
                 type: 'BlockStatement'
                 body: []
+            }
+        }
 
         expect(Dumper.dump(tree)).to.be.equal """
             enter - TryStatement
@@ -217,9 +240,10 @@ describe 'try statement', ->
 
 describe 'arrow function expression', ->
     it 'traverse', ->
-        tree =
+        tree = {
             type: 'ArrowFunctionExpression'
-            params: [{
+            params: [
+                {
                     type: 'AssignmentPattern'
                     left: {
                         type: 'Identifier'
@@ -238,9 +262,11 @@ describe 'arrow function expression', ->
                     }
                 }
             ]
-            body:
+            body: {
                 type: 'BlockStatement'
                 body: []
+            }
+        }
 
         expect(Dumper.dump(tree)).to.be.equal """
             enter - ArrowFunctionExpression
@@ -261,9 +287,10 @@ describe 'arrow function expression', ->
 
 describe 'function expression', ->
     it 'traverse', ->
-        tree =
+        tree = {
             type: 'FunctionExpression'
-            params: [{
+            params: [
+                {
                     type: 'AssignmentPattern'
                     left: {
                         type: 'Identifier'
@@ -276,14 +303,17 @@ describe 'function expression', ->
                 }
                 {
                     type: 'RestElement'
-                    argument:
+                    argument: {
                         type: 'Identifier'
                         name: 'rest'
+                    }
                 }
             ]
-            body:
+            body: {
                 type: 'BlockStatement'
                 body: []
+            }
+        }
 
         expect(Dumper.dump(tree)).to.be.equal """
             enter - FunctionExpression
@@ -304,13 +334,14 @@ describe 'function expression', ->
 
 describe 'function declaration', ->
     it 'traverse', ->
-        tree =
+        tree = {
             type: 'FunctionDeclaration'
             id: {
                 type: 'Identifier'
                 name: 'decl'
             }
-            params: [{
+            params: [
+                {
                     type: 'AssignmentPattern'
                     left: {
                         type: 'Identifier'
@@ -323,14 +354,17 @@ describe 'function declaration', ->
                 }
                 {
                     type: 'RestElement'
-                    argument:
+                    argument: {
                         type: 'Identifier'
                         name: 'rest'
+                    }
                 }
             ]
-            body:
+            body: {
                 type: 'BlockStatement'
                 body: []
+            }
+        }
 
         expect(Dumper.dump(tree)).to.be.equal """
             enter - FunctionDeclaration
@@ -353,7 +387,7 @@ describe 'function declaration', ->
 
 describe 'extending keys', ->
     it 'traverse', ->
-        tree =
+        tree = {
             type: 'TestStatement'
             id: {
                 type: 'Identifier'
@@ -371,12 +405,15 @@ describe 'extending keys', ->
                 type: 'Identifier'
                 name: 'rest'
             }
-            body:
+            body: {
                 type: 'BlockStatement'
                 body: []
+            }
+        }
 
-        result = Dumper.dump tree,
+        result = Dumper.dump tree, {
             TestStatement: ['id', 'params', 'defaults', 'rest', 'body']
+        }
         expect(result).to.be.equal """
             enter - TestStatement
             enter - Identifier
@@ -395,7 +432,7 @@ describe 'extending keys', ->
 
 describe 'no listed keys fallback', ->
     it 'traverse', ->
-        tree =
+        tree = {
             type: 'TestStatement'
             id: {
                 type: 'Identifier'
@@ -413,9 +450,11 @@ describe 'no listed keys fallback', ->
                 type: 'Identifier'
                 name: 'rest'
             }
-            body:
+            body: {
                 type: 'BlockStatement'
                 body: []
+            }
+        }
 
         expect(Dumper.dump(tree, null, 'iteration')).to.be.equal """
             enter - TestStatement
@@ -433,14 +472,15 @@ describe 'no listed keys fallback', ->
         """
 
     it 'throw unkown node type error when unknown nodes', ->
-        tree =
+        tree = {
             type: 'XXXExpression'
             properties: [{
                 type: 'Property'
-                key:
+                key: {
                     type: 'Identifier'
                     name: 'a'
-                value:
+                }
+                value: {
                     type: 'ArrayExpression'
                     elements: [
                         {type: 'Literal', value: 1}
@@ -448,9 +488,12 @@ describe 'no listed keys fallback', ->
                         {type: 'Literal', value: 3}
                         {type: 'Literal', value: 4}
                     ]
+                }
             }]
+        }
 
-        expect ->
-            traverse tree,
+        expect(->
+            traverse tree, {
                 enter: (node) ->
-        .to.throw('Unknown node type XXXExpression.')
+            }
+        ).to.throw('Unknown node type XXXExpression.')

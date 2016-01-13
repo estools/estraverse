@@ -37,7 +37,7 @@ module.exports = class Dumper
     @dump: (tree, keys, fallback) ->
         dumper = new Dumper
 
-        traverse tree,
+        traverse tree, {
             enter: (node) ->
                 dumper.log("enter - #{node.type}")
                 VisitorOption[node.$enter]
@@ -48,5 +48,6 @@ module.exports = class Dumper
 
             keys: keys
             fallback: fallback
+        }
 
         dumper.result()

@@ -28,22 +28,27 @@
 
 describe 'type API', ->
     it 'for Property', ->
-        property =
+        property = {
             type: 'Property'
-            key:
+            key: {
                 type: 'Identifier'
                 name: 'a'
-            value:
+            }
+            value: {
                 type: 'Identifier'
                 name: 'a'
+            }
+        }
 
-        tree =
+        tree = {
             type: 'ObjectExpression'
-            properties: [ property ]
+            properties: [property]
+        }
 
-        traverse tree,
+        traverse tree, {
             enter: (node) ->
                 if node is property
                     expect(@type()).to.be.equal 'Property'
+        }
 
 # vim: set sw=4 ts=4 et tw=80 :

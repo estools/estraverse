@@ -30,23 +30,27 @@ describe 'controller', ->
     it 'traverse', ->
         controller = new Controller
         dumper = new Dumper
-        tree =
+        tree = {
             type: 'ObjectExpression'
             properties: [{
-                key:
+                key: {
                     type: 'Identifier'
                     name: 'a'
-                value:
+                }
+                value: {
                     type: 'Identifier'
                     name: 'a'
+                }
             }]
+        }
 
-        controller.traverse tree,
+        controller.traverse tree, {
             enter: (node) ->
                 dumper.log("enter - #{node.type}")
 
             leave: (node) ->
                 dumper.log("leave - #{node.type}")
+        }
 
         expect(dumper.result()).to.be.equal """
             enter - ObjectExpression

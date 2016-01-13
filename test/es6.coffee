@@ -37,12 +37,13 @@ classDeclaration = ->
 
 describe 'rest expression', ->
     it 'argument', ->
-        tree =
+        tree = {
             type: 'RestElement'
             argument: {
                 type: 'Identifier'
                 name: 'hello'
             }
+        }
 
         expect(Dumper.dump(tree)).to.be.equal """
             enter - RestElement
@@ -118,7 +119,7 @@ describe 'class', ->
 
 describe 'export', ->
     it 'named declaration #1', ->
-        tree =
+        tree = {
             type: 'ExportNamedDeclaration'
             declaration: {
                 type: 'VariableDeclaration'
@@ -134,6 +135,7 @@ describe 'export', ->
                     }
                 }]
             }
+        }
 
         expect(Dumper.dump(tree)).to.be.equal """
             enter - ExportNamedDeclaration
@@ -149,7 +151,7 @@ describe 'export', ->
         """
 
     it 'named declaration #2', ->
-        tree =
+        tree = {
             type: 'ExportNamedDeclaration'
             declaration: null
             specifiers: [{
@@ -168,6 +170,7 @@ describe 'export', ->
                 type: 'Literal',
                 value: 'hello'
             }
+        }
 
         expect(Dumper.dump(tree)).to.be.equal """
             enter - ExportNamedDeclaration
@@ -183,12 +186,13 @@ describe 'export', ->
         """
 
     it 'all declaration #1', ->
-        tree =
+        tree = {
             type: 'ExportAllDeclaration'
             source: {
                 type: 'Literal',
                 value: 'hello'
             }
+        }
 
         expect(Dumper.dump(tree)).to.be.equal """
             enter - ExportAllDeclaration
@@ -198,9 +202,10 @@ describe 'export', ->
         """
 
     it 'default declaration #1', ->
-        tree =
+        tree = {
             type: 'ExportDefaultDeclaration'
             declaration: classDeclaration()
+        }
 
         expect(Dumper.dump(tree)).to.be.equal """
             enter - ExportDefaultDeclaration
@@ -214,9 +219,10 @@ describe 'export', ->
         """
 
     it 'default declaration #1', ->
-        tree =
+        tree = {
             type: 'ExportDefaultDeclaration'
             declaration: classDeclaration()
+        }
 
         expect(Dumper.dump(tree)).to.be.equal """
             enter - ExportDefaultDeclaration
@@ -235,8 +241,9 @@ describe 'import', ->
         tree = espree.parse """
         import Cocoa from 'rabbit-house'
         """, {
-            ecmaFeatures:
+            ecmaFeatures: {
                 modules: yes
+            }
         }
 
         expect(Dumper.dump(tree)).to.be.equal """
@@ -256,8 +263,9 @@ describe 'import', ->
         tree = espree.parse """
         import {Cocoa, Cappuccino as Chino} from 'rabbit-house'
         """, {
-            ecmaFeatures:
+            ecmaFeatures: {
                 modules: yes
+            }
         }
 
         expect(Dumper.dump(tree)).to.be.equal """
@@ -285,8 +293,9 @@ describe 'import', ->
         tree = espree.parse """
         import * as RabbitHouse from 'rabbit-house'
         """, {
-            ecmaFeatures:
+            ecmaFeatures: {
                 modules: yes
+            }
         }
 
         expect(Dumper.dump(tree)).to.be.equal """
@@ -304,7 +313,7 @@ describe 'import', ->
 
 describe 'pattern', ->
     it 'assignment pattern#1', ->
-        tree =
+        tree = {
             type: 'AssignmentPattern'
             left: {
                 type: 'Identifier'
@@ -314,6 +323,7 @@ describe 'pattern', ->
                 type: 'Literal'
                 value: 'world'
             }
+        }
 
         expect(Dumper.dump(tree)).to.be.equal """
             enter - AssignmentPattern
@@ -336,7 +346,7 @@ describe 'super', ->
 
 describe 'meta property', ->
     it 'MetaProperty in constructor #1', ->
-        tree =
+        tree = {
             type: 'UnaryExpression'
             operator: 'typeof'
             prefix: true
@@ -351,6 +361,7 @@ describe 'meta property', ->
                     name: 'target'
                 }
             }
+        }
 
         expect(Dumper.dump(tree)).to.be.equal """
             enter - UnaryExpression

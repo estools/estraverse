@@ -27,51 +27,60 @@
 
 describe 'replace', ->
     it 'can simplify expressions', ->
-        tree =
+        tree = {
             type: 'ObjectExpression'
             properties: [{
                 type: 'Property'
-                key:
+                key: {
                     type: 'Identifier'
                     name: 'a'
-                value:
+                }
+                value: {
                     type: 'BinaryExpression'
                     operator: '*'
-                    left:
+                    left: {
                         type: 'Literal'
                         value: 2
-                    right:
+                    }
+                    right: {
                         type: 'Literal'
                         value: 3
+                    }
+                }
             }]
+        }
 
-        tree = replace tree,
+        tree = replace tree, {
             enter: (node) ->
                 if node.type is 'BinaryExpression' and node.left.type is 'Literal' and node.right.type is 'Literal'
                     type: 'Literal'
                     value: eval(JSON.stringify(node.left.value) + node.operator + JSON.stringify(node.right.value))
+        }
 
         expect(tree).to.be.eql
             type: 'ObjectExpression'
             properties: [{
                 type: 'Property'
-                key:
+                key: {
                     type: 'Identifier'
                     name: 'a'
-                value:
+                }
+                value: {
                     type: 'Literal'
                     value: 6
+                }
             }]
 
     it 'can remove nodes', ->
-        tree =
+        tree = {
             type: 'ObjectExpression'
             properties: [{
                 type: 'Property'
-                key:
+                key: {
                     type: 'Identifier'
                     name: 'a'
-                value:
+                }
+                value: {
                     type: 'ArrayExpression'
                     elements: [
                         {type: 'Literal', value: 1}
@@ -79,38 +88,44 @@ describe 'replace', ->
                         {type: 'Literal', value: 3}
                         {type: 'Literal', value: 4}
                     ]
+                }
             }]
+        }
 
-        tree = replace tree,
+        tree = replace tree, {
             enter: (node) ->
                 if node.type is 'Identifier' and node.name is 'a'
                     this.remove()
                 if node.type is 'Literal' and node.value is 2
                     VisitorOption.Remove
+        }
 
-        expect(tree).to.be.eql
+        expect(tree).to.be.eql {
             type: 'ObjectExpression'
             properties: [{
                 type: 'Property'
                 key: null
-                value:
+                value: {
                     type: 'ArrayExpression'
                     elements: [
                         {type: 'Literal', value: 1}
                         {type: 'Literal', value: 3}
                         {type: 'Literal', value: 4}
                     ]
+                }
             }]
+        }
 
     it 'can remove all nodes in an array in enter phase', ->
-        tree =
+        tree = {
             type: 'ObjectExpression'
             properties: [{
                 type: 'Property'
-                key:
+                key: {
                     type: 'Identifier'
                     name: 'a'
-                value:
+                }
+                value: {
                     type: 'ArrayExpression'
                     elements: [
                         {type: 'Literal', value: 1}
@@ -118,93 +133,110 @@ describe 'replace', ->
                         {type: 'Literal', value: 3}
                         {type: 'Literal', value: 4}
                     ]
+                }
             }]
+        }
 
-        tree = replace tree,
+        tree = replace tree, {
             enter: (node) ->
                 if node.type is 'Literal'
                     return @remove()
+        }
 
-        expect(tree).to.be.eql
+        expect(tree).to.be.eql {
             type: 'ObjectExpression'
             properties: [{
                 type: 'Property'
-                key:
+                key: {
                     type: 'Identifier'
                     name: 'a'
-                value:
+                }
+                value: {
                     type: 'ArrayExpression'
-                    elements: [
-                    ]
+                    elements: []
+                }
             }]
+        }
 
-        tree =
+        tree = {
             type: 'FunctionExpression'
-            id:
+            id: {
                 type: 'Identifier'
                 name: 'foo'
+            }
             params: []
             defaults: []
-            body:
+            body: {
                 type: 'BlockStatement'
                 body: [{
                     type: 'ExpressionStatement'
-                    expression:
+                    expression: {
                         type: 'CallExpression'
-                        callee:
+                        callee: {
                             type: 'Identifier'
                             name: 'debug'
+                        }
                         arguments: [{
                             type: 'Literal'
                             value: 'foo'
                             raw: '"foo"'
                         }]
+                    }
                 }
                 {
                     type: 'ExpressionStatement'
-                    expression:
+                    expression: {
                         type: 'CallExpression'
-                        callee:
+                        callee: {
                             type: 'Identifier'
                             name: 'debug'
+                        }
                         arguments: [{
                             type: 'Literal'
                             value: 'bar'
                             raw: '"bar"'
                         }]
+                    }
                 }]
+            }
             rest: null,
             generator: false,
             expression: false
+        }
 
-        tree = replace tree,
+        tree = replace tree, {
             enter: (node) ->
                 if node.type is 'ExpressionStatement' and node.expression.type is 'CallExpression' and node.expression.callee.name is 'debug'
                     return @remove()
+        }
 
-        expect(tree).to.be.eql
+        expect(tree).to.be.eql {
             type: 'FunctionExpression'
-            id:
+            id: {
                 type: 'Identifier'
                 name: 'foo'
+            }
             params: []
             defaults: []
-            body:
+            body: {
                 type: 'BlockStatement'
                 body: []
+            }
             rest: null,
             generator: false,
             expression: false
+        }
 
     it 'can remove all nodes in an array in leave phase', ->
-        tree =
+        tree = {
             type: 'ObjectExpression'
             properties: [{
                 type: 'Property'
-                key:
+                key: {
                     type: 'Identifier'
                     name: 'a'
-                value:
+                }
+                value: {
                     type: 'ArrayExpression'
                     elements: [
                         {type: 'Literal', value: 1}
@@ -212,124 +244,147 @@ describe 'replace', ->
                         {type: 'Literal', value: 3}
                         {type: 'Literal', value: 4}
                     ]
+                }
             }]
+        }
 
-        tree = replace tree,
+        tree = replace tree, {
             leave: (node) ->
                 if node.type is 'Literal'
                     return @remove()
+        }
 
-        expect(tree).to.be.eql
+        expect(tree).to.be.eql {
             type: 'ObjectExpression'
             properties: [{
                 type: 'Property'
-                key:
+                key: {
                     type: 'Identifier'
                     name: 'a'
-                value:
+                }
+                value: {
                     type: 'ArrayExpression'
-                    elements: [
-                    ]
+                    elements: []
+                }
             }]
+        }
 
-        tree =
+        tree = {
             type: 'FunctionExpression'
-            id:
+            id: {
                 type: 'Identifier'
                 name: 'foo'
+            }
             params: []
             defaults: []
-            body:
+            body: {
                 type: 'BlockStatement'
                 body: [{
                     type: 'ExpressionStatement'
-                    expression:
+                    expression: {
                         type: 'CallExpression'
-                        callee:
+                        callee: {
                             type: 'Identifier'
                             name: 'debug'
+                        }
                         arguments: [{
                             type: 'Literal'
                             value: 'foo'
                             raw: '"foo"'
                         }]
+                    }
                 }
                 {
                     type: 'ExpressionStatement'
-                    expression:
+                    expression: {
                         type: 'CallExpression'
-                        callee:
+                        callee: {
                             type: 'Identifier'
                             name: 'debug'
+                        }
                         arguments: [{
                             type: 'Literal'
                             value: 'bar'
                             raw: '"bar"'
                         }]
+                    }
                 }]
+            }
             rest: null,
             generator: false,
             expression: false
+        }
 
-        tree = replace tree,
+        tree = replace tree, {
             leave: (node) ->
                 if node.type is 'ExpressionStatement' and node.expression.type is 'CallExpression' and node.expression.callee.name is 'debug'
                     return @remove()
+        }
 
-        expect(tree).to.be.eql
+        expect(tree).to.be.eql {
             type: 'FunctionExpression'
-            id:
+            id: {
                 type: 'Identifier'
                 name: 'foo'
+            }
             params: []
             defaults: []
-            body:
+            body: {
                 type: 'BlockStatement'
                 body: []
+            }
             rest: null,
             generator: false,
             expression: false
+        }
 
     it 'respects skip', ->
-        tree =
+        tree = {
             type: 'ObjectExpression'
             properties: [{
                 type: 'Property'
-                key:
+                key: {
                     type: 'Identifier'
                     name: 'a'
-                value:
+                }
+                value: {
                     type: 'BinaryExpression'
                     operator: '*'
-                    left:
+                    left: {
                         type: 'Literal'
                         value: 2
-                    right:
+                    }
+                    right: {
                         type: 'Literal'
                         value: 3
+                    }
+                }
             }]
+        }
 
         old = JSON.parse JSON.stringify tree
 
-        tree = replace tree,
+        tree = replace tree, {
             enter: (node) ->
                 switch node.type
                     when 'ObjectExpression'
                         return VisitorOption.Skip
                     when 'BinaryExpression'
                         return VisitorOption.Remove
+        }
 
         expect(tree).to.be.eql old
 
     it 'can remove unknown nodes', ->
-        tree =
+        tree = {
             type: 'XXXExpression'
             properties: [{
                 type: 'Property'
-                key:
+                key: {
                     type: 'Identifier'
                     name: 'a'
-                value:
+                }
+                value: {
                     type: 'ArrayExpression'
                     elements: [
                         {type: 'Literal', value: 1}
@@ -337,39 +392,45 @@ describe 'replace', ->
                         {type: 'Literal', value: 3}
                         {type: 'Literal', value: 4}
                     ]
+                }
             }]
+        }
 
-        tree = replace tree,
+        tree = replace tree, {
             enter: (node) ->
                 if node.type is 'Identifier' and node.name is 'a'
                     this.remove()
                 if node.type is 'Literal' and node.value is 2
                     VisitorOption.Remove
             fallback: 'iteration'
+        }
 
-        expect(tree).to.be.eql
+        expect(tree).to.be.eql {
             type: 'XXXExpression'
             properties: [{
                 type: 'Property'
                 key: null
-                value:
+                value: {
                     type: 'ArrayExpression'
                     elements: [
                         {type: 'Literal', value: 1}
                         {type: 'Literal', value: 3}
                         {type: 'Literal', value: 4}
                     ]
+                }
             }]
+        }
 
     it 'throw unkown node type error when unknown nodes', ->
-        tree =
+        tree = {
             type: 'XXXExpression'
             properties: [{
                 type: 'Property'
-                key:
+                key: {
                     type: 'Identifier'
                     name: 'a'
-                value:
+                }
+                value: {
                     type: 'ArrayExpression'
                     elements: [
                         {type: 'Literal', value: 1}
@@ -377,13 +438,16 @@ describe 'replace', ->
                         {type: 'Literal', value: 3}
                         {type: 'Literal', value: 4}
                     ]
+                }
             }]
+        }
 
-        expect ->
-            replace tree,
+        expect(->
+            replace tree, {
                 enter: (node) ->
                     if node.type is 'Identifier' and node.name is 'a'
                         this.remove()
                     if node.type is 'Literal' and node.value is 2
                         VisitorOption.Remove
-        .to.throw('Unknown node type XXXExpression.')
+            }
+        ).to.throw('Unknown node type XXXExpression.')
