@@ -27,7 +27,6 @@ Dumper = require './dumper'
 harmony = require './third_party/esprima'
 espree = require 'espree'
 {expect} = require 'chai'
-{traverse} = require '..'
 
 classDeclaration = ->
     program = harmony.parse """

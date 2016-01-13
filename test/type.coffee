@@ -23,7 +23,6 @@
 
 'use strict'
 
-Dumper = require './dumper'
 {expect} = require 'chai'
 {traverse} = require '..'
 
