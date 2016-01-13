@@ -20,40 +20,16 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import { expect } from 'chai';
 
-import { traverse, VisitorOption } from '..';
+export default function checkDump(dump, expected) {
+  expect(normalize(expected)).to.be.equal(normalize(dump));
+}
 
-export default class Dumper {
-    constructor() {
-        this.logs = [];
-    }
-
-    log(str) {
-        this.logs.push(str);
-    }
-
-    result() {
-        return this.logs.join('\n');
-    }
-
-    static dump(tree, keys, fallback) {
-        const dumper = new Dumper();
-
-        traverse(tree, {
-            enter(node) {
-                dumper.log(`enter - ${node.type}`);
-                return VisitorOption[node.$enter];
-            },
-
-            leave(node) {
-                dumper.log(`leave - ${node.type}`);
-                return VisitorOption[node.$leave];
-            },
-
-            keys,
-            fallback
-        });
-
-        return dumper.result();
-    }
-};
+function normalize(dump) {
+  return dump
+    .split('\n')
+    .map(line => line.trim())
+    .filter(line => line.length > 0)
+    .join('\n');
+}

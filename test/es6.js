@@ -23,15 +23,17 @@
 
 
 import Dumper from './dumper';
+import checkDump from './checkDump';
 import { parse as esprima } from './third_party/esprima';
 import { parse as espree } from 'espree';
-import { expect } from 'chai';
 
-const classDeclaration = function() {
-    const program = esprima(`class Hello {
-};`);
+function classDeclaration() {
+    const program = esprima(`
+        class Hello {
+        };
+    `);
     return program.body[0];
-};
+}
 
 describe('rest expression', function() {
     it('argument', function() {
@@ -43,70 +45,80 @@ describe('rest expression', function() {
             }
         };
 
-        expect(Dumper.dump(tree)).to.be.equal(`enter - RestElement
-enter - Identifier
-leave - Identifier
-leave - RestElement`);
+        checkDump(Dumper.dump(tree), `
+            enter - RestElement
+            enter - Identifier
+            leave - Identifier
+            leave - RestElement
+        `);
     });
 });
 
 describe('class', function() {
     it('declaration#1', function() {
-        const tree = esprima(`class Hello extends World {
-    method() {
-    }
-};`);
+        const tree = esprima(`
+            class Hello extends World {
+                method() {
+                }
+            };
+        `);
 
-        expect(Dumper.dump(tree)).to.be.equal(`enter - Program
-enter - ClassDeclaration
-enter - Identifier
-leave - Identifier
-enter - Identifier
-leave - Identifier
-enter - ClassBody
-enter - MethodDefinition
-enter - Identifier
-leave - Identifier
-enter - FunctionExpression
-enter - BlockStatement
-leave - BlockStatement
-leave - FunctionExpression
-leave - MethodDefinition
-leave - ClassBody
-leave - ClassDeclaration
-enter - EmptyStatement
-leave - EmptyStatement
-leave - Program`);
+        checkDump(Dumper.dump(tree), `
+            enter - Program
+            enter - ClassDeclaration
+            enter - Identifier
+            leave - Identifier
+            enter - Identifier
+            leave - Identifier
+            enter - ClassBody
+            enter - MethodDefinition
+            enter - Identifier
+            leave - Identifier
+            enter - FunctionExpression
+            enter - BlockStatement
+            leave - BlockStatement
+            leave - FunctionExpression
+            leave - MethodDefinition
+            leave - ClassBody
+            leave - ClassDeclaration
+            enter - EmptyStatement
+            leave - EmptyStatement
+            leave - Program
+        `);
     });
 
     it('declaration#2', function() {
-        const tree = esprima(`class Hello extends ok() {
-    method() {
-    }
-};`);
+        const tree = esprima(`
+            class Hello extends ok() {
+                method() {
+                }
+            };
+        `);
 
-        expect(Dumper.dump(tree)).to.be.equal(`enter - Program
-enter - ClassDeclaration
-enter - Identifier
-leave - Identifier
-enter - CallExpression
-enter - Identifier
-leave - Identifier
-leave - CallExpression
-enter - ClassBody
-enter - MethodDefinition
-enter - Identifier
-leave - Identifier
-enter - FunctionExpression
-enter - BlockStatement
-leave - BlockStatement
-leave - FunctionExpression
-leave - MethodDefinition
-leave - ClassBody
-leave - ClassDeclaration
-enter - EmptyStatement
-leave - EmptyStatement
-leave - Program`);
+        checkDump(Dumper.dump(tree), `
+            enter - Program
+            enter - ClassDeclaration
+            enter - Identifier
+            leave - Identifier
+            enter - CallExpression
+            enter - Identifier
+            leave - Identifier
+            leave - CallExpression
+            enter - ClassBody
+            enter - MethodDefinition
+            enter - Identifier
+            leave - Identifier
+            enter - FunctionExpression
+            enter - BlockStatement
+            leave - BlockStatement
+            leave - FunctionExpression
+            leave - MethodDefinition
+            leave - ClassBody
+            leave - ClassDeclaration
+            enter - EmptyStatement
+            leave - EmptyStatement
+            leave - Program
+        `);
     });
 });
 
@@ -130,16 +142,18 @@ describe('export', function() {
             }
         };
 
-        expect(Dumper.dump(tree)).to.be.equal(`enter - ExportNamedDeclaration
-enter - VariableDeclaration
-enter - VariableDeclarator
-enter - Identifier
-leave - Identifier
-enter - Literal
-leave - Literal
-leave - VariableDeclarator
-leave - VariableDeclaration
-leave - ExportNamedDeclaration`);
+        checkDump(Dumper.dump(tree), `
+            enter - ExportNamedDeclaration
+            enter - VariableDeclaration
+            enter - VariableDeclarator
+            enter - Identifier
+            leave - Identifier
+            enter - Literal
+            leave - Literal
+            leave - VariableDeclarator
+            leave - VariableDeclaration
+            leave - ExportNamedDeclaration
+        `);
     });
 
     it('named declaration #2', function() {
@@ -164,16 +178,18 @@ leave - ExportNamedDeclaration`);
             }
         };
 
-        expect(Dumper.dump(tree)).to.be.equal(`enter - ExportNamedDeclaration
-enter - ExportSpecifier
-enter - Identifier
-leave - Identifier
-enter - Identifier
-leave - Identifier
-leave - ExportSpecifier
-enter - Literal
-leave - Literal
-leave - ExportNamedDeclaration`);
+        checkDump(Dumper.dump(tree), `
+            enter - ExportNamedDeclaration
+            enter - ExportSpecifier
+            enter - Identifier
+            leave - Identifier
+            enter - Identifier
+            leave - Identifier
+            leave - ExportSpecifier
+            enter - Literal
+            leave - Literal
+            leave - ExportNamedDeclaration
+        `);
     });
 
     it('all declaration #1', function() {
@@ -185,10 +201,12 @@ leave - ExportNamedDeclaration`);
             }
         };
 
-        expect(Dumper.dump(tree)).to.be.equal(`enter - ExportAllDeclaration
-enter - Literal
-leave - Literal
-leave - ExportAllDeclaration`);
+        checkDump(Dumper.dump(tree), `
+            enter - ExportAllDeclaration
+            enter - Literal
+            leave - Literal
+            leave - ExportAllDeclaration
+        `);
     });
 
     it('default declaration #1', function() {
@@ -197,14 +215,16 @@ leave - ExportAllDeclaration`);
             declaration: classDeclaration()
         };
 
-        expect(Dumper.dump(tree)).to.be.equal(`enter - ExportDefaultDeclaration
-enter - ClassDeclaration
-enter - Identifier
-leave - Identifier
-enter - ClassBody
-leave - ClassBody
-leave - ClassDeclaration
-leave - ExportDefaultDeclaration`);
+        checkDump(Dumper.dump(tree), `
+            enter - ExportDefaultDeclaration
+            enter - ClassDeclaration
+            enter - Identifier
+            leave - Identifier
+            enter - ClassBody
+            leave - ClassBody
+            leave - ClassDeclaration
+            leave - ExportDefaultDeclaration
+        `);
     });
 
     it('default declaration #1', function() {
@@ -213,85 +233,90 @@ leave - ExportDefaultDeclaration`);
             declaration: classDeclaration()
         };
 
-        expect(Dumper.dump(tree)).to.be.equal(`enter - ExportDefaultDeclaration
-enter - ClassDeclaration
-enter - Identifier
-leave - Identifier
-enter - ClassBody
-leave - ClassBody
-leave - ClassDeclaration
-leave - ExportDefaultDeclaration`);
+        checkDump(Dumper.dump(tree), `
+            enter - ExportDefaultDeclaration
+            enter - ClassDeclaration
+            enter - Identifier
+            leave - Identifier
+            enter - ClassBody
+            leave - ClassBody
+            leave - ClassDeclaration
+            leave - ExportDefaultDeclaration
+        `);
     });
 });
 
 
 describe('import', function() {
     it('default specifier #1', function() {
-        const tree = espree( `import Cocoa from 'rabbit-house'`, {
+        const tree = espree(`import Cocoa from 'rabbit-house'`, {
             ecmaFeatures: {
                 modules: true
             }
-        }
-        );
+        });
 
-        expect(Dumper.dump(tree)).to.be.equal(`enter - Program
-enter - ImportDeclaration
-enter - ImportDefaultSpecifier
-enter - Identifier
-leave - Identifier
-leave - ImportDefaultSpecifier
-enter - Literal
-leave - Literal
-leave - ImportDeclaration
-leave - Program`);
+        checkDump(Dumper.dump(tree), `
+            enter - Program
+            enter - ImportDeclaration
+            enter - ImportDefaultSpecifier
+            enter - Identifier
+            leave - Identifier
+            leave - ImportDefaultSpecifier
+            enter - Literal
+            leave - Literal
+            leave - ImportDeclaration
+            leave - Program
+        `);
     });
 
     it('named specifier #1', function() {
-        const tree = espree( `import {Cocoa, Cappuccino as Chino} from 'rabbit-house'`, {
+        const tree = espree(`import {Cocoa, Cappuccino as Chino} from 'rabbit-house'`, {
             ecmaFeatures: {
                 modules: true
             }
-        }
-        );
+        });
 
-        expect(Dumper.dump(tree)).to.be.equal(`enter - Program
-enter - ImportDeclaration
-enter - ImportSpecifier
-enter - Identifier
-leave - Identifier
-enter - Identifier
-leave - Identifier
-leave - ImportSpecifier
-enter - ImportSpecifier
-enter - Identifier
-leave - Identifier
-enter - Identifier
-leave - Identifier
-leave - ImportSpecifier
-enter - Literal
-leave - Literal
-leave - ImportDeclaration
-leave - Program`);
+        checkDump(Dumper.dump(tree), `
+            enter - Program
+            enter - ImportDeclaration
+            enter - ImportSpecifier
+            enter - Identifier
+            leave - Identifier
+            enter - Identifier
+            leave - Identifier
+            leave - ImportSpecifier
+            enter - ImportSpecifier
+            enter - Identifier
+            leave - Identifier
+            enter - Identifier
+            leave - Identifier
+            leave - ImportSpecifier
+            enter - Literal
+            leave - Literal
+            leave - ImportDeclaration
+            leave - Program
+        `);
     });
 
     it('namespace specifier #1', function() {
-        const tree = espree( `import * as RabbitHouse from 'rabbit-house'`, {
+        const tree = espree(`import * as RabbitHouse from 'rabbit-house'`, {
             ecmaFeatures: {
                 modules: true
             }
-        }
-        );
+        });
 
-        expect(Dumper.dump(tree)).to.be.equal(`enter - Program
-enter - ImportDeclaration
-enter - ImportNamespaceSpecifier
-enter - Identifier
-leave - Identifier
-leave - ImportNamespaceSpecifier
-enter - Literal
-leave - Literal
-leave - ImportDeclaration
-leave - Program`);
+        checkDump(Dumper.dump(tree), `
+            enter - Program
+            enter - ImportDeclaration
+            enter - ImportNamespaceSpecifier
+            enter - Identifier
+            leave - Identifier
+            leave - ImportNamespaceSpecifier
+            enter - Literal
+            leave - Literal
+            leave - ImportDeclaration
+            leave - Program
+        `);
     });
 });
 
@@ -309,22 +334,25 @@ describe('pattern', function() {
             }
         };
 
-        expect(Dumper.dump(tree)).to.be.equal(`enter - AssignmentPattern
-enter - Identifier
-leave - Identifier
-enter - Literal
-leave - Literal
-leave - AssignmentPattern`);
+        checkDump(Dumper.dump(tree), `
+            enter - AssignmentPattern
+            enter - Identifier
+            leave - Identifier
+            enter - Literal
+            leave - Literal
+            leave - AssignmentPattern
+        `);
     });
 });
 
 describe('super', function() {
     it('super expression#1', function() {
-        const tree =
-            {type: 'Super'}
+        const tree = {type: 'Super'};
 
-        ;expect(Dumper.dump(tree)).to.be.equal(`enter - Super
-leave - Super`);
+        checkDump(Dumper.dump(tree), `
+            enter - Super
+            leave - Super
+        `);
     });
 });
 
@@ -347,14 +375,16 @@ describe('meta property', function() {
             }
         };
 
-        expect(Dumper.dump(tree)).to.be.equal(`enter - UnaryExpression
-enter - MetaProperty
-enter - Identifier
-leave - Identifier
-enter - Identifier
-leave - Identifier
-leave - MetaProperty
-leave - UnaryExpression`);
+        checkDump(Dumper.dump(tree), `
+            enter - UnaryExpression
+            enter - MetaProperty
+            enter - Identifier
+            leave - Identifier
+            enter - Identifier
+            leave - Identifier
+            leave - MetaProperty
+            leave - UnaryExpression
+        `);
     });
 });
 

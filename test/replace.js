@@ -52,8 +52,9 @@ describe('replace', function() {
         tree = replace(tree, {
             enter(node) {
                 if (node.type === 'BinaryExpression' && node.left.type === 'Literal' && node.right.type === 'Literal') {
-                    return {type: 'Literal',
-                    value: eval(JSON.stringify(node.left.value) + node.operator + JSON.stringify(node.right.value))
+                    return {
+                        type: 'Literal',
+                        value: eval(JSON.stringify(node.left.value) + node.operator + JSON.stringify(node.right.value))
                     };
                 }
             }
@@ -333,7 +334,7 @@ describe('replace', function() {
         tree = replace(tree, {
             leave(node) {
                 if (node.type === 'ExpressionStatement' && node.expression.type === 'CallExpression' && node.expression.callee.name === 'debug') {
-                    return this.remove();
+                    this.remove();
                 }
             }
         });
@@ -387,10 +388,8 @@ describe('replace', function() {
                 switch (node.type) {
                     case 'ObjectExpression':
                         return VisitorOption.Skip;
-                        break;
                     case 'BinaryExpression':
                         return VisitorOption.Remove;
-                        break;
                 }
             }
         });

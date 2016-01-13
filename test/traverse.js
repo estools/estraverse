@@ -22,6 +22,7 @@
 
 
 import Dumper from './dumper';
+import checkDump from './checkDump';
 import { expect } from 'chai';
 import { traverse } from '..';
 
@@ -42,14 +43,16 @@ describe('object expression', function() {
             }]
         };
 
-        expect(Dumper.dump(tree)).to.be.equal(`enter - ObjectExpression
-enter - Property
-enter - Identifier
-leave - Identifier
-enter - Identifier
-leave - Identifier
-leave - Property
-leave - ObjectExpression`);
+        checkDump(Dumper.dump(tree), `
+            enter - ObjectExpression
+            enter - Property
+            enter - Identifier
+            leave - Identifier
+            enter - Identifier
+            leave - Identifier
+            leave - Property
+            leave - ObjectExpression
+        `);
     });
 
     it('properties without type', function() {
@@ -67,14 +70,16 @@ leave - ObjectExpression`);
             }]
         };
 
-        expect(Dumper.dump(tree)).to.be.equal(`enter - ObjectExpression
-enter - undefined
-enter - Identifier
-leave - Identifier
-enter - Identifier
-leave - Identifier
-leave - undefined
-leave - ObjectExpression`);
+        checkDump(Dumper.dump(tree), `
+            enter - ObjectExpression
+            enter - undefined
+            enter - Identifier
+            leave - Identifier
+            enter - Identifier
+            leave - Identifier
+            leave - undefined
+            leave - ObjectExpression
+        `);
     });
 
     it('properties with custom type', function() {
@@ -89,12 +94,14 @@ leave - ObjectExpression`);
             }]
         };
 
-        expect(Dumper.dump(tree, {CustomProperty: ['foo']})).to.be.equal(`enter - ObjectExpression
-enter - CustomProperty
-enter - Identifier
-leave - Identifier
-leave - CustomProperty
-leave - ObjectExpression`);
+        checkDump(Dumper.dump(tree, {CustomProperty: ['foo']}), `
+            enter - ObjectExpression
+            enter - CustomProperty
+            enter - Identifier
+            leave - Identifier
+            leave - CustomProperty
+            leave - ObjectExpression
+        `);
     });
 
     it('skip and break', function() {
@@ -125,13 +132,15 @@ leave - ObjectExpression`);
             }]
         };
 
-        expect(Dumper.dump(tree)).to.be.equal(`enter - ObjectExpression
-enter - Property
-enter - Identifier
-leave - Identifier
-enter - ObjectExpression
-leave - ObjectExpression
-leave - Property`);
+        checkDump(Dumper.dump(tree), `
+            enter - ObjectExpression
+            enter - Property
+            enter - Identifier
+            leave - Identifier
+            enter - ObjectExpression
+            leave - ObjectExpression
+            leave - Property
+        `);
     });
 });
 
@@ -152,14 +161,16 @@ describe('object pattern', function() {
             }]
         };
 
-        expect(Dumper.dump(tree)).to.be.equal(`enter - ObjectPattern
-enter - Property
-enter - Identifier
-leave - Identifier
-enter - Identifier
-leave - Identifier
-leave - Property
-leave - ObjectPattern`);
+        checkDump(Dumper.dump(tree), `
+            enter - ObjectPattern
+            enter - Property
+            enter - Identifier
+            leave - Identifier
+            enter - Identifier
+            leave - Identifier
+            leave - Property
+            leave - ObjectPattern
+        `);
     });
 
     it('properties without type', function() {
@@ -177,14 +188,16 @@ leave - ObjectPattern`);
             }]
         };
 
-        expect(Dumper.dump(tree)).to.be.equal(`enter - ObjectPattern
-enter - undefined
-enter - Identifier
-leave - Identifier
-enter - Identifier
-leave - Identifier
-leave - undefined
-leave - ObjectPattern`);
+        checkDump(Dumper.dump(tree), `
+            enter - ObjectPattern
+            enter - undefined
+            enter - Identifier
+            leave - Identifier
+            enter - Identifier
+            leave - Identifier
+            leave - undefined
+            leave - ObjectPattern
+        `);
     });
 });
 
@@ -202,12 +215,14 @@ describe('try statement', function() {
             }
         };
 
-        expect(Dumper.dump(tree)).to.be.equal(`enter - TryStatement
-enter - BlockStatement
-leave - BlockStatement
-enter - BlockStatement
-leave - BlockStatement
-leave - TryStatement`);
+        checkDump(Dumper.dump(tree), `
+            enter - TryStatement
+            enter - BlockStatement
+            leave - BlockStatement
+            enter - BlockStatement
+            leave - BlockStatement
+            leave - TryStatement
+        `);
     });
 
     it('new interface', function() {
@@ -223,12 +238,14 @@ leave - TryStatement`);
             }
         };
 
-        expect(Dumper.dump(tree)).to.be.equal(`enter - TryStatement
-enter - BlockStatement
-leave - BlockStatement
-enter - BlockStatement
-leave - BlockStatement
-leave - TryStatement`);
+        checkDump(Dumper.dump(tree), `
+            enter - TryStatement
+            enter - BlockStatement
+            leave - BlockStatement
+            enter - BlockStatement
+            leave - BlockStatement
+            leave - TryStatement
+        `);
     });
 });
 
@@ -262,20 +279,22 @@ describe('arrow function expression', function() {
             }
         };
 
-        expect(Dumper.dump(tree)).to.be.equal(`enter - ArrowFunctionExpression
-enter - AssignmentPattern
-enter - Identifier
-leave - Identifier
-enter - Literal
-leave - Literal
-leave - AssignmentPattern
-enter - RestElement
-enter - Identifier
-leave - Identifier
-leave - RestElement
-enter - BlockStatement
-leave - BlockStatement
-leave - ArrowFunctionExpression`);
+        checkDump(Dumper.dump(tree), `
+            enter - ArrowFunctionExpression
+            enter - AssignmentPattern
+            enter - Identifier
+            leave - Identifier
+            enter - Literal
+            leave - Literal
+            leave - AssignmentPattern
+            enter - RestElement
+            enter - Identifier
+            leave - Identifier
+            leave - RestElement
+            enter - BlockStatement
+            leave - BlockStatement
+            leave - ArrowFunctionExpression
+        `);
     });
 });
 
@@ -309,20 +328,22 @@ describe('function expression', function() {
             }
         };
 
-        expect(Dumper.dump(tree)).to.be.equal(`enter - FunctionExpression
-enter - AssignmentPattern
-enter - Identifier
-leave - Identifier
-enter - Literal
-leave - Literal
-leave - AssignmentPattern
-enter - RestElement
-enter - Identifier
-leave - Identifier
-leave - RestElement
-enter - BlockStatement
-leave - BlockStatement
-leave - FunctionExpression`);
+        checkDump(Dumper.dump(tree), `
+            enter - FunctionExpression
+            enter - AssignmentPattern
+            enter - Identifier
+            leave - Identifier
+            enter - Literal
+            leave - Literal
+            leave - AssignmentPattern
+            enter - RestElement
+            enter - Identifier
+            leave - Identifier
+            leave - RestElement
+            enter - BlockStatement
+            leave - BlockStatement
+            leave - FunctionExpression
+        `);
     });
 });
 
@@ -360,22 +381,24 @@ describe('function declaration', function() {
             }
         };
 
-        expect(Dumper.dump(tree)).to.be.equal(`enter - FunctionDeclaration
-enter - Identifier
-leave - Identifier
-enter - AssignmentPattern
-enter - Identifier
-leave - Identifier
-enter - Literal
-leave - Literal
-leave - AssignmentPattern
-enter - RestElement
-enter - Identifier
-leave - Identifier
-leave - RestElement
-enter - BlockStatement
-leave - BlockStatement
-leave - FunctionDeclaration`);
+        checkDump(Dumper.dump(tree), `
+            enter - FunctionDeclaration
+            enter - Identifier
+            leave - Identifier
+            enter - AssignmentPattern
+            enter - Identifier
+            leave - Identifier
+            enter - Literal
+            leave - Literal
+            leave - AssignmentPattern
+            enter - RestElement
+            enter - Identifier
+            leave - Identifier
+            leave - RestElement
+            enter - BlockStatement
+            leave - BlockStatement
+            leave - FunctionDeclaration
+        `);
     });
 });
 
@@ -408,18 +431,20 @@ describe('extending keys', function() {
         const result = Dumper.dump(tree, {
             TestStatement: ['id', 'params', 'defaults', 'rest', 'body']
         });
-        expect(result).to.be.equal(`enter - TestStatement
-enter - Identifier
-leave - Identifier
-enter - Identifier
-leave - Identifier
-enter - Literal
-leave - Literal
-enter - Identifier
-leave - Identifier
-enter - BlockStatement
-leave - BlockStatement
-leave - TestStatement`);
+        checkDump(result, `
+            enter - TestStatement
+            enter - Identifier
+            leave - Identifier
+            enter - Identifier
+            leave - Identifier
+            enter - Literal
+            leave - Literal
+            enter - Identifier
+            leave - Identifier
+            enter - BlockStatement
+            leave - BlockStatement
+            leave - TestStatement
+        `);
     });
 });
 
@@ -450,18 +475,20 @@ describe('no listed keys fallback', function() {
             }
         };
 
-        expect(Dumper.dump(tree, null, 'iteration')).to.be.equal(`enter - TestStatement
-enter - Identifier
-leave - Identifier
-enter - Identifier
-leave - Identifier
-enter - Literal
-leave - Literal
-enter - Identifier
-leave - Identifier
-enter - BlockStatement
-leave - BlockStatement
-leave - TestStatement`);
+        checkDump(Dumper.dump(tree, null, 'iteration'), `
+            enter - TestStatement
+            enter - Identifier
+            leave - Identifier
+            enter - Identifier
+            leave - Identifier
+            enter - Literal
+            leave - Literal
+            enter - Identifier
+            leave - Identifier
+            enter - BlockStatement
+            leave - BlockStatement
+            leave - TestStatement
+        `);
     });
 
     it('throw unkown node type error when unknown nodes', function() {
@@ -485,9 +512,8 @@ leave - TestStatement`);
             }]
         };
 
-        expect(() => traverse(tree, {
-                enter(node) {}
-            })
+        expect(
+          () => traverse(tree, { enter(node) {} })
         ).to.throw('Unknown node type XXXExpression.');
     });
 });

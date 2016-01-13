@@ -23,7 +23,7 @@
 
 import { Controller } from '../';
 import Dumper from './dumper';
-import { expect } from 'chai';
+import checkDump from './checkDump';
 
 describe('controller', function() {
     it('traverse', function() {
@@ -45,21 +45,23 @@ describe('controller', function() {
 
         controller.traverse(tree, {
             enter(node) {
-                return dumper.log(`enter - ${node.type}`);
+                dumper.log(`enter - ${node.type}`);
             },
 
             leave(node) {
-                return dumper.log(`leave - ${node.type}`);
+                dumper.log(`leave - ${node.type}`);
             }
         });
 
-        expect(dumper.result()).to.be.equal(`enter - ObjectExpression
-enter - undefined
-enter - Identifier
-leave - Identifier
-enter - Identifier
-leave - Identifier
-leave - undefined
-leave - ObjectExpression`);
+        checkDump(dumper.result(), `
+            enter - ObjectExpression
+            enter - undefined
+            enter - Identifier
+            leave - Identifier
+            enter - Identifier
+            leave - Identifier
+            leave - undefined
+            leave - ObjectExpression
+        `);
     });
 });
