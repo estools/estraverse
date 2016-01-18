@@ -548,6 +548,20 @@
     };
 
     Controller.prototype.replace = function replace(root, visitor) {
+        var worklist,
+            leavelist,
+            node,
+            nodeType,
+            target,
+            element,
+            current,
+            current2,
+            candidates,
+            candidate,
+            sentinel,
+            outer,
+            key;
+
         function removeElem(element) {
             var i,
                 key,
@@ -572,20 +586,6 @@
                 }
             }
         }
-
-        var worklist,
-            leavelist,
-            node,
-            nodeType,
-            target,
-            element,
-            current,
-            current2,
-            candidates,
-            candidate,
-            sentinel,
-            outer,
-            key;
 
         this.__initialize(root, visitor);
 
