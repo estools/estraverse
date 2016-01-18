@@ -28,8 +28,8 @@ export default function checkDump(dump, expected) {
 
 function normalize(dump) {
   return dump
+    .trim()
     .split('\n')
     .map(line => line.trim())
-    .filter(line => line.length > 0)
     .join('\n');
 }
