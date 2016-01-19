@@ -99,7 +99,7 @@ estraverse.traverse(tree, {
 
 ### License
 
-Copyright (C) 2012-2013 [Yusuke Suzuki](http://github.com/Constellation)
+Copyright (C) 2012-2015 [Yusuke Suzuki](http://github.com/Constellation)
  (twitter: [@Constellation](http://twitter.com/Constellation)) and other contributors.
 
 Redistribution and use in source and binary forms, with or without
