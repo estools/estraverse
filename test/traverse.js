@@ -491,7 +491,50 @@ describe('no listed keys fallback', function() {
         `);
     });
 
-    it('throw unkown node type error when unknown nodes', function() {
+    it('traverse with fallback function', function() {
+        const tree = {
+            type: 'TestStatement',
+            id: {
+                type: 'Identifier',
+                name: 'decl'
+            },
+            params: [{
+                type: 'Identifier',
+                name: 'a'
+            }],
+            defaults: [{
+                type: 'Literal',
+                value: 20
+            }],
+            rest: {
+                type: 'Identifier',
+                name: 'rest'
+            },
+            body: {
+                type: 'BlockStatement',
+                body: []
+            }
+        };
+
+        function filterKeys(node) {
+            return Object.keys(node).filter(key => key !== 'id');
+        }
+
+        checkDump(Dumper.dump(tree, null, filterKeys), `
+            enter - TestStatement
+            enter - Identifier
+            leave - Identifier
+            enter - Literal
+            leave - Literal
+            enter - Identifier
+            leave - Identifier
+            enter - BlockStatement
+            leave - BlockStatement
+            leave - TestStatement
+        `);
+    });
+
+    it('throw unknown node type error when unknown nodes', function() {
         const tree = {
             type: 'XXXExpression',
             properties: [{

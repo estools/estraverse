@@ -75,6 +75,7 @@ estraverse.traverse(tree, {
 ```
 
 By passing `visitor.fallback` option, we can control the behavior when encountering unknown nodes.
+
 ```javascript
 // This tree contains a user-defined `TestExpression` node.
 var tree = {
@@ -94,6 +95,34 @@ estraverse.traverse(tree, {
 
     // Iterating the child **nodes** of unknown nodes.
     fallback: 'iteration'
+});
+```
+
+When `visitor.fallback` is a function, we can determine which keys to visit on each node.
+
+```javascript
+// This tree contains a user-defined `TestExpression` node.
+var tree = {
+    type: 'TestExpression',
+
+    // This 'argument' is the property containing the other **node**.
+    argument: {
+        type: 'Literal',
+        value: 20
+    },
+
+    // This 'extended' is the property not containing the other **node**.
+    extended: true
+};
+estraverse.traverse(tree, {
+    enter: function (node) { },
+
+    // Skip the `argument` property of each node
+    fallback: function(node) {
+        return Object.keys(node).filter(function(key) {
+            return key !== 'argument';
+        });
+    }
 });
 ```
 
