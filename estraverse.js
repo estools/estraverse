@@ -468,7 +468,8 @@
             current2,
             candidates,
             candidate,
-            sentinel;
+            sentinel,
+            onEnd;
 
         this.__initialize(root, visitor);
 
@@ -481,6 +482,8 @@
         // initialize
         worklist.push(new Element(root, null, null, null));
         leavelist.push(new Element(null, null, null, null));
+
+        onEnd = visitor.onEnd;
 
         while (worklist.length) {
             element = worklist.pop();
@@ -551,6 +554,8 @@
                 }
             }
         }
+
+        onEnd && onEnd();
     };
 
     Controller.prototype.replace = function replace(root, visitor) {
