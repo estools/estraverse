@@ -806,6 +806,18 @@
                 while (cursor < comments.length) {
                     comment = comments[cursor];
                     if (node.range[1] < comment.extendedRange[0]) {
+                        // Collect inline comments
+                        if (comment.extendedRange[0] < node.range[1]) { // Don't handle trailing comment which starts after the node 
+                            if ((node.type === Syntax.ObjectExpression && node.properties.length === 0) ||
+                                (node.type === Syntax.BlockStatement && node.body.length === 0)) {
+                                if (!node.inlineComments) {
+                                  node.inlineComments = [];
+                                }
+                                node.inlineComments.push(comment);
+                                comments.splice(cursor, 1);
+                                continue;           
+                            }
+                        }
                         break;
                     }
 
