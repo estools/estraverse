@@ -555,7 +555,9 @@
             }
         }
 
-        onEnd && onEnd();
+        if (onEnd) {
+            onEnd();
+        }
     };
 
     Controller.prototype.replace = function replace(root, visitor) {
