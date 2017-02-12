@@ -24,6 +24,7 @@
     "chai": "^2.1.1",
     "espree": "^1.11.0",
     "gulp": "^3.8.10",
+    "gulp-browserify-thin": "^0.1.5",
     "gulp-bump": "^0.2.2",
     "gulp-filter": "^2.0.0",
     "gulp-git": "^1.0.1",
