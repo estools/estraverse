@@ -1,4 +1,4 @@
-### Estraverse [![Build Status](https://secure.travis-ci.org/estools/estraverse.png)](http://travis-ci.org/estools/estraverse)
+### Estraverse [![Build Status](https://secure.travis-ci.org/estools/estraverse.svg)](http://travis-ci.org/estools/estraverse)
 
 Estraverse ([estraverse](http://github.com/estools/estraverse)) is
 [ECMAScript](http://www.ecma-international.org/publications/standards/Ecma-262.htm)
