@@ -483,7 +483,7 @@
         worklist.push(new Element(root, null, null, null));
         leavelist.push(new Element(null, null, null, null));
 
-        onEnd = visitor.onEnd;
+        onEnd = visitor.onEnd.bind(visitor);
 
         while (worklist.length) {
             element = worklist.pop();
@@ -556,7 +556,7 @@
         }
 
         if (onEnd) {
-            onEnd();
+            setTimeout(onEnd, 0);
         }
     };
 
