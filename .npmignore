@@ -1,4 +1,5 @@
 npm-debug.log
+.babelrc
 .DS_Store
 .vimrc.local
 t.js
