@@ -29,23 +29,13 @@
     'use strict';
 
     var Syntax,
-        isArray,
         VisitorOption,
         VisitorKeys,
-        objectCreate,
-        objectKeys,
         BREAK,
         SKIP,
         REMOVE;
 
     function ignoreJSHintError() { }
-
-    isArray = Array.isArray;
-    if (!isArray) {
-        isArray = function isArray(array) {
-            return Object.prototype.toString.call(array) === '[object Array]';
-        };
-    }
 
     function deepCopy(obj) {
         var ret = {}, key, val;
@@ -114,32 +104,6 @@
         return i;
     }
     ignoreJSHintError(lowerBound);
-
-    objectCreate = Object.create || (function () {
-        function F() { }
-
-        return function (o) {
-            F.prototype = o;
-            return new F();
-        };
-    })();
-
-    objectKeys = Object.keys || function (o) {
-        var keys = [], key;
-        for (key in o) {
-            keys.push(key);
-        }
-        return keys;
-    };
-
-    function extend(to, from) {
-        var keys = objectKeys(from), key, i, len;
-        for (i = 0, len = keys.length; i < len; i += 1) {
-            key = keys[i];
-            to[key] = from[key];
-        }
-        return to;
-    }
 
     Syntax = {
         AssignmentExpression: 'AssignmentExpression',
@@ -310,7 +274,7 @@
     };
 
     Reference.prototype.remove = function remove() {
-        if (isArray(this.parent)) {
+        if (Array.isArray(this.parent)) {
             this.parent.splice(this.key, 1);
             return true;
         } else {
@@ -334,7 +298,7 @@
         var i, iz, j, jz, result, element;
 
         function addToPath(result, path) {
-            if (isArray(path)) {
+            if (Array.isArray(path)) {
                 for (j = 0, jz = path.length; j < jz; ++j) {
                     result.push(path[j]);
                 }
@@ -434,14 +398,14 @@
         this.__state = null;
         this.__fallback = null;
         if (visitor.fallback === 'iteration') {
-            this.__fallback = objectKeys;
+            this.__fallback = Object.keys;
         } else if (typeof visitor.fallback === 'function') {
             this.__fallback = visitor.fallback;
         }
 
         this.__keys = VisitorKeys;
         if (visitor.keys) {
-            this.__keys = extend(objectCreate(this.__keys), visitor.keys);
+            this.__keys = Object.assign(Object.create(this.__keys), visitor.keys);
         }
     };
 
@@ -530,7 +494,7 @@
                         continue;
                     }
 
-                    if (isArray(candidate)) {
+                    if (Array.isArray(candidate)) {
                         current2 = candidate.length;
                         while ((current2 -= 1) >= 0) {
                             if (!candidate[current2]) {
@@ -684,7 +648,7 @@
                     continue;
                 }
 
-                if (isArray(candidate)) {
+                if (Array.isArray(candidate)) {
                     current2 = candidate.length;
                     while ((current2 -= 1) >= 0) {
                         if (!candidate[current2]) {
