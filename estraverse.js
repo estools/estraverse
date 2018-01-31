@@ -433,6 +433,10 @@
             candidates,
             candidate,
             sentinel;
+            
+        if (typeof visitor === 'function') {
+            visitor = { enter: visitor };
+        }
 
         this.__initialize(root, visitor);
 
