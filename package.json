@@ -19,7 +19,7 @@
     "url": "http://github.com/estools/estraverse.git"
   },
   "devDependencies": {
-    "babel-preset-es2015": "^6.3.13",
+    "babel-preset-env": "^1.6.1",
     "babel-register": "^6.3.13",
     "chai": "^2.1.1",
     "espree": "^1.11.0",
