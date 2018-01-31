@@ -35,8 +35,6 @@
         SKIP,
         REMOVE;
 
-    function ignoreJSHintError() { }
-
     function deepCopy(obj) {
         var ret = {}, key, val;
         for (key in obj) {
@@ -51,17 +49,6 @@
         }
         return ret;
     }
-
-    function shallowCopy(obj) {
-        var ret = {}, key;
-        for (key in obj) {
-            if (obj.hasOwnProperty(key)) {
-                ret[key] = obj[key];
-            }
-        }
-        return ret;
-    }
-    ignoreJSHintError(shallowCopy);
 
     // based on LLVM libc++ upper_bound / lower_bound
     // MIT License
@@ -84,26 +71,6 @@
         }
         return i;
     }
-
-    function lowerBound(array, func) {
-        var diff, len, i, current;
-
-        len = array.length;
-        i = 0;
-
-        while (len) {
-            diff = len >>> 1;
-            current = i + diff;
-            if (func(array[current])) {
-                i = current + 1;
-                len -= diff + 1;
-            } else {
-                len = diff;
-            }
-        }
-        return i;
-    }
-    ignoreJSHintError(lowerBound);
 
     Syntax = {
         AssignmentExpression: 'AssignmentExpression',
