@@ -169,6 +169,8 @@
         DirectiveStatement: [],
         DoWhileStatement: ['body', 'test'],
         EmptyStatement: [],
+        ExperimentalRestProperty: ['argument'],
+        ExperimentalSpreadProperty: ['argument'],
         ExportAllDeclaration: ['source'],
         ExportDefaultDeclaration: ['declaration'],
         ExportNamedDeclaration: ['declaration', 'specifiers', 'source'],
