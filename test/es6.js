@@ -320,34 +320,37 @@ describe('import', function() {
     });
 });
 
-describe.skip('dynamic import', function() {
-  it('expression pattern #1', function() {
-      const tree = espree(`import('rabbit-house')`, {
-          ecmaFeatures: {
-              modules: true
-          }
-      });
+describe('dynamic import', function() {
+    it('expression pattern #1', function() {
+        // TODO: espree currently doesn't support dynamic imports. Update when it does
+        // const tree = espree(`import('rabbit-house')`, {
+        //     ecmaFeatures: {
+        //         modules: true
+        //     }
+        // });
+
+        const tree = {
+            type: 'CallExpression',
+            callee: {
+                type: 'Import'
+            },
+            arguments: [
+                {
+                    type: 'Literal',
+                    value: 'rabbit-house'
+                }
+            ]
+        };
 
       checkDump(Dumper.dump(tree), `
-          enter - Program
-          enter - ImportExpression
-          leave - Program
+          enter - CallExpression
+          enter - Import
+          leave - Import
+          enter - Literal
+          leave - Literal
+          leave - CallExpression
       `);
-  });
-
-  it('expression pattern #1', function() {
-      const tree = espree(`import(\`module-\${foo}\`)`, {
-          ecmaFeatures: {
-              modules: true
-          }
-      });
-
-      checkDump(Dumper.dump(tree), `
-          enter - Program
-          enter - ImportExpression
-          leave - Program
-      `);
-  });
+    });
 });
 
 describe('pattern', function() {
