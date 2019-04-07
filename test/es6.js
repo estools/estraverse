@@ -320,6 +320,36 @@ describe('import', function() {
     });
 });
 
+describe.skip('dynamic import', function() {
+  it('expression pattern #1', function() {
+      const tree = espree(`import('rabbit-house')`, {
+          ecmaFeatures: {
+              modules: true
+          }
+      });
+
+      checkDump(Dumper.dump(tree), `
+          enter - Program
+          enter - ImportExpression
+          leave - Program
+      `);
+  });
+
+  it('expression pattern #1', function() {
+      const tree = espree(`import(\`module-\${foo}\`)`, {
+          ecmaFeatures: {
+              modules: true
+          }
+      });
+
+      checkDump(Dumper.dump(tree), `
+          enter - Program
+          enter - ImportExpression
+          leave - Program
+      `);
+  });
+});
+
 describe('pattern', function() {
     it('assignment pattern#1', function() {
         const tree = {
