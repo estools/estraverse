@@ -108,6 +108,7 @@
         GeneratorExpression: 'GeneratorExpression',  // CAUTION: It's deferred to ES7.
         Identifier: 'Identifier',
         IfStatement: 'IfStatement',
+        Import: 'ImportExpression',
         ImportDeclaration: 'ImportDeclaration',
         ImportDefaultSpecifier: 'ImportDefaultSpecifier',
         ImportNamespaceSpecifier: 'ImportNamespaceSpecifier',
@@ -182,6 +183,7 @@
         GeneratorExpression: ['blocks', 'filter', 'body'],  // CAUTION: It's deferred to ES7.
         Identifier: [],
         IfStatement: ['test', 'consequent', 'alternate'],
+        Import: ['argument'],
         ImportDeclaration: ['specifiers', 'source'],
         ImportDefaultSpecifier: ['local'],
         ImportNamespaceSpecifier: ['local'],
