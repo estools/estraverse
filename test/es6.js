@@ -330,25 +330,18 @@ describe('dynamic import', function() {
         // });
 
         const tree = {
-            type: 'CallExpression',
-            callee: {
-                type: 'Import'
-            },
-            arguments: [
-                {
-                    type: 'Literal',
-                    value: 'rabbit-house'
-                }
-            ]
+            type: 'ImportExpression',
+            source: {
+                type: 'Literal',
+                value: 'rabbit-house'
+            }
         };
 
       checkDump(Dumper.dump(tree), `
-          enter - CallExpression
-          enter - Import
-          leave - Import
+          enter - ImportExpression
           enter - Literal
           leave - Literal
-          leave - CallExpression
+          leave - ImportExpression
       `);
     });
 });
