@@ -320,6 +320,32 @@ describe('import', function() {
     });
 });
 
+describe('dynamic import', function() {
+    it('expression pattern #1', function() {
+        // TODO: espree currently doesn't support dynamic imports. Update when it does
+        // const tree = espree(`import('rabbit-house')`, {
+        //     ecmaFeatures: {
+        //         modules: true
+        //     }
+        // });
+
+        const tree = {
+            type: 'ImportExpression',
+            source: {
+                type: 'Literal',
+                value: 'rabbit-house'
+            }
+        };
+
+      checkDump(Dumper.dump(tree), `
+          enter - ImportExpression
+          enter - Literal
+          leave - Literal
+          leave - ImportExpression
+      `);
+    });
+});
+
 describe('pattern', function() {
     it('assignment pattern#1', function() {
         const tree = {
