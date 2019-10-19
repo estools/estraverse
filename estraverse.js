@@ -651,22 +651,30 @@
         return controller.replace(root, visitor);
     }
 
+    // Get range either by directly accessing .start + .end or accessing .range
+    function getRange(node) {
+        if (!('range' in node)) {
+            return [node.start, node.end];
+        }
+        return node.range;
+    }
+
     function extendCommentRange(comment, tokens) {
         var target;
 
         target = upperBound(tokens, function search(token) {
-            return token.range[0] > comment.range[0];
+            return getRange(token)[0] > getRange(comment)[0];
         });
 
-        comment.extendedRange = [comment.range[0], comment.range[1]];
+        comment.extendedRange = [getRange(comment)[0], getRange(comment)[1]];
 
         if (target !== tokens.length) {
-            comment.extendedRange[1] = tokens[target].range[0];
+            comment.extendedRange[1] = getRange(tokens[target])[0];
         }
 
         target -= 1;
         if (target >= 0) {
-            comment.extendedRange[0] = tokens[target].range[1];
+            comment.extendedRange[0] = getRange(tokens[target])[1];
         }
 
         return comment;
@@ -676,7 +684,7 @@
         // At first, we should calculate extended comment ranges.
         var comments = [], comment, len, i, cursor;
 
-        if (!tree.range) {
+        if (!getRange(tree)) {
             throw new Error('attachComments needs range information');
         }
 
@@ -685,7 +693,7 @@
             if (providedComments.length) {
                 for (i = 0, len = providedComments.length; i < len; i += 1) {
                     comment = deepCopy(providedComments[i]);
-                    comment.extendedRange = [0, tree.range[0]];
+                    comment.extendedRange = [0, getRange(tree)[0]];
                     comments.push(comment);
                 }
                 tree.leadingComments = comments;
@@ -705,11 +713,11 @@
 
                 while (cursor < comments.length) {
                     comment = comments[cursor];
-                    if (comment.extendedRange[1] > node.range[0]) {
+                    if (comment.extendedRange[1] > getRange(node)[0]) {
                         break;
                     }
 
-                    if (comment.extendedRange[1] === node.range[0]) {
+                    if (comment.extendedRange[1] === getRange(node)[0]) {
                         if (!node.leadingComments) {
                             node.leadingComments = [];
                         }
@@ -725,7 +733,7 @@
                     return VisitorOption.Break;
                 }
 
-                if (comments[cursor].extendedRange[0] > node.range[1]) {
+                if (comments[cursor].extendedRange[0] > getRange(node)[1]) {
                     return VisitorOption.Skip;
                 }
             }
@@ -738,11 +746,11 @@
 
                 while (cursor < comments.length) {
                     comment = comments[cursor];
-                    if (node.range[1] < comment.extendedRange[0]) {
+                    if (getRange(node)[1] < comment.extendedRange[0]) {
                         break;
                     }
 
-                    if (node.range[1] === comment.extendedRange[0]) {
+                    if (getRange(node)[1] === comment.extendedRange[0]) {
                         if (!node.trailingComments) {
                             node.trailingComments = [];
                         }
@@ -758,7 +766,7 @@
                     return VisitorOption.Break;
                 }
 
-                if (comments[cursor].extendedRange[0] > node.range[1]) {
+                if (comments[cursor].extendedRange[0] > getRange(node)[1]) {
                     return VisitorOption.Skip;
                 }
             }
