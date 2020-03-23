@@ -767,7 +767,6 @@
         return tree;
     }
 
-    exports.version = require('./package.json').version;
     exports.Syntax = Syntax;
     exports.traverse = traverse;
     exports.replace = replace;
