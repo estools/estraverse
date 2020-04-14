@@ -559,4 +559,28 @@ describe('no listed keys fallback', function() {
           () => traverse(tree, { enter(node) {} })
         ).to.throw('Unknown node type XXXExpression.');
     });
+
+    it('break loop', function () {
+        const children = {
+          type: 'Children',
+          name: 'div'
+        };
+
+        const parent = {
+          type: 'Parent',
+          name: children,
+          parent: null,
+        };
+
+        children.parent = parent;
+
+        const tree = parent;
+
+        checkDump(Dumper.dump(tree, null, 'iteration'), `
+              enter - Parent
+              enter - Children
+              leave - Children
+              leave - Parent
+          `);
+    })
 });

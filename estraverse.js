@@ -390,6 +390,17 @@
     }
 
     Controller.prototype.traverse = function traverse(root, visitor) {
+        function candidateExistInLeaveList(leavelist, candidate) {
+          var current = leavelist.length;
+          var exist;
+
+          while((current -= 1) >= 0 && !exist) {
+            exist = leavelist[current] && leavelist[current].node === candidate;
+          }
+
+          return exist;
+        }
+
         var worklist,
             leavelist,
             element,
@@ -458,6 +469,7 @@
                 current = candidates.length;
                 while ((current -= 1) >= 0) {
                     key = candidates[current];
+
                     candidate = node[key];
                     if (!candidate) {
                         continue;
@@ -469,6 +481,11 @@
                             if (!candidate[current2]) {
                                 continue;
                             }
+
+                            if (candidateExistInLeaveList(leavelist, candidate[current2])) {
+                              continue;
+                            }
+
                             if (isProperty(nodeType, candidates[current])) {
                                 element = new Element(candidate[current2], [key, current2], 'Property', null);
                             } else if (isNode(candidate[current2])) {
@@ -479,6 +496,10 @@
                             worklist.push(element);
                         }
                     } else if (isNode(candidate)) {
+                        if (candidateExistInLeaveList(leavelist, candidate)) {
+                          continue;
+                        }
+
                         worklist.push(new Element(candidate, key, null, null));
                     }
                 }
