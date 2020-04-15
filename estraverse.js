@@ -388,19 +388,17 @@
     function isProperty(nodeType, key) {
         return (nodeType === Syntax.ObjectExpression || nodeType === Syntax.ObjectPattern) && 'properties' === key;
     }
+  
+    function candidateExistsInLeaveList(leavelist, candidate) {
+        for (var i = leavelist.length - 1; i >= 0; --i) {
+            if (leavelist[i].node === candidate) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     Controller.prototype.traverse = function traverse(root, visitor) {
-        function candidateExistInLeaveList(leavelist, candidate) {
-          var current = leavelist.length;
-          var exist;
-
-          while((current -= 1) >= 0 && !exist) {
-            exist = leavelist[current] && leavelist[current].node === candidate;
-          }
-
-          return exist;
-        }
-
         var worklist,
             leavelist,
             element,
@@ -482,7 +480,7 @@
                                 continue;
                             }
 
-                            if (candidateExistInLeaveList(leavelist, candidate[current2])) {
+                            if (candidateExistsInLeaveList(leavelist, candidate[current2])) {
                               continue;
                             }
 
@@ -496,7 +494,7 @@
                             worklist.push(element);
                         }
                     } else if (isNode(candidate)) {
-                        if (candidateExistInLeaveList(leavelist, candidate)) {
+                        if (candidateExistsInLeaveList(leavelist, candidate)) {
                           continue;
                         }
 
