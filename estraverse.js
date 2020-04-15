@@ -467,7 +467,6 @@
                 current = candidates.length;
                 while ((current -= 1) >= 0) {
                     key = candidates[current];
-
                     candidate = node[key];
                     if (!candidate) {
                         continue;
