@@ -21,13 +21,13 @@
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 export default function checkDump(dump, expected) {
-  expect(normalize(expected)).to.be.equal(normalize(dump));
+    expect(normalize(expected)).to.be.equal(normalize(dump));
 }
 
 function normalize(dump) {
-  return dump
-    .trim()
-    .split('\n')
-    .map(line => line.trim())
-    .join('\n');
+    return dump
+        .trim()
+        .split('\n')
+        .map(line => line.trim())
+        .join('\n');
 }

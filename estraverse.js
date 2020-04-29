@@ -22,24 +22,15 @@
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
   THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-/*jslint vars:false, bitwise:true*/
-/*jshint indent:4*/
-/*global exports:true*/
+
 (function clone(exports) {
     'use strict';
 
-    var Syntax,
-        VisitorOption,
-        VisitorKeys,
-        BREAK,
-        SKIP,
-        REMOVE;
-
     function deepCopy(obj) {
-        var ret = {}, key, val;
-        for (key in obj) {
-            if (obj.hasOwnProperty(key)) {
-                val = obj[key];
+        const ret = {};
+        for (const key in obj) {
+            if (Object.hasOwnProperty.call(obj, key)) {
+                const val = obj[key];
                 if (typeof val === 'object' && val !== null) {
                     ret[key] = deepCopy(val);
                 } else {
@@ -54,7 +45,7 @@
     // MIT License
 
     function upperBound(array, func) {
-        var diff, len, i, current;
+        let diff, len, i, current;
 
         len = array.length;
         i = 0;
@@ -72,7 +63,7 @@
         return i;
     }
 
-    Syntax = {
+    const Syntax = {
         AssignmentExpression: 'AssignmentExpression',
         AssignmentPattern: 'AssignmentPattern',
         ArrayExpression: 'ArrayExpression',
@@ -150,7 +141,7 @@
         YieldExpression: 'YieldExpression'
     };
 
-    VisitorKeys = {
+    const VisitorKeys = {
         AssignmentExpression: ['left', 'right'],
         AssignmentPattern: ['left', 'right'],
         ArrayExpression: ['elements'],
@@ -229,11 +220,11 @@
     };
 
     // unique id
-    BREAK = {};
-    SKIP = {};
-    REMOVE = {};
+    const BREAK = {};
+    const SKIP = {};
+    const REMOVE = {};
 
-    VisitorOption = {
+    const VisitorOption = {
         Break: BREAK,
         Skip: SKIP,
         Remove: REMOVE
@@ -270,7 +261,7 @@
     // API:
     // return property path array from root to current node
     Controller.prototype.path = function path() {
-        var i, iz, j, jz, result, element;
+        let i, iz, j, jz, element;
 
         function addToPath(result, path) {
             if (Array.isArray(path)) {
@@ -288,7 +279,7 @@
         }
 
         // first node is sentinel, second node is root element
-        result = [];
+        const result = [];
         for (i = 2, iz = this.__leavelist.length; i < iz; ++i) {
             element = this.__leavelist[i];
             addToPath(result, element.path);
@@ -300,18 +291,16 @@
     // API:
     // return type of current node
     Controller.prototype.type = function () {
-        var node = this.current();
+        const node = this.current();
         return node.type || this.__current.wrap;
     };
 
     // API:
     // return array of parent elements
     Controller.prototype.parents = function parents() {
-        var i, iz, result;
-
         // first node is sentinel
-        result = [];
-        for (i = 1, iz = this.__leavelist.length; i < iz; ++i) {
+        const result = [];
+        for (let i = 1, iz = this.__leavelist.length; i < iz; ++i) {
             result.push(this.__leavelist[i].node);
         }
 
@@ -325,11 +314,11 @@
     };
 
     Controller.prototype.__execute = function __execute(callback, element) {
-        var previous, result;
+        let result;
 
         result = undefined;
 
-        previous  = this.__current;
+        const previous = this.__current;
         this.__current = element;
         this.__state = null;
         if (callback) {
@@ -394,9 +383,9 @@
     function isProperty(nodeType, key) {
         return (nodeType === Syntax.ObjectExpression || nodeType === Syntax.ObjectPattern) && 'properties' === key;
     }
-  
+
     function candidateExistsInLeaveList(leavelist, candidate) {
-        for (var i = leavelist.length - 1; i >= 0; --i) {
+        for (let i = leavelist.length - 1; i >= 0; --i) {
             if (leavelist[i].node === candidate) {
                 return true;
             }
@@ -405,9 +394,7 @@
     }
 
     Controller.prototype.traverse = function traverse(root, visitor) {
-        var worklist,
-            leavelist,
-            element,
+        let element,
             node,
             nodeType,
             ret,
@@ -415,16 +402,15 @@
             current,
             current2,
             candidates,
-            candidate,
-            sentinel;
+            candidate;
 
         this.__initialize(root, visitor);
 
-        sentinel = {};
+        const sentinel = {};
 
         // reference
-        worklist = this.__worklist;
-        leavelist = this.__leavelist;
+        const worklist = this.__worklist;
+        const leavelist = this.__leavelist;
 
         // initialize
         worklist.push(new Element(root, null, null, null));
@@ -459,14 +445,14 @@
                     continue;
                 }
 
-                node = element.node;
+                ({ node } = element);
                 nodeType = node.type || element.wrap;
                 candidates = this.__keys[nodeType];
                 if (!candidates) {
                     if (this.__fallback) {
                         candidates = this.__fallback(node);
                     } else {
-                        throw new Error('Unknown node type ' + nodeType + '.');
+                        throw new Error(`Unknown node type ${  nodeType  }.`);
                     }
                 }
 
@@ -486,7 +472,7 @@
                             }
 
                             if (candidateExistsInLeaveList(leavelist, candidate[current2])) {
-                              continue;
+                                continue;
                             }
 
                             if (isProperty(nodeType, candidates[current])) {
@@ -500,7 +486,7 @@
                         }
                     } else if (isNode(candidate)) {
                         if (candidateExistsInLeaveList(leavelist, candidate)) {
-                          continue;
+                            continue;
                         }
 
                         worklist.push(new Element(candidate, key, null, null));
@@ -511,9 +497,7 @@
     };
 
     Controller.prototype.replace = function replace(root, visitor) {
-        var worklist,
-            leavelist,
-            node,
+        let node,
             nodeType,
             target,
             element,
@@ -521,20 +505,17 @@
             current2,
             candidates,
             candidate,
-            sentinel,
-            outer,
             key;
 
         function removeElem(element) {
-            var i,
+            let i,
                 key,
                 nextElem,
                 parent;
 
             if (element.ref.remove()) {
                 // When the reference is an element of an array.
-                key = element.ref.key;
-                parent = element.ref.parent;
+                ({ key, parent } = element.ref);
 
                 // If removed from array, then decrease following items' keys.
                 i = worklist.length;
@@ -552,15 +533,15 @@
 
         this.__initialize(root, visitor);
 
-        sentinel = {};
+        const sentinel = {};
 
         // reference
-        worklist = this.__worklist;
-        leavelist = this.__leavelist;
+        const worklist = this.__worklist;
+        const leavelist = this.__leavelist;
 
         // initialize
-        outer = {
-            root: root
+        const outer = {
+            root
         };
         element = new Element(root, null, null, new Reference(outer, 'root'));
         worklist.push(element);
@@ -611,7 +592,7 @@
             }
 
             // node may be null
-            node = element.node;
+            ({ node } = element);
             if (!node) {
                 continue;
             }
@@ -629,7 +610,7 @@
                 if (this.__fallback) {
                     candidates = this.__fallback(node);
                 } else {
-                    throw new Error('Unknown node type ' + nodeType + '.');
+                    throw new Error(`Unknown node type ${  nodeType  }.`);
                 }
             }
 
@@ -666,17 +647,17 @@
     };
 
     function traverse(root, visitor) {
-        var controller = new Controller();
+        const controller = new Controller();
         return controller.traverse(root, visitor);
     }
 
     function replace(root, visitor) {
-        var controller = new Controller();
+        const controller = new Controller();
         return controller.replace(root, visitor);
     }
 
     function extendCommentRange(comment, tokens) {
-        var target;
+        let target;
 
         target = upperBound(tokens, function search(token) {
             return token.range[0] > comment.range[0];
@@ -685,12 +666,12 @@
         comment.extendedRange = [comment.range[0], comment.range[1]];
 
         if (target !== tokens.length) {
-            comment.extendedRange[1] = tokens[target].range[0];
+            [comment.extendedRange[1]] = tokens[target].range;
         }
 
         target -= 1;
         if (target >= 0) {
-            comment.extendedRange[0] = tokens[target].range[1];
+            [, comment.extendedRange[0]] = tokens[target].range;
         }
 
         return comment;
@@ -698,7 +679,8 @@
 
     function attachComments(tree, providedComments, tokens) {
         // At first, we should calculate extended comment ranges.
-        var comments = [], comment, len, i, cursor;
+        const  comments = [];
+        let comment, len, i, cursor;
 
         if (!tree.range) {
             throw new Error('attachComments needs range information');
@@ -724,8 +706,8 @@
         // This is based on John Freeman's implementation.
         cursor = 0;
         traverse(tree, {
-            enter: function (node) {
-                var comment;
+            enter (node) {
+                let comment;
 
                 while (cursor < comments.length) {
                     comment = comments[cursor];
@@ -757,8 +739,8 @@
 
         cursor = 0;
         traverse(tree, {
-            leave: function (node) {
-                var comment;
+            leave (node) {
+                let comment;
 
                 while (cursor < comments.length) {
                     comment = comments[cursor];

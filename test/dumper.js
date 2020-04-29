@@ -56,4 +56,4 @@ export default class Dumper {
 
         return dumper.result();
     }
-};
+}

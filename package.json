@@ -33,9 +33,9 @@
     "@babel/preset-env": "^7.16.11",
     "@babel/register": "^7.17.0",
     "chai": "^4.3.6",
+    "eslint": "^6.8.0",
     "espree": "^9.3.1",
     "esprima": "^4.0.1",
-    "jshint": "^2.13.4",
     "mocha": "^9.2.1",
     "nyc": "^15.1.0"
   },
@@ -55,7 +55,7 @@
   },
   "scripts": {
     "test": "npm run lint && npm run unit-test",
-    "lint": "jshint estraverse.js",
+    "lint": "eslint .",
     "unit-test": "nyc mocha --require chai/register-expect.js --require @babel/register"
   }
 }

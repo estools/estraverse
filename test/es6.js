@@ -249,7 +249,7 @@ describe('export', function() {
 
 describe('import', function() {
     it('default specifier #1', function() {
-        const tree = espree(`import Cocoa from 'rabbit-house'`, {
+        const tree = espree('import Cocoa from \'rabbit-house\'', {
             ecmaVersion: 2015,
             sourceType: 'module'
         });
@@ -269,7 +269,7 @@ describe('import', function() {
     });
 
     it('named specifier #1', function() {
-        const tree = espree(`import {Cocoa, Cappuccino as Chino} from 'rabbit-house'`, {
+        const tree = espree('import {Cocoa, Cappuccino as Chino} from \'rabbit-house\'', {
             ecmaVersion: 2015,
             sourceType: 'module'
         });
@@ -297,7 +297,7 @@ describe('import', function() {
     });
 
     it('namespace specifier #1', function() {
-        const tree = espree(`import * as RabbitHouse from 'rabbit-house'`, {
+        const tree = espree('import * as RabbitHouse from \'rabbit-house\'', {
             ecmaVersion: 2015,
             sourceType: 'module'
         });
@@ -319,7 +319,7 @@ describe('import', function() {
 
 describe('dynamic import', function() {
     it('expression pattern #1', function() {
-        const tree = espree(`import('rabbit-house')`, {
+        const tree = espree('import(\'rabbit-house\')', {
             ecmaVersion: 2020
         });
 
@@ -363,7 +363,7 @@ describe('pattern', function() {
 
 describe('super', function() {
     it('super expression#1', function() {
-        const tree = {type: 'Super'};
+        const tree = { type: 'Super' };
 
         checkDump(Dumper.dump(tree), `
             enter - Super
