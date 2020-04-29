@@ -23,7 +23,6 @@
 
 import Dumper from './dumper';
 import checkDump from './checkDump';
-import { expect } from 'chai';
 import { traverse } from '..';
 
 describe('object expression', function() {

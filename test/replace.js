@@ -22,7 +22,6 @@
 
 
 import { replace, VisitorOption } from '..';
-import { expect } from 'chai';
 
 describe('replace', function() {
     it('can simplify expressions', function() {
