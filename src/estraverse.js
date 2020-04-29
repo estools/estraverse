@@ -23,9 +23,7 @@
   THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-(function clone(exports) {
-    'use strict';
-
+function clone(exports) {
     function deepCopy(obj) {
         const ret = {};
         for (const key in obj) {
@@ -217,7 +215,7 @@
         YieldExpression: ['argument']
     };
 
-    // unique id
+    // unique id (convert to symbols once targeted versions supporting?)
     const BREAK = {};
     const SKIP = {};
     const REMOVE = {};
@@ -256,6 +254,26 @@
             this.wrap = wrap;
             this.ref = ref;
         }
+    }
+
+    function isNode(node) {
+        if (node == null) {
+            return false;
+        }
+        return typeof node === 'object' && typeof node.type === 'string';
+    }
+
+    function isProperty(nodeType, key) {
+        return (nodeType === Syntax.ObjectExpression || nodeType === Syntax.ObjectPattern) && 'properties' === key;
+    }
+
+    function candidateExistsInLeaveList(leavelist, candidate) {
+        for (let i = leavelist.length - 1; i >= 0; --i) {
+            if (leavelist[i].node === candidate) {
+                return true;
+            }
+        }
+        return false;
     }
 
     class Controller {
@@ -370,72 +388,199 @@
                 this.__keys = Object.assign(Object.create(this.__keys), visitor.keys);
             }
         }
-    }
 
-    function isNode(node) {
-        if (node == null) {
-            return false;
-        }
-        return typeof node === 'object' && typeof node.type === 'string';
-    }
+        traverse (root, visitor) {
+            this.__initialize(root, visitor);
 
-    function isProperty(nodeType, key) {
-        return (nodeType === Syntax.ObjectExpression || nodeType === Syntax.ObjectPattern) && 'properties' === key;
-    }
+            const sentinel = {};
 
-    function candidateExistsInLeaveList(leavelist, candidate) {
-        for (let i = leavelist.length - 1; i >= 0; --i) {
-            if (leavelist[i].node === candidate) {
-                return true;
-            }
-        }
-        return false;
-    }
+            // reference
+            const worklist = this.__worklist;
+            const leavelist = this.__leavelist;
 
-    Controller.prototype.traverse = function traverse(root, visitor) {
-        this.__initialize(root, visitor);
+            // initialize
+            worklist.push(new Element(root, null, null, null));
+            leavelist.push(new Element(null, null, null, null));
 
-        const sentinel = {};
+            while (worklist.length) {
+                let element = worklist.pop();
 
-        // reference
-        const worklist = this.__worklist;
-        const leavelist = this.__leavelist;
+                let ret;
+                if (element === sentinel) {
+                    element = leavelist.pop();
 
-        // initialize
-        worklist.push(new Element(root, null, null, null));
-        leavelist.push(new Element(null, null, null, null));
+                    ret = this.__execute(visitor.leave, element);
 
-        while (worklist.length) {
-            let element = worklist.pop();
-
-            let ret;
-            if (element === sentinel) {
-                element = leavelist.pop();
-
-                ret = this.__execute(visitor.leave, element);
-
-                if (this.__state === BREAK || ret === BREAK) {
-                    return;
+                    if (this.__state === BREAK || ret === BREAK) {
+                        return;
+                    }
+                    continue;
                 }
-                continue;
+
+                if (element.node) {
+
+                    ret = this.__execute(visitor.enter, element);
+
+                    if (this.__state === BREAK || ret === BREAK) {
+                        return;
+                    }
+
+                    worklist.push(sentinel);
+                    leavelist.push(element);
+
+                    if (this.__state === SKIP || ret === SKIP) {
+                        continue;
+                    }
+
+                    const { node } = element;
+                    const nodeType = node.type || element.wrap;
+                    let candidates = this.__keys[nodeType];
+                    if (!candidates) {
+                        if (this.__fallback) {
+                            candidates = this.__fallback(node);
+                        } else {
+                            throw new Error(`Unknown node type ${  nodeType  }.`);
+                        }
+                    }
+
+                    let current = candidates.length;
+                    while ((current -= 1) >= 0) {
+                        const key = candidates[current];
+                        const candidate = node[key];
+                        if (!candidate) {
+                            continue;
+                        }
+
+                        if (Array.isArray(candidate)) {
+                            let current2 = candidate.length;
+                            while ((current2 -= 1) >= 0) {
+                                if (!candidate[current2]) {
+                                    continue;
+                                }
+
+                                if (candidateExistsInLeaveList(leavelist, candidate[current2])) {
+                                    continue;
+                                }
+
+                                if (isProperty(nodeType, candidates[current])) {
+                                    element = new Element(candidate[current2], [key, current2], 'Property', null);
+                                } else if (isNode(candidate[current2])) {
+                                    element = new Element(candidate[current2], [key, current2], null, null);
+                                } else {
+                                    continue;
+                                }
+                                worklist.push(element);
+                            }
+                        } else if (isNode(candidate)) {
+                            if (candidateExistsInLeaveList(leavelist, candidate)) {
+                                continue;
+                            }
+
+                            worklist.push(new Element(candidate, key, null, null));
+                        }
+                    }
+                }
+            }
+        }
+
+        replace (root, visitor) {
+            function removeElem(element) {
+                let i,
+                    key,
+                    nextElem,
+                    parent;
+
+                if (element.ref.remove()) {
+                    // When the reference is an element of an array.
+                    ({ key, parent } = element.ref);
+
+                    // If removed from array, then decrease following items' keys.
+                    i = worklist.length;
+                    while (i--) {
+                        nextElem = worklist[i];
+                        if (nextElem.ref && nextElem.ref.parent === parent) {
+                            if  (nextElem.ref.key < key) {
+                                break;
+                            }
+                            --nextElem.ref.key;
+                        }
+                    }
+                }
             }
 
-            if (element.node) {
+            this.__initialize(root, visitor);
 
-                ret = this.__execute(visitor.enter, element);
+            const sentinel = {};
 
-                if (this.__state === BREAK || ret === BREAK) {
-                    return;
+            // reference
+            const worklist = this.__worklist;
+            const leavelist = this.__leavelist;
+
+            // initialize
+            const outer = {
+                root
+            };
+            let element = new Element(root, null, null, new Reference(outer, 'root'));
+            worklist.push(element);
+            leavelist.push(element);
+
+            while (worklist.length) {
+                element = worklist.pop();
+
+                if (element === sentinel) {
+                    element = leavelist.pop();
+
+                    const target = this.__execute(visitor.leave, element);
+
+                    // node may be replaced with null,
+                    // so distinguish between undefined and null in this place
+                    if (target !== undefined && target !== BREAK && target !== SKIP && target !== REMOVE) {
+                        // replace
+                        element.ref.replace(target);
+                    }
+
+                    if (this.__state === REMOVE || target === REMOVE) {
+                        removeElem(element);
+                    }
+
+                    if (this.__state === BREAK || target === BREAK) {
+                        return outer.root;
+                    }
+                    continue;
+                }
+
+                const target = this.__execute(visitor.enter, element);
+
+                // node may be replaced with null,
+                // so distinguish between undefined and null in this place
+                if (target !== undefined && target !== BREAK && target !== SKIP && target !== REMOVE) {
+                    // replace
+                    element.ref.replace(target);
+                    element.node = target;
+                }
+
+                if (this.__state === REMOVE || target === REMOVE) {
+                    removeElem(element);
+                    element.node = null;
+                }
+
+                if (this.__state === BREAK || target === BREAK) {
+                    return outer.root;
+                }
+
+                // node may be null
+                const { node } = element;
+                if (!node) {
+                    continue;
                 }
 
                 worklist.push(sentinel);
                 leavelist.push(element);
 
-                if (this.__state === SKIP || ret === SKIP) {
+                if (this.__state === SKIP || target === SKIP) {
                     continue;
                 }
 
-                const { node } = element;
                 const nodeType = node.type || element.wrap;
                 let candidates = this.__keys[nodeType];
                 if (!candidates) {
@@ -460,171 +605,24 @@
                             if (!candidate[current2]) {
                                 continue;
                             }
-
-                            if (candidateExistsInLeaveList(leavelist, candidate[current2])) {
-                                continue;
-                            }
-
                             if (isProperty(nodeType, candidates[current])) {
-                                element = new Element(candidate[current2], [key, current2], 'Property', null);
+                                element = new Element(candidate[current2], [key, current2], 'Property', new Reference(candidate, current2));
                             } else if (isNode(candidate[current2])) {
-                                element = new Element(candidate[current2], [key, current2], null, null);
+                                element = new Element(candidate[current2], [key, current2], null, new Reference(candidate, current2));
                             } else {
                                 continue;
                             }
                             worklist.push(element);
                         }
                     } else if (isNode(candidate)) {
-                        if (candidateExistsInLeaveList(leavelist, candidate)) {
-                            continue;
-                        }
-
-                        worklist.push(new Element(candidate, key, null, null));
+                        worklist.push(new Element(candidate, key, null, new Reference(node, key)));
                     }
                 }
             }
+
+            return outer.root;
         }
-    };
-
-    Controller.prototype.replace = function replace(root, visitor) {
-        function removeElem(element) {
-            let i,
-                key,
-                nextElem,
-                parent;
-
-            if (element.ref.remove()) {
-                // When the reference is an element of an array.
-                ({ key, parent } = element.ref);
-
-                // If removed from array, then decrease following items' keys.
-                i = worklist.length;
-                while (i--) {
-                    nextElem = worklist[i];
-                    if (nextElem.ref && nextElem.ref.parent === parent) {
-                        if  (nextElem.ref.key < key) {
-                            break;
-                        }
-                        --nextElem.ref.key;
-                    }
-                }
-            }
-        }
-
-        this.__initialize(root, visitor);
-
-        const sentinel = {};
-
-        // reference
-        const worklist = this.__worklist;
-        const leavelist = this.__leavelist;
-
-        // initialize
-        const outer = {
-            root
-        };
-        let element = new Element(root, null, null, new Reference(outer, 'root'));
-        worklist.push(element);
-        leavelist.push(element);
-
-        while (worklist.length) {
-            element = worklist.pop();
-
-            if (element === sentinel) {
-                element = leavelist.pop();
-
-                const target = this.__execute(visitor.leave, element);
-
-                // node may be replaced with null,
-                // so distinguish between undefined and null in this place
-                if (target !== undefined && target !== BREAK && target !== SKIP && target !== REMOVE) {
-                    // replace
-                    element.ref.replace(target);
-                }
-
-                if (this.__state === REMOVE || target === REMOVE) {
-                    removeElem(element);
-                }
-
-                if (this.__state === BREAK || target === BREAK) {
-                    return outer.root;
-                }
-                continue;
-            }
-
-            const target = this.__execute(visitor.enter, element);
-
-            // node may be replaced with null,
-            // so distinguish between undefined and null in this place
-            if (target !== undefined && target !== BREAK && target !== SKIP && target !== REMOVE) {
-                // replace
-                element.ref.replace(target);
-                element.node = target;
-            }
-
-            if (this.__state === REMOVE || target === REMOVE) {
-                removeElem(element);
-                element.node = null;
-            }
-
-            if (this.__state === BREAK || target === BREAK) {
-                return outer.root;
-            }
-
-            // node may be null
-            const { node } = element;
-            if (!node) {
-                continue;
-            }
-
-            worklist.push(sentinel);
-            leavelist.push(element);
-
-            if (this.__state === SKIP || target === SKIP) {
-                continue;
-            }
-
-            const nodeType = node.type || element.wrap;
-            let candidates = this.__keys[nodeType];
-            if (!candidates) {
-                if (this.__fallback) {
-                    candidates = this.__fallback(node);
-                } else {
-                    throw new Error(`Unknown node type ${  nodeType  }.`);
-                }
-            }
-
-            let current = candidates.length;
-            while ((current -= 1) >= 0) {
-                const key = candidates[current];
-                const candidate = node[key];
-                if (!candidate) {
-                    continue;
-                }
-
-                if (Array.isArray(candidate)) {
-                    let current2 = candidate.length;
-                    while ((current2 -= 1) >= 0) {
-                        if (!candidate[current2]) {
-                            continue;
-                        }
-                        if (isProperty(nodeType, candidates[current])) {
-                            element = new Element(candidate[current2], [key, current2], 'Property', new Reference(candidate, current2));
-                        } else if (isNode(candidate[current2])) {
-                            element = new Element(candidate[current2], [key, current2], null, new Reference(candidate, current2));
-                        } else {
-                            continue;
-                        }
-                        worklist.push(element);
-                    }
-                } else if (isNode(candidate)) {
-                    worklist.push(new Element(candidate, key, null, new Reference(node, key)));
-                }
-            }
-        }
-
-        return outer.root;
-    };
+    }
 
     function traverse(root, visitor) {
         const controller = new Controller();
@@ -763,5 +761,15 @@
     exports.cloneEnvironment = function () { return clone({}); };
 
     return exports;
-}(exports));
+}
 /* vim: set sw=4 ts=4 et tw=80 : */
+
+const {
+    Syntax, traverse, replace, attachComments,
+    VisitorKeys, VisitorOption, Controller, cloneEnvironment
+} = clone({});
+
+export {
+    Syntax, traverse, replace, attachComments,
+    VisitorKeys, VisitorOption, Controller, cloneEnvironment
+};
