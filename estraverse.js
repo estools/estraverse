@@ -45,14 +45,12 @@
     // MIT License
 
     function upperBound(array, func) {
-        let diff, len, i, current;
-
-        len = array.length;
-        i = 0;
+        let len = array.length;
+        let i = 0;
 
         while (len) {
-            diff = len >>> 1;
-            current = i + diff;
+            const diff = len >>> 1;
+            const current = i + diff;
             if (func(array[current])) {
                 len = diff;
             } else {
@@ -230,148 +228,149 @@
         Remove: REMOVE
     };
 
-    function Reference(parent, key) {
-        this.parent = parent;
-        this.key = key;
-    }
-
-    Reference.prototype.replace = function replace(node) {
-        this.parent[this.key] = node;
-    };
-
-    Reference.prototype.remove = function remove() {
-        if (Array.isArray(this.parent)) {
-            this.parent.splice(this.key, 1);
-            return true;
-        } else {
-            this.replace(null);
-            return false;
+    class Reference {
+        constructor (parent, key) {
+            this.parent = parent;
+            this.key = key;
         }
-    };
 
-    function Element(node, path, wrap, ref) {
-        this.node = node;
-        this.path = path;
-        this.wrap = wrap;
-        this.ref = ref;
-    }
+        replace (node) {
+            this.parent[this.key] = node;
+        }
 
-    function Controller() { }
-
-    // API:
-    // return property path array from root to current node
-    Controller.prototype.path = function path() {
-        let i, iz, j, jz, element;
-
-        function addToPath(result, path) {
-            if (Array.isArray(path)) {
-                for (j = 0, jz = path.length; j < jz; ++j) {
-                    result.push(path[j]);
-                }
+        remove () {
+            if (Array.isArray(this.parent)) {
+                this.parent.splice(this.key, 1);
+                return true;
             } else {
-                result.push(path);
+                this.replace(null);
+                return false;
             }
         }
+    }
 
-        // root node
-        if (!this.__current.path) {
-            return null;
+    class Element {
+        constructor (node, path, wrap, ref) {
+            this.node = node;
+            this.path = path;
+            this.wrap = wrap;
+            this.ref = ref;
+        }
+    }
+
+    class Controller {
+
+        // API:
+        // return property path array from root to current node
+        path () {
+            function addToPath(result, path) {
+                if (Array.isArray(path)) {
+                    for (const p of path) {
+                        result.push(p);
+                    }
+                } else {
+                    result.push(path);
+                }
+            }
+
+            // root node
+            if (!this.__current.path) {
+                return null;
+            }
+
+            // first node is sentinel, second node is root element
+            const result = [];
+            for (let i = 2, iz = this.__leavelist.length; i < iz; ++i) {
+                const element = this.__leavelist[i];
+                addToPath(result, element.path);
+            }
+            addToPath(result, this.__current.path);
+            return result;
         }
 
-        // first node is sentinel, second node is root element
-        const result = [];
-        for (i = 2, iz = this.__leavelist.length; i < iz; ++i) {
-            element = this.__leavelist[i];
-            addToPath(result, element.path);
-        }
-        addToPath(result, this.__current.path);
-        return result;
-    };
-
-    // API:
-    // return type of current node
-    Controller.prototype.type = function () {
-        const node = this.current();
-        return node.type || this.__current.wrap;
-    };
-
-    // API:
-    // return array of parent elements
-    Controller.prototype.parents = function parents() {
-        // first node is sentinel
-        const result = [];
-        for (let i = 1, iz = this.__leavelist.length; i < iz; ++i) {
-            result.push(this.__leavelist[i].node);
+        // API:
+        // return type of current node
+        type () {
+            const node = this.current();
+            return node.type || this.__current.wrap;
         }
 
-        return result;
-    };
+        // API:
+        // return array of parent elements
+        parents () {
+            // first node is sentinel
+            const result = [];
+            for (let i = 1, iz = this.__leavelist.length; i < iz; ++i) {
+                result.push(this.__leavelist[i].node);
+            }
 
-    // API:
-    // return current node
-    Controller.prototype.current = function current() {
-        return this.__current.node;
-    };
-
-    Controller.prototype.__execute = function __execute(callback, element) {
-        let result;
-
-        result = undefined;
-
-        const previous = this.__current;
-        this.__current = element;
-        this.__state = null;
-        if (callback) {
-            result = callback.call(this, element.node, this.__leavelist[this.__leavelist.length - 1].node);
-        }
-        this.__current = previous;
-
-        return result;
-    };
-
-    // API:
-    // notify control skip / break
-    Controller.prototype.notify = function notify(flag) {
-        this.__state = flag;
-    };
-
-    // API:
-    // skip child nodes of current node
-    Controller.prototype.skip = function () {
-        this.notify(SKIP);
-    };
-
-    // API:
-    // break traversals
-    Controller.prototype['break'] = function () {
-        this.notify(BREAK);
-    };
-
-    // API:
-    // remove node
-    Controller.prototype.remove = function () {
-        this.notify(REMOVE);
-    };
-
-    Controller.prototype.__initialize = function(root, visitor) {
-        this.visitor = visitor;
-        this.root = root;
-        this.__worklist = [];
-        this.__leavelist = [];
-        this.__current = null;
-        this.__state = null;
-        this.__fallback = null;
-        if (visitor.fallback === 'iteration') {
-            this.__fallback = Object.keys;
-        } else if (typeof visitor.fallback === 'function') {
-            this.__fallback = visitor.fallback;
+            return result;
         }
 
-        this.__keys = VisitorKeys;
-        if (visitor.keys) {
-            this.__keys = Object.assign(Object.create(this.__keys), visitor.keys);
+        // API:
+        // return current node
+        current () {
+            return this.__current.node;
         }
-    };
+
+        __execute (callback, element) {
+            const previous = this.__current;
+            this.__current = element;
+            this.__state = null;
+
+            let result = undefined;
+            if (callback) {
+                result = callback.call(this, element.node, this.__leavelist[this.__leavelist.length - 1].node);
+            }
+            this.__current = previous;
+
+            return result;
+        }
+
+        // API:
+        // notify control skip / break
+        notify (flag) {
+            this.__state = flag;
+        }
+
+        // API:
+        // skip child nodes of current node
+        skip () {
+            this.notify(SKIP);
+        }
+
+        // API:
+        // break traversals
+        break () {
+            this.notify(BREAK);
+        }
+
+        // API:
+        // remove node
+        remove () {
+            this.notify(REMOVE);
+        }
+
+        __initialize (root, visitor) {
+            this.visitor = visitor;
+            this.root = root;
+            this.__worklist = [];
+            this.__leavelist = [];
+            this.__current = null;
+            this.__state = null;
+            this.__fallback = null;
+            if (visitor.fallback === 'iteration') {
+                this.__fallback = Object.keys;
+            } else if (typeof visitor.fallback === 'function') {
+                this.__fallback = visitor.fallback;
+            }
+
+            this.__keys = VisitorKeys;
+            if (visitor.keys) {
+                this.__keys = Object.assign(Object.create(this.__keys), visitor.keys);
+            }
+        }
+    }
 
     function isNode(node) {
         if (node == null) {
@@ -394,16 +393,6 @@
     }
 
     Controller.prototype.traverse = function traverse(root, visitor) {
-        let element,
-            node,
-            nodeType,
-            ret,
-            key,
-            current,
-            current2,
-            candidates,
-            candidate;
-
         this.__initialize(root, visitor);
 
         const sentinel = {};
@@ -417,8 +406,9 @@
         leavelist.push(new Element(null, null, null, null));
 
         while (worklist.length) {
-            element = worklist.pop();
+            let element = worklist.pop();
 
+            let ret;
             if (element === sentinel) {
                 element = leavelist.pop();
 
@@ -445,9 +435,9 @@
                     continue;
                 }
 
-                ({ node } = element);
-                nodeType = node.type || element.wrap;
-                candidates = this.__keys[nodeType];
+                const { node } = element;
+                const nodeType = node.type || element.wrap;
+                let candidates = this.__keys[nodeType];
                 if (!candidates) {
                     if (this.__fallback) {
                         candidates = this.__fallback(node);
@@ -456,16 +446,16 @@
                     }
                 }
 
-                current = candidates.length;
+                let current = candidates.length;
                 while ((current -= 1) >= 0) {
-                    key = candidates[current];
-                    candidate = node[key];
+                    const key = candidates[current];
+                    const candidate = node[key];
                     if (!candidate) {
                         continue;
                     }
 
                     if (Array.isArray(candidate)) {
-                        current2 = candidate.length;
+                        let current2 = candidate.length;
                         while ((current2 -= 1) >= 0) {
                             if (!candidate[current2]) {
                                 continue;
@@ -497,16 +487,6 @@
     };
 
     Controller.prototype.replace = function replace(root, visitor) {
-        let node,
-            nodeType,
-            target,
-            element,
-            current,
-            current2,
-            candidates,
-            candidate,
-            key;
-
         function removeElem(element) {
             let i,
                 key,
@@ -543,7 +523,7 @@
         const outer = {
             root
         };
-        element = new Element(root, null, null, new Reference(outer, 'root'));
+        let element = new Element(root, null, null, new Reference(outer, 'root'));
         worklist.push(element);
         leavelist.push(element);
 
@@ -553,7 +533,7 @@
             if (element === sentinel) {
                 element = leavelist.pop();
 
-                target = this.__execute(visitor.leave, element);
+                const target = this.__execute(visitor.leave, element);
 
                 // node may be replaced with null,
                 // so distinguish between undefined and null in this place
@@ -572,7 +552,7 @@
                 continue;
             }
 
-            target = this.__execute(visitor.enter, element);
+            const target = this.__execute(visitor.enter, element);
 
             // node may be replaced with null,
             // so distinguish between undefined and null in this place
@@ -592,7 +572,7 @@
             }
 
             // node may be null
-            ({ node } = element);
+            const { node } = element;
             if (!node) {
                 continue;
             }
@@ -604,8 +584,8 @@
                 continue;
             }
 
-            nodeType = node.type || element.wrap;
-            candidates = this.__keys[nodeType];
+            const nodeType = node.type || element.wrap;
+            let candidates = this.__keys[nodeType];
             if (!candidates) {
                 if (this.__fallback) {
                     candidates = this.__fallback(node);
@@ -614,16 +594,16 @@
                 }
             }
 
-            current = candidates.length;
+            let current = candidates.length;
             while ((current -= 1) >= 0) {
-                key = candidates[current];
-                candidate = node[key];
+                const key = candidates[current];
+                const candidate = node[key];
                 if (!candidate) {
                     continue;
                 }
 
                 if (Array.isArray(candidate)) {
-                    current2 = candidate.length;
+                    let current2 = candidate.length;
                     while ((current2 -= 1) >= 0) {
                         if (!candidate[current2]) {
                             continue;
@@ -679,8 +659,8 @@
 
     function attachComments(tree, providedComments, tokens) {
         // At first, we should calculate extended comment ranges.
-        const  comments = [];
-        let comment, len, i, cursor;
+        const comments = [];
+        let comment, cursor;
 
         if (!tree.range) {
             throw new Error('attachComments needs range information');
@@ -689,8 +669,8 @@
         // tokens array is empty, we attach comments to tree as 'leadingComments'
         if (!tokens.length) {
             if (providedComments.length) {
-                for (i = 0, len = providedComments.length; i < len; i += 1) {
-                    comment = deepCopy(providedComments[i]);
+                for (const providedComment of providedComments) {
+                    comment = deepCopy(providedComment);
                     comment.extendedRange = [0, tree.range[0]];
                     comments.push(comment);
                 }
@@ -699,8 +679,8 @@
             return tree;
         }
 
-        for (i = 0, len = providedComments.length; i < len; i += 1) {
-            comments.push(extendCommentRange(deepCopy(providedComments[i]), tokens));
+        for (const providedComment of providedComments) {
+            comments.push(extendCommentRange(deepCopy(providedComment), tokens));
         }
 
         // This is based on John Freeman's implementation.
