@@ -21,7 +21,7 @@
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import { Controller } from '../';
+import { Controller } from '../src/estraverse.js';
 import Dumper from './dumper';
 import checkDump from './checkDump';
 

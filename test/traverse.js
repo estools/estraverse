@@ -23,7 +23,7 @@
 
 import Dumper from './dumper';
 import checkDump from './checkDump';
-import { traverse } from '..';
+import { traverse } from '../src/estraverse.js';
 
 describe('object expression', function() {
     it('properties', function() {

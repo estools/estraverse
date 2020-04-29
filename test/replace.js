@@ -21,7 +21,7 @@
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import { replace, VisitorOption } from '..';
+import { replace, VisitorOption } from '../src/estraverse.js';
 
 describe('replace', function() {
     it('can simplify expressions', function() {

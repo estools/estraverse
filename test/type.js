@@ -22,7 +22,7 @@
 //  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import { traverse } from '..';
+import { traverse } from '../src/estraverse.js';
 
 describe('type API', function() {
     it('for Property', function() {
