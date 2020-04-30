@@ -21,8 +21,8 @@
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import Dumper from './dumper';
-import checkDump from './checkDump';
+import Dumper from './dumper.js';
+import checkDump from './checkDump.js';
 import { traverse } from '../src/estraverse.js';
 
 describe('object expression', function() {

@@ -22,8 +22,8 @@
 
 
 import { Controller } from '../src/estraverse.js';
-import Dumper from './dumper';
-import checkDump from './checkDump';
+import Dumper from './dumper.js';
+import checkDump from './checkDump.js';
 
 describe('controller', function() {
     it('traverse', function() {
