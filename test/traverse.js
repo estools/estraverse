@@ -402,6 +402,43 @@ describe('function declaration', function() {
     });
 });
 
+describe('chain expression', function() {
+    it('traverse', function() {
+        const tree = {
+            type: 'ExpressionStatement',
+            expression: {
+                type: 'ChainExpression',
+                expression: {
+                    type: 'MemberExpression',
+                    object: {
+                        type: 'Identifier',
+                        name: 'a'
+                    },
+                    property: {
+                        type: 'Identifier',
+                        name: 'b'
+                    },
+                    computed: false,
+                    optional: true
+                }
+            }
+        };
+
+        checkDump(Dumper.dump(tree), `
+            enter - ExpressionStatement
+            enter - ChainExpression
+            enter - MemberExpression
+            enter - Identifier
+            leave - Identifier
+            enter - Identifier
+            leave - Identifier
+            leave - MemberExpression
+            leave - ChainExpression
+            leave - ExpressionStatement
+        `);
+    });
+});
+
 describe('extending keys', function() {
     it('traverse', function() {
         const tree = {
