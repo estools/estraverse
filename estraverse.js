@@ -732,10 +732,8 @@
                             node.leadingComments = [];
                         }
                         node.leadingComments.push(comment);
-                        comments.splice(cursor, 1);
-                    } else {
-                        cursor += 1;
                     }
+                    cursor++;
                 }
 
                 // already out of owned node
@@ -765,10 +763,8 @@
                             node.trailingComments = [];
                         }
                         node.trailingComments.push(comment);
-                        comments.splice(cursor, 1);
-                    } else {
-                        cursor += 1;
                     }
+                    cursor++;
                 }
 
                 // already out of owned node
