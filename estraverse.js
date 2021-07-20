@@ -172,7 +172,7 @@
         DirectiveStatement: [],
         DoWhileStatement: ['body', 'test'],
         EmptyStatement: [],
-        ExportAllDeclaration: ['source'],
+        ExportAllDeclaration: ['source', 'exported'],
         ExportDefaultDeclaration: ['declaration'],
         ExportNamedDeclaration: ['declaration', 'specifiers', 'source'],
         ExportSpecifier: ['exported', 'local'],
