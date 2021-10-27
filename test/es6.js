@@ -209,6 +209,29 @@ describe('export', function() {
         `);
     });
 
+    it('all declaration #2 (named)', function() {
+        const tree = {
+            type: 'ExportAllDeclaration',
+            source: {
+                type: 'Literal',
+                value: 'hello'
+            },
+            exported: {
+                type: 'Identifier',
+                name: 'name1'
+            }
+        };
+
+        checkDump(Dumper.dump(tree), `
+            enter - ExportAllDeclaration
+            enter - Literal
+            leave - Literal
+            enter - Identifier
+            leave - Identifier
+            leave - ExportAllDeclaration
+        `);
+    });
+
     it('default declaration #1', function() {
         const tree = {
             type: 'ExportDefaultDeclaration',
