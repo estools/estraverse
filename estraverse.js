@@ -762,7 +762,7 @@
 
                 while (cursor < comments.length) {
                     comment = comments[cursor];
-                    if (node.range[1] < comment.extendedRange[0]) {
+                    if (!node.range || node.range[1] < comment.extendedRange[0]) {
                         break;
                     }
 
@@ -782,7 +782,7 @@
                     return VisitorOption.Break;
                 }
 
-                if (comments[cursor].extendedRange[0] > node.range[1]) {
+                if (!node.range || comments[cursor].extendedRange[0] > node.range[1]) {
                     return VisitorOption.Skip;
                 }
             }
