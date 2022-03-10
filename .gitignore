@@ -12,3 +12,5 @@ coverage/
 
 npm-debug.log
 .vimrc.local
+
+dist

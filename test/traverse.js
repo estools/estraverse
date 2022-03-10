@@ -21,10 +21,9 @@
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import Dumper from './dumper';
-import checkDump from './checkDump';
-import { expect } from 'chai';
-import { traverse } from '..';
+import Dumper from './dumper.js';
+import checkDump from './checkDump.js';
+import { traverse } from '../src/estraverse.js';
 
 describe('object expression', function() {
     it('properties', function() {
@@ -94,7 +93,7 @@ describe('object expression', function() {
             }]
         };
 
-        checkDump(Dumper.dump(tree, {CustomProperty: ['foo']}), `
+        checkDump(Dumper.dump(tree, { CustomProperty: ['foo'] }), `
             enter - ObjectExpression
             enter - CustomProperty
             enter - Identifier
@@ -583,30 +582,30 @@ describe('no listed keys fallback', function() {
                 value: {
                     type: 'ArrayExpression',
                     elements: [
-                        {type: 'Literal', value: 1},
-                        {type: 'Literal', value: 2},
-                        {type: 'Literal', value: 3},
-                        {type: 'Literal', value: 4}
+                        { type: 'Literal', value: 1 },
+                        { type: 'Literal', value: 2 },
+                        { type: 'Literal', value: 3 },
+                        { type: 'Literal', value: 4 }
                     ]
                 }
             }]
         };
 
         expect(
-          () => traverse(tree, { enter(node) {} })
+            () => traverse(tree, { enter (/* node */) {} })
         ).to.throw('Unknown node type XXXExpression.');
     });
 
     it('break loop', function () {
         const children = {
-          type: 'Children',
-          name: 'div'
+            type: 'Children',
+            name: 'div'
         };
 
         const parent = {
-          type: 'Parent',
-          name: children,
-          parent: null,
+            type: 'Parent',
+            name: children,
+            parent: null,
         };
 
         children.parent = parent;
@@ -619,5 +618,5 @@ describe('no listed keys fallback', function() {
               leave - Children
               leave - Parent
           `);
-    })
+    });
 });

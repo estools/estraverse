@@ -22,24 +22,13 @@
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
   THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-/*jslint vars:false, bitwise:true*/
-/*jshint indent:4*/
-/*global exports:true*/
-(function clone(exports) {
-    'use strict';
 
-    var Syntax,
-        VisitorOption,
-        VisitorKeys,
-        BREAK,
-        SKIP,
-        REMOVE;
-
+function clone(exports) {
     function deepCopy(obj) {
-        var ret = {}, key, val;
-        for (key in obj) {
-            if (obj.hasOwnProperty(key)) {
-                val = obj[key];
+        const ret = {};
+        for (const key in obj) {
+            if (Object.hasOwnProperty.call(obj, key)) {
+                const val = obj[key];
                 if (typeof val === 'object' && val !== null) {
                     ret[key] = deepCopy(val);
                 } else {
@@ -54,14 +43,12 @@
     // MIT License
 
     function upperBound(array, func) {
-        var diff, len, i, current;
-
-        len = array.length;
-        i = 0;
+        let len = array.length;
+        let i = 0;
 
         while (len) {
-            diff = len >>> 1;
-            current = i + diff;
+            const diff = len >>> 1;
+            const current = i + diff;
             if (func(array[current])) {
                 len = diff;
             } else {
@@ -72,7 +59,7 @@
         return i;
     }
 
-    Syntax = {
+    const Syntax = {
         AssignmentExpression: 'AssignmentExpression',
         AssignmentPattern: 'AssignmentPattern',
         ArrayExpression: 'ArrayExpression',
@@ -150,7 +137,7 @@
         YieldExpression: 'YieldExpression'
     };
 
-    VisitorKeys = {
+    const VisitorKeys = {
         AssignmentExpression: ['left', 'right'],
         AssignmentPattern: ['left', 'right'],
         ArrayExpression: ['elements'],
@@ -228,161 +215,46 @@
         YieldExpression: ['argument']
     };
 
-    // unique id
-    BREAK = {};
-    SKIP = {};
-    REMOVE = {};
+    // unique id (convert to symbols once targeted versions supporting?)
+    const BREAK = {};
+    const SKIP = {};
+    const REMOVE = {};
 
-    VisitorOption = {
+    const VisitorOption = {
         Break: BREAK,
         Skip: SKIP,
         Remove: REMOVE
     };
 
-    function Reference(parent, key) {
-        this.parent = parent;
-        this.key = key;
-    }
-
-    Reference.prototype.replace = function replace(node) {
-        this.parent[this.key] = node;
-    };
-
-    Reference.prototype.remove = function remove() {
-        if (Array.isArray(this.parent)) {
-            this.parent.splice(this.key, 1);
-            return true;
-        } else {
-            this.replace(null);
-            return false;
+    class Reference {
+        constructor (parent, key) {
+            this.parent = parent;
+            this.key = key;
         }
-    };
 
-    function Element(node, path, wrap, ref) {
-        this.node = node;
-        this.path = path;
-        this.wrap = wrap;
-        this.ref = ref;
-    }
+        replace (node) {
+            this.parent[this.key] = node;
+        }
 
-    function Controller() { }
-
-    // API:
-    // return property path array from root to current node
-    Controller.prototype.path = function path() {
-        var i, iz, j, jz, result, element;
-
-        function addToPath(result, path) {
-            if (Array.isArray(path)) {
-                for (j = 0, jz = path.length; j < jz; ++j) {
-                    result.push(path[j]);
-                }
+        remove () {
+            if (Array.isArray(this.parent)) {
+                this.parent.splice(this.key, 1);
+                return true;
             } else {
-                result.push(path);
+                this.replace(null);
+                return false;
             }
         }
+    }
 
-        // root node
-        if (!this.__current.path) {
-            return null;
+    class Element {
+        constructor (node, path, wrap, ref) {
+            this.node = node;
+            this.path = path;
+            this.wrap = wrap;
+            this.ref = ref;
         }
-
-        // first node is sentinel, second node is root element
-        result = [];
-        for (i = 2, iz = this.__leavelist.length; i < iz; ++i) {
-            element = this.__leavelist[i];
-            addToPath(result, element.path);
-        }
-        addToPath(result, this.__current.path);
-        return result;
-    };
-
-    // API:
-    // return type of current node
-    Controller.prototype.type = function () {
-        var node = this.current();
-        return node.type || this.__current.wrap;
-    };
-
-    // API:
-    // return array of parent elements
-    Controller.prototype.parents = function parents() {
-        var i, iz, result;
-
-        // first node is sentinel
-        result = [];
-        for (i = 1, iz = this.__leavelist.length; i < iz; ++i) {
-            result.push(this.__leavelist[i].node);
-        }
-
-        return result;
-    };
-
-    // API:
-    // return current node
-    Controller.prototype.current = function current() {
-        return this.__current.node;
-    };
-
-    Controller.prototype.__execute = function __execute(callback, element) {
-        var previous, result;
-
-        result = undefined;
-
-        previous  = this.__current;
-        this.__current = element;
-        this.__state = null;
-        if (callback) {
-            result = callback.call(this, element.node, this.__leavelist[this.__leavelist.length - 1].node);
-        }
-        this.__current = previous;
-
-        return result;
-    };
-
-    // API:
-    // notify control skip / break
-    Controller.prototype.notify = function notify(flag) {
-        this.__state = flag;
-    };
-
-    // API:
-    // skip child nodes of current node
-    Controller.prototype.skip = function () {
-        this.notify(SKIP);
-    };
-
-    // API:
-    // break traversals
-    Controller.prototype['break'] = function () {
-        this.notify(BREAK);
-    };
-
-    // API:
-    // remove node
-    Controller.prototype.remove = function () {
-        this.notify(REMOVE);
-    };
-
-    Controller.prototype.__initialize = function(root, visitor) {
-        this.visitor = visitor;
-        this.root = root;
-        this.__worklist = [];
-        this.__leavelist = [];
-        this.__current = null;
-        this.__state = null;
-        this.__fallback = null;
-        if (visitor.fallback === 'iteration') {
-            this.__fallback = Object.keys;
-        } else if (typeof visitor.fallback === 'function') {
-            this.__fallback = visitor.fallback;
-        }
-
-        this.__keys = VisitorKeys;
-        if (visitor.keys) {
-            this.__keys = Object.assign(Object.create(this.__keys), visitor.keys);
-        }
-    };
+    }
 
     function isNode(node) {
         if (node == null) {
@@ -394,9 +266,9 @@
     function isProperty(nodeType, key) {
         return (nodeType === Syntax.ObjectExpression || nodeType === Syntax.ObjectPattern) && 'properties' === key;
     }
-  
+
     function candidateExistsInLeaveList(leavelist, candidate) {
-        for (var i = leavelist.length - 1; i >= 0; --i) {
+        for (let i = leavelist.length - 1; i >= 0; --i) {
             if (leavelist[i].node === candidate) {
                 return true;
             }
@@ -404,279 +276,366 @@
         return false;
     }
 
-    Controller.prototype.traverse = function traverse(root, visitor) {
-        var worklist,
-            leavelist,
-            element,
-            node,
-            nodeType,
-            ret,
-            key,
-            current,
-            current2,
-            candidates,
-            candidate,
-            sentinel;
+    class Controller {
 
-        this.__initialize(root, visitor);
-
-        sentinel = {};
-
-        // reference
-        worklist = this.__worklist;
-        leavelist = this.__leavelist;
-
-        // initialize
-        worklist.push(new Element(root, null, null, null));
-        leavelist.push(new Element(null, null, null, null));
-
-        while (worklist.length) {
-            element = worklist.pop();
-
-            if (element === sentinel) {
-                element = leavelist.pop();
-
-                ret = this.__execute(visitor.leave, element);
-
-                if (this.__state === BREAK || ret === BREAK) {
-                    return;
+        // API:
+        // return property path array from root to current node
+        path () {
+            function addToPath(result, path) {
+                if (Array.isArray(path)) {
+                    for (const p of path) {
+                        result.push(p);
+                    }
+                } else {
+                    result.push(path);
                 }
-                continue;
             }
 
-            if (element.node) {
+            // root node
+            if (!this.__current.path) {
+                return null;
+            }
 
-                ret = this.__execute(visitor.enter, element);
+            // first node is sentinel, second node is root element
+            const result = [];
+            for (let i = 2, iz = this.__leavelist.length; i < iz; ++i) {
+                const element = this.__leavelist[i];
+                addToPath(result, element.path);
+            }
+            addToPath(result, this.__current.path);
+            return result;
+        }
 
-                if (this.__state === BREAK || ret === BREAK) {
-                    return;
-                }
+        // API:
+        // return type of current node
+        type () {
+            const node = this.current();
+            return node.type || this.__current.wrap;
+        }
 
-                worklist.push(sentinel);
-                leavelist.push(element);
+        // API:
+        // return array of parent elements
+        parents () {
+            // first node is sentinel
+            const result = [];
+            for (let i = 1, iz = this.__leavelist.length; i < iz; ++i) {
+                result.push(this.__leavelist[i].node);
+            }
 
-                if (this.__state === SKIP || ret === SKIP) {
+            return result;
+        }
+
+        // API:
+        // return current node
+        current () {
+            return this.__current.node;
+        }
+
+        __execute (callback, element) {
+            const previous = this.__current;
+            this.__current = element;
+            this.__state = null;
+
+            let result = undefined;
+            if (callback) {
+                result = callback.call(this, element.node, this.__leavelist[this.__leavelist.length - 1].node);
+            }
+            this.__current = previous;
+
+            return result;
+        }
+
+        // API:
+        // notify control skip / break
+        notify (flag) {
+            this.__state = flag;
+        }
+
+        // API:
+        // skip child nodes of current node
+        skip () {
+            this.notify(SKIP);
+        }
+
+        // API:
+        // break traversals
+        break () {
+            this.notify(BREAK);
+        }
+
+        // API:
+        // remove node
+        remove () {
+            this.notify(REMOVE);
+        }
+
+        __initialize (root, visitor) {
+            this.visitor = visitor;
+            this.root = root;
+            this.__worklist = [];
+            this.__leavelist = [];
+            this.__current = null;
+            this.__state = null;
+            this.__fallback = null;
+            if (visitor.fallback === 'iteration') {
+                this.__fallback = Object.keys;
+            } else if (typeof visitor.fallback === 'function') {
+                this.__fallback = visitor.fallback;
+            }
+
+            this.__keys = VisitorKeys;
+            if (visitor.keys) {
+                this.__keys = Object.assign(Object.create(this.__keys), visitor.keys);
+            }
+        }
+
+        traverse (root, visitor) {
+            this.__initialize(root, visitor);
+
+            const sentinel = {};
+
+            // reference
+            const worklist = this.__worklist;
+            const leavelist = this.__leavelist;
+
+            // initialize
+            worklist.push(new Element(root, null, null, null));
+            leavelist.push(new Element(null, null, null, null));
+
+            while (worklist.length) {
+                let element = worklist.pop();
+
+                let ret;
+                if (element === sentinel) {
+                    element = leavelist.pop();
+
+                    ret = this.__execute(visitor.leave, element);
+
+                    if (this.__state === BREAK || ret === BREAK) {
+                        return;
+                    }
                     continue;
                 }
 
-                node = element.node;
-                nodeType = node.type || element.wrap;
-                candidates = this.__keys[nodeType];
-                if (!candidates) {
-                    if (this.__fallback) {
-                        candidates = this.__fallback(node);
-                    } else {
-                        throw new Error('Unknown node type ' + nodeType + '.');
-                    }
-                }
+                if (element.node) {
 
-                current = candidates.length;
-                while ((current -= 1) >= 0) {
-                    key = candidates[current];
-                    candidate = node[key];
-                    if (!candidate) {
+                    ret = this.__execute(visitor.enter, element);
+
+                    if (this.__state === BREAK || ret === BREAK) {
+                        return;
+                    }
+
+                    worklist.push(sentinel);
+                    leavelist.push(element);
+
+                    if (this.__state === SKIP || ret === SKIP) {
                         continue;
                     }
 
-                    if (Array.isArray(candidate)) {
-                        current2 = candidate.length;
-                        while ((current2 -= 1) >= 0) {
-                            if (!candidate[current2]) {
-                                continue;
-                            }
-
-                            if (candidateExistsInLeaveList(leavelist, candidate[current2])) {
-                              continue;
-                            }
-
-                            if (isProperty(nodeType, candidates[current])) {
-                                element = new Element(candidate[current2], [key, current2], 'Property', null);
-                            } else if (isNode(candidate[current2])) {
-                                element = new Element(candidate[current2], [key, current2], null, null);
-                            } else {
-                                continue;
-                            }
-                            worklist.push(element);
+                    const { node } = element;
+                    const nodeType = node.type || element.wrap;
+                    let candidates = this.__keys[nodeType];
+                    if (!candidates) {
+                        if (this.__fallback) {
+                            candidates = this.__fallback(node);
+                        } else {
+                            throw new Error(`Unknown node type ${  nodeType  }.`);
                         }
-                    } else if (isNode(candidate)) {
-                        if (candidateExistsInLeaveList(leavelist, candidate)) {
-                          continue;
-                        }
-
-                        worklist.push(new Element(candidate, key, null, null));
                     }
-                }
-            }
-        }
-    };
 
-    Controller.prototype.replace = function replace(root, visitor) {
-        var worklist,
-            leavelist,
-            node,
-            nodeType,
-            target,
-            element,
-            current,
-            current2,
-            candidates,
-            candidate,
-            sentinel,
-            outer,
-            key;
-
-        function removeElem(element) {
-            var i,
-                key,
-                nextElem,
-                parent;
-
-            if (element.ref.remove()) {
-                // When the reference is an element of an array.
-                key = element.ref.key;
-                parent = element.ref.parent;
-
-                // If removed from array, then decrease following items' keys.
-                i = worklist.length;
-                while (i--) {
-                    nextElem = worklist[i];
-                    if (nextElem.ref && nextElem.ref.parent === parent) {
-                        if  (nextElem.ref.key < key) {
-                            break;
+                    let current = candidates.length;
+                    while ((current -= 1) >= 0) {
+                        const key = candidates[current];
+                        const candidate = node[key];
+                        if (!candidate) {
+                            continue;
                         }
-                        --nextElem.ref.key;
+
+                        if (Array.isArray(candidate)) {
+                            let current2 = candidate.length;
+                            while ((current2 -= 1) >= 0) {
+                                if (!candidate[current2]) {
+                                    continue;
+                                }
+
+                                if (candidateExistsInLeaveList(leavelist, candidate[current2])) {
+                                    continue;
+                                }
+
+                                if (isProperty(nodeType, candidates[current])) {
+                                    element = new Element(candidate[current2], [key, current2], 'Property', null);
+                                } else if (isNode(candidate[current2])) {
+                                    element = new Element(candidate[current2], [key, current2], null, null);
+                                } else {
+                                    continue;
+                                }
+                                worklist.push(element);
+                            }
+                        } else if (isNode(candidate)) {
+                            if (candidateExistsInLeaveList(leavelist, candidate)) {
+                                continue;
+                            }
+
+                            worklist.push(new Element(candidate, key, null, null));
+                        }
                     }
                 }
             }
         }
 
-        this.__initialize(root, visitor);
+        replace (root, visitor) {
+            function removeElem(element) {
+                let i,
+                    key,
+                    nextElem,
+                    parent;
 
-        sentinel = {};
+                if (element.ref.remove()) {
+                    // When the reference is an element of an array.
+                    ({ key, parent } = element.ref);
 
-        // reference
-        worklist = this.__worklist;
-        leavelist = this.__leavelist;
+                    // If removed from array, then decrease following items' keys.
+                    i = worklist.length;
+                    while (i--) {
+                        nextElem = worklist[i];
+                        if (nextElem.ref && nextElem.ref.parent === parent) {
+                            if  (nextElem.ref.key < key) {
+                                break;
+                            }
+                            --nextElem.ref.key;
+                        }
+                    }
+                }
+            }
 
-        // initialize
-        outer = {
-            root: root
-        };
-        element = new Element(root, null, null, new Reference(outer, 'root'));
-        worklist.push(element);
-        leavelist.push(element);
+            this.__initialize(root, visitor);
 
-        while (worklist.length) {
-            element = worklist.pop();
+            const sentinel = {};
 
-            if (element === sentinel) {
-                element = leavelist.pop();
+            // reference
+            const worklist = this.__worklist;
+            const leavelist = this.__leavelist;
 
-                target = this.__execute(visitor.leave, element);
+            // initialize
+            const outer = {
+                root
+            };
+            let element = new Element(root, null, null, new Reference(outer, 'root'));
+            worklist.push(element);
+            leavelist.push(element);
+
+            while (worklist.length) {
+                element = worklist.pop();
+
+                if (element === sentinel) {
+                    element = leavelist.pop();
+
+                    const target = this.__execute(visitor.leave, element);
+
+                    // node may be replaced with null,
+                    // so distinguish between undefined and null in this place
+                    if (target !== undefined && target !== BREAK && target !== SKIP && target !== REMOVE) {
+                        // replace
+                        element.ref.replace(target);
+                    }
+
+                    if (this.__state === REMOVE || target === REMOVE) {
+                        removeElem(element);
+                    }
+
+                    if (this.__state === BREAK || target === BREAK) {
+                        return outer.root;
+                    }
+                    continue;
+                }
+
+                const target = this.__execute(visitor.enter, element);
 
                 // node may be replaced with null,
                 // so distinguish between undefined and null in this place
                 if (target !== undefined && target !== BREAK && target !== SKIP && target !== REMOVE) {
                     // replace
                     element.ref.replace(target);
+                    element.node = target;
                 }
 
                 if (this.__state === REMOVE || target === REMOVE) {
                     removeElem(element);
+                    element.node = null;
                 }
 
                 if (this.__state === BREAK || target === BREAK) {
                     return outer.root;
                 }
-                continue;
-            }
 
-            target = this.__execute(visitor.enter, element);
-
-            // node may be replaced with null,
-            // so distinguish between undefined and null in this place
-            if (target !== undefined && target !== BREAK && target !== SKIP && target !== REMOVE) {
-                // replace
-                element.ref.replace(target);
-                element.node = target;
-            }
-
-            if (this.__state === REMOVE || target === REMOVE) {
-                removeElem(element);
-                element.node = null;
-            }
-
-            if (this.__state === BREAK || target === BREAK) {
-                return outer.root;
-            }
-
-            // node may be null
-            node = element.node;
-            if (!node) {
-                continue;
-            }
-
-            worklist.push(sentinel);
-            leavelist.push(element);
-
-            if (this.__state === SKIP || target === SKIP) {
-                continue;
-            }
-
-            nodeType = node.type || element.wrap;
-            candidates = this.__keys[nodeType];
-            if (!candidates) {
-                if (this.__fallback) {
-                    candidates = this.__fallback(node);
-                } else {
-                    throw new Error('Unknown node type ' + nodeType + '.');
-                }
-            }
-
-            current = candidates.length;
-            while ((current -= 1) >= 0) {
-                key = candidates[current];
-                candidate = node[key];
-                if (!candidate) {
+                // node may be null
+                const { node } = element;
+                if (!node) {
                     continue;
                 }
 
-                if (Array.isArray(candidate)) {
-                    current2 = candidate.length;
-                    while ((current2 -= 1) >= 0) {
-                        if (!candidate[current2]) {
-                            continue;
-                        }
-                        if (isProperty(nodeType, candidates[current])) {
-                            element = new Element(candidate[current2], [key, current2], 'Property', new Reference(candidate, current2));
-                        } else if (isNode(candidate[current2])) {
-                            element = new Element(candidate[current2], [key, current2], null, new Reference(candidate, current2));
-                        } else {
-                            continue;
-                        }
-                        worklist.push(element);
+                worklist.push(sentinel);
+                leavelist.push(element);
+
+                if (this.__state === SKIP || target === SKIP) {
+                    continue;
+                }
+
+                const nodeType = node.type || element.wrap;
+                let candidates = this.__keys[nodeType];
+                if (!candidates) {
+                    if (this.__fallback) {
+                        candidates = this.__fallback(node);
+                    } else {
+                        throw new Error(`Unknown node type ${  nodeType  }.`);
                     }
-                } else if (isNode(candidate)) {
-                    worklist.push(new Element(candidate, key, null, new Reference(node, key)));
+                }
+
+                let current = candidates.length;
+                while ((current -= 1) >= 0) {
+                    const key = candidates[current];
+                    const candidate = node[key];
+                    if (!candidate) {
+                        continue;
+                    }
+
+                    if (Array.isArray(candidate)) {
+                        let current2 = candidate.length;
+                        while ((current2 -= 1) >= 0) {
+                            if (!candidate[current2]) {
+                                continue;
+                            }
+                            if (isProperty(nodeType, candidates[current])) {
+                                element = new Element(candidate[current2], [key, current2], 'Property', new Reference(candidate, current2));
+                            } else if (isNode(candidate[current2])) {
+                                element = new Element(candidate[current2], [key, current2], null, new Reference(candidate, current2));
+                            } else {
+                                continue;
+                            }
+                            worklist.push(element);
+                        }
+                    } else if (isNode(candidate)) {
+                        worklist.push(new Element(candidate, key, null, new Reference(node, key)));
+                    }
                 }
             }
-        }
 
-        return outer.root;
-    };
+            return outer.root;
+        }
+    }
 
     function traverse(root, visitor) {
-        var controller = new Controller();
+        const controller = new Controller();
         return controller.traverse(root, visitor);
     }
 
     function replace(root, visitor) {
-        var controller = new Controller();
+        const controller = new Controller();
         return controller.replace(root, visitor);
     }
 
     function extendCommentRange(comment, tokens) {
-        var target;
+        let target;
 
         target = upperBound(tokens, function search(token) {
             return token.range[0] > comment.range[0];
@@ -685,12 +644,12 @@
         comment.extendedRange = [comment.range[0], comment.range[1]];
 
         if (target !== tokens.length) {
-            comment.extendedRange[1] = tokens[target].range[0];
+            [comment.extendedRange[1]] = tokens[target].range;
         }
 
         target -= 1;
         if (target >= 0) {
-            comment.extendedRange[0] = tokens[target].range[1];
+            [, comment.extendedRange[0]] = tokens[target].range;
         }
 
         return comment;
@@ -698,7 +657,8 @@
 
     function attachComments(tree, providedComments, tokens) {
         // At first, we should calculate extended comment ranges.
-        var comments = [], comment, len, i, cursor;
+        const comments = [];
+        let comment, cursor;
 
         if (!tree.range) {
             throw new Error('attachComments needs range information');
@@ -707,8 +667,8 @@
         // tokens array is empty, we attach comments to tree as 'leadingComments'
         if (!tokens.length) {
             if (providedComments.length) {
-                for (i = 0, len = providedComments.length; i < len; i += 1) {
-                    comment = deepCopy(providedComments[i]);
+                for (const providedComment of providedComments) {
+                    comment = deepCopy(providedComment);
                     comment.extendedRange = [0, tree.range[0]];
                     comments.push(comment);
                 }
@@ -717,15 +677,15 @@
             return tree;
         }
 
-        for (i = 0, len = providedComments.length; i < len; i += 1) {
-            comments.push(extendCommentRange(deepCopy(providedComments[i]), tokens));
+        for (const providedComment of providedComments) {
+            comments.push(extendCommentRange(deepCopy(providedComment), tokens));
         }
 
         // This is based on John Freeman's implementation.
         cursor = 0;
         traverse(tree, {
-            enter: function (node) {
-                var comment;
+            enter (node) {
+                let comment;
 
                 while (cursor < comments.length) {
                     comment = comments[cursor];
@@ -757,8 +717,8 @@
 
         cursor = 0;
         traverse(tree, {
-            leave: function (node) {
-                var comment;
+            leave (node) {
+                let comment;
 
                 while (cursor < comments.length) {
                     comment = comments[cursor];
@@ -801,5 +761,15 @@
     exports.cloneEnvironment = function () { return clone({}); };
 
     return exports;
-}(exports));
+}
 /* vim: set sw=4 ts=4 et tw=80 : */
+
+const {
+    Syntax, traverse, replace, attachComments,
+    VisitorKeys, VisitorOption, Controller, cloneEnvironment
+} = clone({});
+
+export {
+    Syntax, traverse, replace, attachComments,
+    VisitorKeys, VisitorOption, Controller, cloneEnvironment
+};

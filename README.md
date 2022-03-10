@@ -14,11 +14,11 @@ The following code will output all variables declared at the root of a file.
 
 ```javascript
 estraverse.traverse(ast, {
-    enter: function (node, parent) {
+    enter (node, parent) {
         if (node.type == 'FunctionExpression' || node.type == 'FunctionDeclaration')
             return estraverse.VisitorOption.Skip;
     },
-    leave: function (node, parent) {
+    leave (node, parent) {
         if (node.type == 'VariableDeclarator')
           console.log(node.id.name);
     }
@@ -29,7 +29,7 @@ We can use `this.skip`, `this.remove` and `this.break` functions instead of usin
 
 ```javascript
 estraverse.traverse(ast, {
-    enter: function (node) {
+    enter (node) {
         this.break();
     }
 });
@@ -38,8 +38,8 @@ estraverse.traverse(ast, {
 And estraverse provides `estraverse.replace` function. When returning node from `enter`/`leave`, current node is replaced with it.
 
 ```javascript
-result = estraverse.replace(tree, {
-    enter: function (node) {
+const result = estraverse.replace(tree, {
+    enter (node) {
         // Replace it with replaced.
         if (node.type === 'Literal')
             return replaced;
@@ -51,7 +51,7 @@ By passing `visitor.keys` mapping, we can extend estraverse traversing functiona
 
 ```javascript
 // This tree contains a user-defined `TestExpression` node.
-var tree = {
+const tree = {
     type: 'TestExpression',
 
     // This 'argument' is the property containing the other **node**.
@@ -64,7 +64,7 @@ var tree = {
     extended: true
 };
 estraverse.traverse(tree, {
-    enter: function (node) { },
+    enter (node) { },
 
     // Extending the existing traversing rules.
     keys: {
@@ -78,7 +78,7 @@ By passing `visitor.fallback` option, we can control the behavior when encounter
 
 ```javascript
 // This tree contains a user-defined `TestExpression` node.
-var tree = {
+const tree = {
     type: 'TestExpression',
 
     // This 'argument' is the property containing the other **node**.
@@ -91,7 +91,7 @@ var tree = {
     extended: true
 };
 estraverse.traverse(tree, {
-    enter: function (node) { },
+    enter (node) { },
 
     // Iterating the child **nodes** of unknown nodes.
     fallback: 'iteration'
@@ -102,7 +102,7 @@ When `visitor.fallback` is a function, we can determine which keys to visit on e
 
 ```javascript
 // This tree contains a user-defined `TestExpression` node.
-var tree = {
+const tree = {
     type: 'TestExpression',
 
     // This 'argument' is the property containing the other **node**.
@@ -115,11 +115,11 @@ var tree = {
     extended: true
 };
 estraverse.traverse(tree, {
-    enter: function (node) { },
+    enter (node) { },
 
     // Skip the `argument` property of each node
-    fallback: function(node) {
-        return Object.keys(node).filter(function(key) {
+    fallback(node) {
+        return Object.keys(node).filter((key) => {
             return key !== 'argument';
         });
     }

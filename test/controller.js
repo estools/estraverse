@@ -21,9 +21,9 @@
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import { Controller } from '../';
-import Dumper from './dumper';
-import checkDump from './checkDump';
+import { Controller } from '../src/estraverse.js';
+import Dumper from './dumper.js';
+import checkDump from './checkDump.js';
 
 describe('controller', function() {
     it('traverse', function() {

@@ -21,7 +21,7 @@
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import { traverse, VisitorOption } from '..';
+import { traverse, VisitorOption } from '../src/estraverse.js';
 
 export default class Dumper {
     constructor() {
@@ -56,4 +56,4 @@ export default class Dumper {
 
         return dumper.result();
     }
-};
+}

@@ -21,8 +21,7 @@
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import { replace, VisitorOption } from '..';
-import { expect } from 'chai';
+import { replace, VisitorOption } from '../src/estraverse.js';
 
 describe('replace', function() {
     it('can simplify expressions', function() {
@@ -88,10 +87,10 @@ describe('replace', function() {
                 value: {
                     type: 'ArrayExpression',
                     elements: [
-                        {type: 'Literal', value: 1},
-                        {type: 'Literal', value: 2},
-                        {type: 'Literal', value: 3},
-                        {type: 'Literal', value: 4}
+                        { type: 'Literal', value: 1 },
+                        { type: 'Literal', value: 2 },
+                        { type: 'Literal', value: 3 },
+                        { type: 'Literal', value: 4 }
                     ]
                 }
             }]
@@ -116,9 +115,9 @@ describe('replace', function() {
                 value: {
                     type: 'ArrayExpression',
                     elements: [
-                        {type: 'Literal', value: 1},
-                        {type: 'Literal', value: 3},
-                        {type: 'Literal', value: 4}
+                        { type: 'Literal', value: 1 },
+                        { type: 'Literal', value: 3 },
+                        { type: 'Literal', value: 4 }
                     ]
                 }
             }]
@@ -137,10 +136,10 @@ describe('replace', function() {
                 value: {
                     type: 'ArrayExpression',
                     elements: [
-                        {type: 'Literal', value: 1},
-                        {type: 'Literal', value: 2},
-                        {type: 'Literal', value: 3},
-                        {type: 'Literal', value: 4}
+                        { type: 'Literal', value: 1 },
+                        { type: 'Literal', value: 2 },
+                        { type: 'Literal', value: 3 },
+                        { type: 'Literal', value: 4 }
                     ]
                 }
             }]
@@ -253,10 +252,10 @@ describe('replace', function() {
                 value: {
                     type: 'ArrayExpression',
                     elements: [
-                        {type: 'Literal', value: 1},
-                        {type: 'Literal', value: 2},
-                        {type: 'Literal', value: 3},
-                        {type: 'Literal', value: 4}
+                        { type: 'Literal', value: 1 },
+                        { type: 'Literal', value: 2 },
+                        { type: 'Literal', value: 3 },
+                        { type: 'Literal', value: 4 }
                     ]
                 }
             }]
@@ -409,10 +408,10 @@ describe('replace', function() {
                 value: {
                     type: 'ArrayExpression',
                     elements: [
-                        {type: 'Literal', value: 1},
-                        {type: 'Literal', value: 2},
-                        {type: 'Literal', value: 3},
-                        {type: 'Literal', value: 4}
+                        { type: 'Literal', value: 1 },
+                        { type: 'Literal', value: 2 },
+                        { type: 'Literal', value: 3 },
+                        { type: 'Literal', value: 4 }
                     ]
                 }
             }]
@@ -438,9 +437,9 @@ describe('replace', function() {
                 value: {
                     type: 'ArrayExpression',
                     elements: [
-                        {type: 'Literal', value: 1},
-                        {type: 'Literal', value: 3},
-                        {type: 'Literal', value: 4}
+                        { type: 'Literal', value: 1 },
+                        { type: 'Literal', value: 3 },
+                        { type: 'Literal', value: 4 }
                     ]
                 }
             }]
@@ -459,25 +458,25 @@ describe('replace', function() {
                 value: {
                     type: 'ArrayExpression',
                     elements: [
-                        {type: 'Literal', value: 1},
-                        {type: 'Literal', value: 2},
-                        {type: 'Literal', value: 3},
-                        {type: 'Literal', value: 4}
+                        { type: 'Literal', value: 1 },
+                        { type: 'Literal', value: 2 },
+                        { type: 'Literal', value: 3 },
+                        { type: 'Literal', value: 4 }
                     ]
                 }
             }]
         };
 
         expect(() => replace(tree, {
-                enter(node) {
-                    if (node.type === 'Identifier' && node.name === 'a') {
-                        this.remove();
-                    }
-                    if (node.type === 'Literal' && node.value === 2) {
-                        return VisitorOption.Remove;
-                    }
+            enter(node) {
+                if (node.type === 'Identifier' && node.name === 'a') {
+                    this.remove();
                 }
-            })
+                if (node.type === 'Literal' && node.value === 2) {
+                    return VisitorOption.Remove;
+                }
+            }
+        })
         ).to.throw('Unknown node type XXXExpression.');
     });
 });
