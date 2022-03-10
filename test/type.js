@@ -22,7 +22,6 @@
 //  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import { expect } from 'chai';
 import { traverse } from '..';
 
 describe('type API', function() {

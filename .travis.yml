@@ -3,6 +3,7 @@ arch:
  - ppc64le
 language: node_js
 node_js:
-    - 4
-    - 6
-    - 8
+  - 12
+  - 14
+  - 16
+  - 17

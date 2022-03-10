@@ -24,7 +24,7 @@
 
 import Dumper from './dumper';
 import checkDump from './checkDump';
-import { parse as esprima } from './third_party/esprima';
+import { parse as esprima } from 'esprima';
 import { parse as espree } from 'espree';
 
 function classDeclaration() {
@@ -250,9 +250,8 @@ describe('export', function() {
 describe('import', function() {
     it('default specifier #1', function() {
         const tree = espree(`import Cocoa from 'rabbit-house'`, {
-            ecmaFeatures: {
-                modules: true
-            }
+            ecmaVersion: 2015,
+            sourceType: 'module'
         });
 
         checkDump(Dumper.dump(tree), `
@@ -271,9 +270,8 @@ describe('import', function() {
 
     it('named specifier #1', function() {
         const tree = espree(`import {Cocoa, Cappuccino as Chino} from 'rabbit-house'`, {
-            ecmaFeatures: {
-                modules: true
-            }
+            ecmaVersion: 2015,
+            sourceType: 'module'
         });
 
         checkDump(Dumper.dump(tree), `
@@ -300,9 +298,8 @@ describe('import', function() {
 
     it('namespace specifier #1', function() {
         const tree = espree(`import * as RabbitHouse from 'rabbit-house'`, {
-            ecmaFeatures: {
-                modules: true
-            }
+            ecmaVersion: 2015,
+            sourceType: 'module'
         });
 
         checkDump(Dumper.dump(tree), `
@@ -322,27 +319,20 @@ describe('import', function() {
 
 describe('dynamic import', function() {
     it('expression pattern #1', function() {
-        // TODO: espree currently doesn't support dynamic imports. Update when it does
-        // const tree = espree(`import('rabbit-house')`, {
-        //     ecmaFeatures: {
-        //         modules: true
-        //     }
-        // });
+        const tree = espree(`import('rabbit-house')`, {
+            ecmaVersion: 2020
+        });
 
-        const tree = {
-            type: 'ImportExpression',
-            source: {
-                type: 'Literal',
-                value: 'rabbit-house'
-            }
-        };
-
-      checkDump(Dumper.dump(tree), `
-          enter - ImportExpression
-          enter - Literal
-          leave - Literal
-          leave - ImportExpression
-      `);
+        checkDump(Dumper.dump(tree), `
+            enter - Program
+            enter - ExpressionStatement
+            enter - ImportExpression
+            enter - Literal
+            leave - Literal
+            leave - ImportExpression
+            leave - ExpressionStatement
+            leave - Program
+        `);
     });
 });
 
